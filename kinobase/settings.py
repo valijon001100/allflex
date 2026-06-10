@@ -62,7 +62,7 @@ _EXTRA_HOSTS = [
     h.strip()
     for h in os.environ.get(
         'DJANGO_EXTRA_ALLOWED_HOSTS',
-        'allflex.docmed.uz,www.allflex.docmed.uz,allflex-ota0.onrender.com',
+        'allflex.doccmed.uz,www.allflex.doccmed.uz,allflex.docmed.uz,www.allflex.docmed.uz,allflex-ota0.onrender.com',
     ).split(',')
     if h.strip()
 ]
