@@ -57,6 +57,19 @@ _render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '').strip()
 if _render_host and _render_host not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(_render_host)
 
+# Production custom domains (Render env orqali ham qo'shish mumkin)
+_EXTRA_HOSTS = [
+    h.strip()
+    for h in os.environ.get(
+        'DJANGO_EXTRA_ALLOWED_HOSTS',
+        'allflex.docmed.uz,www.allflex.docmed.uz,allflex-ota0.onrender.com',
+    ).split(',')
+    if h.strip()
+]
+for _host in _EXTRA_HOSTS:
+    if _host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_host)
+
 CSRF_TRUSTED_ORIGINS = [
     o.strip() for o in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
     if o.strip()
@@ -65,6 +78,10 @@ if _render_host:
     _render_origin = f'https://{_render_host}'
     if _render_origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(_render_origin)
+for _host in _EXTRA_HOSTS:
+    _origin = f'https://{_host}'
+    if _origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(_origin)
 
 
 # Application definition

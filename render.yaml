@@ -18,6 +18,10 @@ services:
         generateValue: true
       - key: DJANGO_DEBUG
         value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "allflex-ota0.onrender.com,allflex.docmed.uz,www.allflex.docmed.uz"
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        value: "https://allflex-ota0.onrender.com,https://allflex.docmed.uz,https://www.allflex.docmed.uz"
       - key: DATABASE_URL
         fromDatabase:
           name: alflix-db
