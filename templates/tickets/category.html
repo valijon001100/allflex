@@ -5,7 +5,7 @@
 {% include 'tickets/_premiere_styles.html' %}
 <div class="ticket-page">
     <div class="ticket-inner">
-        <p style="margin-bottom:12px"><a href="{% url 'movie:ticket_home' %}" style="color:#9ca3af">← {% trans 'Biletlar' %}</a></p>
+        {% include 'tickets/_back_home.html' with show_tickets_link=True %}
         <h1>{{ category.icon }} {{ category_name }}</h1>
         <p class="ticket-sub">{% trans 'Premyeralar va tadbirlar' %}</p>
 

@@ -1,0 +1,8 @@
+{% load i18n %}
+<p class="ticket-back-links" style="margin-bottom:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+    <a href="{% url 'movie:home' %}" style="color:#f5c518;font-weight:600;text-decoration:none">← {% trans 'Bosh sahifa' %}</a>
+    {% if show_tickets_link %}
+    <span style="color:#4b5563">|</span>
+    <a href="{% url 'movie:ticket_home' %}" style="color:#9ca3af;text-decoration:none">{% trans 'Biletlar' %}</a>
+    {% endif %}
+</p>

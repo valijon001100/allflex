@@ -3,6 +3,7 @@
 
 {% block content %}
 <div id="main" class="container" style="padding:24px 20px 48px;max-width:900px">
+    {% include 'tickets/_back_home.html' with show_tickets_link=True %}
     <h1 style="color:#fff;margin-bottom:24px">🎫 {% trans 'Mening biletlarim' %}</h1>
 
     {% for ticket in tickets %}

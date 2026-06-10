@@ -4,9 +4,10 @@
 {% block content %}
 {% include 'tickets/_premiere_styles.html' %}
 <div class="ticket-page" style="padding-bottom:0">
-    <p style="max-width:1200px;margin:0 auto;padding:16px 20px 0">
+    <div style="max-width:1200px;margin:0 auto;padding:16px 20px 0">
+        {% include 'tickets/_back_home.html' with show_tickets_link=True %}
         <a href="{{ event.category.get_absolute_url }}" style="color:#9ca3af">← {{ category_name }}</a>
-    </p>
+    </div>
 
     <section class="ticket-hero">
         {% if event.poster %}
