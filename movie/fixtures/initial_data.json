@@ -1,0 +1,1170 @@
+[
+{
+  "model": "movie.category",
+  "pk": 1,
+  "fields": {
+    "parent": null,
+    "name": "Фильмы",
+    "name_uz": "Filmlar",
+    "name_en": "Movies",
+    "slug": "filmy",
+    "is_active": true,
+    "order": 1
+  }
+},
+{
+  "model": "movie.category",
+  "pk": 2,
+  "fields": {
+    "parent": null,
+    "name": "Сериалы",
+    "name_uz": "Seriallar",
+    "name_en": "TV Series",
+    "slug": "serialy",
+    "is_active": true,
+    "order": 2
+  }
+},
+{
+  "model": "movie.category",
+  "pk": 3,
+  "fields": {
+    "parent": null,
+    "name": "Телепередачи",
+    "name_uz": "Teleko'rsatuvlar",
+    "name_en": "TV Shows",
+    "slug": "teleperedachi",
+    "is_active": true,
+    "order": 3
+  }
+},
+{
+  "model": "movie.category",
+  "pk": 4,
+  "fields": {
+    "parent": null,
+    "name": "Мультфильмы",
+    "name_uz": "Multfilmlar",
+    "name_en": "Cartoons",
+    "slug": "multfilmy",
+    "is_active": true,
+    "order": 4
+  }
+},
+{
+  "model": "movie.category",
+  "pk": 5,
+  "fields": {
+    "parent": null,
+    "name": "Скоро на сайте",
+    "name_uz": "Tez kunda",
+    "name_en": "Coming Soon",
+    "slug": "skoro-na-sajte",
+    "is_active": true,
+    "order": 5
+  }
+},
+{
+  "model": "movie.category",
+  "pk": 7,
+  "fields": {
+    "parent": null,
+    "name": "Teatr",
+    "name_uz": "Teatr",
+    "name_en": "Teatr",
+    "slug": "Teatr",
+    "is_active": true,
+    "order": 7
+  }
+},
+{
+  "model": "movie.genre",
+  "pk": 1,
+  "fields": {
+    "name": "Семейный",
+    "slug": "semejnyj"
+  }
+},
+{
+  "model": "movie.genre",
+  "pk": 2,
+  "fields": {
+    "name": "Комедия",
+    "slug": "komediya"
+  }
+},
+{
+  "model": "movie.genre",
+  "pk": 3,
+  "fields": {
+    "name": "Фэнтези",
+    "slug": "fentezi"
+  }
+},
+{
+  "model": "movie.genre",
+  "pk": 4,
+  "fields": {
+    "name": "Фантастика",
+    "slug": "fantastika"
+  }
+},
+{
+  "model": "movie.genre",
+  "pk": 5,
+  "fields": {
+    "name": "Боевик",
+    "slug": "boevik"
+  }
+},
+{
+  "model": "movie.genre",
+  "pk": 6,
+  "fields": {
+    "name": "Ужасы",
+    "slug": "uzhasy"
+  }
+},
+{
+  "model": "movie.genre",
+  "pk": 7,
+  "fields": {
+    "name": "Приключения",
+    "slug": "priklyucheniya"
+  }
+},
+{
+  "model": "movie.genre",
+  "pk": 8,
+  "fields": {
+    "name": "Триллер",
+    "slug": "triller"
+  }
+},
+{
+  "model": "movie.actor",
+  "pk": 1,
+  "fields": {
+    "name": "Эдди Редмэйн",
+    "slug": "eddi-redmejn",
+    "age": 56,
+    "image": "actor_images/68f6690f907e7d69c108544664c80e63.jpg"
+  }
+},
+{
+  "model": "movie.actor",
+  "pk": 2,
+  "fields": {
+    "name": "Каллум Тернер",
+    "slug": "kallum-terner",
+    "age": 35,
+    "image": "actor_images/Chris-Hemsworth.jpg"
+  }
+},
+{
+  "model": "movie.actor",
+  "pk": 3,
+  "fields": {
+    "name": "Оливер Мазуччи",
+    "slug": "oliver-mazuchchi",
+    "age": 65,
+    "image": "actor_images/hollywood-highest-paid-actor-actress.webp"
+  }
+},
+{
+  "model": "movie.actor",
+  "pk": 4,
+  "fields": {
+    "name": "Мадс Миккельсен",
+    "slug": "mads-mikkelsen",
+    "age": 45,
+    "image": "actor_images/main-qimg-fa166cb42693e4643faeb6340a056934-lq.jpg"
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 1,
+  "fields": {
+    "category": 4,
+    "poster": "movie_posters/2022/05/64c0480d66a92778fc93.jpg",
+    "title": "Соник 2 в кино",
+    "title_uz": "Sonik 2 kinoda",
+    "title_en": "",
+    "slug": "sonik-2-v-kino",
+    "description": "Поселившись в Грин Хилз, Соник стремится доказать, что у него есть все задатки настоящего героя. И геройское испытание не заставляет себя долго ждать: злодейский доктор Роботник вновь строит козни. На этот раз — с загадочным напарником Наклзом. Вместе они разыскивают бесценный изумруд, в котором заключены силы, способные уничтожать целые цивилизации. Соник объединяется с лисенком Тейлзом, чтобы отправиться в кругосветное путешествие и найти изумруд до того, как он попадет в плохие руки.",
+    "short_description": "«Welcome to the next level.»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "TS",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      1,
+      2,
+      3
+    ],
+    "genres": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 2,
+  "fields": {
+    "category": 1,
+    "poster": "movie_posters/2022/05/95747f24e3e1223a106c.jpg",
+    "title": "Дерзкое ограбление: Выжить любой ценой",
+    "title_uz": "Jasoratli talon-taroj: Tirilish uchun hamma narsa",
+    "title_en": "",
+    "slug": "derzkoe-ograblenie-vyzhit-lyuboj-cenoj",
+    "description": "Команда наемников похищает 14 миллионов долларов у босса мафии. Они прячутся в доме семьи, у которой есть мрачная тайна — хозяин дома оказывается не совсем человеком. Бойцам теперь предстоит пережить ночь с врагами как снаружи, так и внутри укрытия.",
+    "short_description": ".",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      1,
+      3,
+      4
+    ],
+    "genres": [
+      2,
+      5,
+      8
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 3,
+  "fields": {
+    "category": 1,
+    "poster": "movie_posters/2022/05/78bc3c8724a76e268628.jpg",
+    "title": "Закат",
+    "title_uz": "Quyosh botishi",
+    "title_en": "",
+    "slug": "zakat",
+    "description": "Казалось бы, что может быть спокойнее жизни в элегантных гостиничных люксах и на размеренных пляжах Акапулько? Однако, случай может нарушить тихий порядок состоятельной пары, и нарастающая напряженность начнет раскрывать тайны",
+    "short_description": "«Иногда лучше не знать чужие секреты»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      1,
+      2,
+      3
+    ],
+    "genres": [
+      2,
+      3,
+      5
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 4,
+  "fields": {
+    "category": 1,
+    "poster": "movie_posters/2022/05/86389b716b7e665fdd42.jpg",
+    "title": "Близнец",
+    "title_uz": "Egizak",
+    "title_en": "",
+    "slug": "bliznec",
+    "description": "Молодая семья переезжает в сельскую глубинку, чтобы восстановить силы и забыть о недавней трагедии. Однако вместо тишины и спокойствия семейство ждёт настоящий кошмар. Их сын Элиот начинает как-то странно себя вести. Он говорит, что по ночам ему является некое потустороннее существо. Мать Элиота вынуждена вступить в отчаянную схватку за душу своего ребенка.",
+    "short_description": "«Любовь матери безусловна. Даже если ее сын – дьявол»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      2,
+      3,
+      4
+    ],
+    "genres": [
+      2,
+      4,
+      7
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 5,
+  "fields": {
+    "category": 1,
+    "poster": "movie_posters/2022/05/ccfc586ad4559035617d.jpg",
+    "title": "Оторви и выбрось",
+    "title_uz": "Yirtib tashlash",
+    "title_en": "",
+    "slug": "otorvi-i-vybros",
+    "description": "От любящей родни не уйдешь. Суровая Вера Павловна отправляется в лихую погоню за своей внучкой Машей и непутёвой дочерью Олей. Помогает ей в этом Олег — все еще влюбленный в Олю «бывший», даже после того, как посадил за решетку. Кажется, во всей этой уморительной суматохе только маленькая Маша знает, как взрослым не слететь с катушек.",
+    "short_description": "«Это полный трындец»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "TS",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      2,
+      3,
+      4
+    ],
+    "genres": [
+      4,
+      5,
+      6
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 6,
+  "fields": {
+    "category": 1,
+    "poster": "movie_posters/2022/05/1c4dea714f8fa0a66c88.jpg",
+    "title": "Флешбэк",
+    "title_uz": "Fleshbek",
+    "title_en": "",
+    "slug": "fleshbek",
+    "description": "Алекс Льюис, профессиональный киллер с репутацией, в какой-то момент пошел против ветра, и теперь вынужден отбиваться и от ФБР, и от криминального босса. Все потому, что убийца отказался нарушить свой внутренний кодекс.",
+    "short_description": "«Память киллера — тяжелая ноша»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      1,
+      2,
+      4
+    ],
+    "genres": [
+      5,
+      8
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 7,
+  "fields": {
+    "category": 1,
+    "poster": "movie_posters/2022/05/111ebbb72ac9ad1359ea.jpg",
+    "title": "Скрежет",
+    "title_uz": "Sqrijet",
+    "title_en": "",
+    "slug": "skrezhet",
+    "description": "12-летняя гимнастка Тинья всячески пытается угодить одержимой имиджем матери и достичь высот в спорте. Ее мать, популярный видеоблогер, прилагает массу усилий для поддержания статуса образцовой семьи с идеальным домом, как из каталога IKEA. Однажды Тинья находит в лесу птичье яйцо и, чтобы спасти его от гибели, втайне приносит домой. С этого момента семейная идиллия начинает рушиться.",
+    "short_description": "«Будь осторожен, оно уже в доме»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 4.5,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      2,
+      3,
+      4
+    ],
+    "genres": [
+      3,
+      4,
+      5
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 8,
+  "fields": {
+    "category": 2,
+    "poster": "movie_posters/2022/05/2a27789eff43cde7b9bc.jpg",
+    "title": "Кунг-фу",
+    "title_uz": "Kung-fu",
+    "title_en": "",
+    "slug": "kung-fu",
+    "description": "Студентка Ники оставляет учёбу в колледже и отправляется на поиски себя в уединённый монастырь.",
+    "short_description": "«Welcome to the next level.»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 5.5,
+    "quality": "TS",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      3,
+      4
+    ],
+    "genres": [
+      2,
+      4,
+      5
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 9,
+  "fields": {
+    "category": 2,
+    "poster": "movie_posters/2022/05/6c4b358298363eb52f0e.jpg",
+    "title": "Абсурд",
+    "title_uz": "Absurd",
+    "title_en": "",
+    "slug": "absurd",
+    "description": "Одному генералу пришла в голову гениальная на первый взгляд идея — отправить настоящих зеков в путешествие по России, а на их места нанять профессиональных актёров, чтобы те за хороший гонорар изобразили счастливых и довольных заключённых во время проверки комиссии, — но что-то, как это часто бывает, идёт",
+    "short_description": "«Иногда лучше не знать чужие секреты»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 6.3,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      2,
+      3,
+      4
+    ],
+    "genres": [
+      1,
+      3,
+      5
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 10,
+  "fields": {
+    "category": 2,
+    "poster": "movie_posters/2022/05/8e3f12cf79dbb30f82c4.jpg",
+    "title": "Вокально–криминальный ансамбль",
+    "title_uz": "Vokal-jinoiy ansambl",
+    "title_en": "",
+    "slug": "vokalnokriminalnyj-ansambl",
+    "description": "Действие сериала происходит в 70-х годах прошлого века. Музыкальный ансамбль сотрудников МВД под прикрытием расследует дело о незаконном вывозе исторических ценностей из страны. Главный подозреваемый — популярный певец Аркадий Золоторевский, который, по версии следствия, руководит преступной схемой.",
+    "short_description": "",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 8.3,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      1,
+      2,
+      3
+    ],
+    "genres": [
+      2,
+      3,
+      5
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 11,
+  "fields": {
+    "category": 2,
+    "poster": "movie_posters/2022/05/6695970f62d2a9cabcf2.jpg",
+    "title": "Нулевой пациент",
+    "title_uz": "Nol bemor",
+    "title_en": "",
+    "slug": "nulevoj-pacient",
+    "description": "988 год, Калмыцкая АССР. Молодой врач детской больницы Кирсан Аюшев подозревает, что у нескольких его пациентов ВИЧ. Старшие коллеги не верят, что такое возможно, поэтому Кирсан тайком отправляет пробы в Москву. Когда анализы подтверждают его правоту, к делу подключается ученый Дмитрий Гончаров — специалист по малоизвестной в СССР «экзотической» болезни. Теперь судьба десятков детей и нескольких взрослых — а, возможно, и всей страны — зависит от действий столичного эпидемиолога и провинциального педиатра.",
+    "short_description": "«Это полный трындец»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      1,
+      3,
+      4
+    ],
+    "genres": [
+      4,
+      6,
+      7
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 12,
+  "fields": {
+    "category": 3,
+    "poster": "movie_posters/2022/05/45078f059368e2456d2e.jpg",
+    "title": "Серебряный волк",
+    "title_uz": "Kumush bo'ri",
+    "title_en": "",
+    "slug": "serebryanyj-volk",
+    "description": "Полковник Александр Волков преподает в Академии ФСБ, ему семьдесят, он в отставке. Капитан Игорь Каморин — действующий оперативник, ему двадцать семь. Каморин — фанат электронных гаджетов, а Волков не знает, как пользоваться WhatsApp. Каморин верит в прогресс и считает, что «ламповые мозги» Волкова устарели еще в прошлом веке, Волков же уверен, что «клиповое мышление» Каморина не годится даже для разгадывания кроссвордов. Однако в тандеме этим двоим предстоит совершить невозможное: соединить старую школу и современные технологии…",
+    "short_description": "«Это полный трындец»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 5.6,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      2,
+      4
+    ],
+    "genres": [
+      3,
+      5,
+      7
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 13,
+  "fields": {
+    "category": 3,
+    "poster": "movie_posters/2022/05/5e6f327aa911f706ade2.jpg",
+    "title": "Улетная история",
+    "title_uz": "Ajoyib hikoya",
+    "title_en": "",
+    "slug": "uletnaya-istoriya",
+    "description": "Авиакомпания-лоукостер теряет деньги и клиентов. Для спасения предприятия за внушительную сумму выписывается кризисный менеджер эстра-класса Хавьер Гарсия — выдающийся стратег и визионер.\r\n\r\nОднако Гарсия еще не подозревает, что в аэропорту, компания встречает не только его, но и другого нового сотрудника — суицидального механика-невротика, которого… также зовут Хавьер Гарсия. Двух мужчин путают при встрече: бедолагу механика отправляют в люкс пятизвездочного отеля, а эстета кризисного менеджера — в страшную дыру, где каждый выключатель норовит убить током.\r\n\r\nУморительная путаница приводит к самому невероятному приключению в жизни двух так непохожих мужчин.",
+    "short_description": "«Иногда лучше не знать чужие секреты»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "TS",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      1,
+      2,
+      4
+    ],
+    "genres": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 14,
+  "fields": {
+    "category": 4,
+    "poster": "movie_posters/2022/05/e776a924173345884428.jpg",
+    "title": "Вендетта. Банды Атланты",
+    "title_uz": "Vendetta: Atlanta to'dalari",
+    "title_en": "",
+    "slug": "vendetta-bandy-atlanty",
+    "description": "Бывший морпех Уильям Дункан теряет дочь — девушка стала случайной жертвой разборок уличных банд. Полиция бездействует. Отец берет правосудие в свои руки и расправляется с виновным. Убитый оказывается сыном крупного мафиози, и Дункан попадает в эпицентр войны бандитских группировок.",
+    "short_description": "«Welcome to the next level.»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "TS",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      3,
+      4
+    ],
+    "genres": [
+      2,
+      3,
+      4,
+      5
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 15,
+  "fields": {
+    "category": 4,
+    "poster": "movie_posters/2022/05/072bcf18ab120aa5d013.jpg",
+    "title": "Прогулки вдвоём",
+    "title_uz": "Juft sayr",
+    "title_en": "",
+    "slug": "progulki-vdvoyom",
+    "description": "Оден - молодая и красивая девушка, которая после поступления на первый курс в колледжа, приезжает на лето погостить к отцу. Однажды оказавшись ночью на улице города, она случайно знакомиться с загадочным Илаем, страдающим бессонницей. Во время ночных прогулок мальчик показывает ей беззаботную подростковую жизнь, которой ей так не хватало.",
+    "short_description": "",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      2,
+      3
+    ],
+    "genres": [
+      3,
+      5,
+      7
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 16,
+  "fields": {
+    "category": 4,
+    "poster": "movie_posters/2022/05/1b6d23a63c2998c00377.jpg",
+    "title": "Доктор Кинси",
+    "title_uz": "Doktor Kinzi",
+    "title_en": "",
+    "slug": "doktor-kinsi",
+    "description": "Фильм основан на реальных событиях. В 1953 году врач-сексопатолог Альфред Кинси исследует сексуальную жизнь и сексуальные фантазии миллионов американцев. Откровения многих опрошенных вызывают удивление у всей нации: многие из них занимались сексом до свадьбы, с большим количеством партнеров, с различными предметами.\r\n\r\nСредства массовой информации, а вместе с ними и католическая церковь представили исследования Кинси в дурном свете, они выдали бескомпромиссное утверждение, что все американки занимаются сексом только со своими мужьями. Скандал достигает своего апогея тогда, когда Кинси внедряет результаты своих исследований в лечебную практику…",
+    "short_description": "«Это полный трындец»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 0.0,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      1,
+      3,
+      4
+    ],
+    "genres": [
+      4,
+      6,
+      7
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 17,
+  "fields": {
+    "category": 1,
+    "poster": "movie_posters/2022/05/3fc6679caf702799f3c6.jpg",
+    "title": "Прощайте, месье Хаффманн",
+    "title_uz": "Xayr, janob Xoffman",
+    "title_en": "",
+    "slug": "proshajte-mese-haffmann",
+    "description": "Париж, 1941 год. Франсуа Мерсье работает у талантливого ювелира, месье Хаффманна, и мечтает жениться на любимой женщине. Однако перед лицом немецкой оккупации у мужчин не будет иного выбора, кроме как заключить соглашение, последствия которого в ближайшие несколько месяцев перевернут судьбы всех трех героев.",
+    "short_description": "«Любовь матери безусловна. Даже если ее сын – дьявол»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 5.6,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      2,
+      3,
+      4
+    ],
+    "genres": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  }
+},
+{
+  "model": "movie.movie",
+  "pk": 18,
+  "fields": {
+    "category": 1,
+    "poster": "movie_posters/2022/05/67291dcfd8f3bcb5cacd.jpg",
+    "title": "Родители строгого режима",
+    "title_uz": "Qattiq tarbiyali ota-onalar",
+    "title_en": "",
+    "slug": "roditeli-strogogo-rezhima",
+    "description": "Пожилая семейная пара внезапно узнаёт, что их 38-летний сын-мэр в действительности является коррупционером и взяточником. Они решают пригласить его в свой дом, где запирают его с надеждой, что он сможет перевоспитаться.",
+    "short_description": "«Память киллера — тяжелая ноша»",
+    "likes": 0,
+    "dislikes": 0,
+    "rating": 8.6,
+    "quality": "HDR",
+    "duration": "1 hour 59 mins",
+    "year": "2026",
+    "country": "USA",
+    "video_url": "",
+    "is_premium": false,
+    "created_at": "2026-06-09T11:26:34.794Z",
+    "actors": [
+      2,
+      3
+    ],
+    "genres": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  }
+},
+{
+  "model": "movie.moviestream",
+  "pk": 1,
+  "fields": {
+    "movie": 18,
+    "quality": "480",
+    "video_file": "movies/videos/2026/06/3277-168129539.mp4",
+    "url": ""
+  }
+},
+{
+  "model": "movie.comment",
+  "pk": 32,
+  "fields": {
+    "movie": 3,
+    "name": "Гость",
+    "comment": "Казалось бы, что может быть спокойнее жизни в элегантных гостиничных люксах и на размеренных пляжах Акапулько?"
+  }
+},
+{
+  "model": "movie.comment",
+  "pk": 33,
+  "fields": {
+    "movie": 3,
+    "name": "Гость",
+    "comment": "Однако, случай может нарушить тихий порядок состоятельной пары, и нарастающая напряженность начнет раскрывать тайны"
+  }
+},
+{
+  "model": "movie.likedmovielist",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "movie": []
+  }
+},
+{
+  "model": "movie.subscriptionplan",
+  "pk": 1,
+  "fields": {
+    "name": "Oylik",
+    "price": "29900.00",
+    "duration_days": 30,
+    "description": "1 oylik obuna",
+    "access_movies": true,
+    "access_live": true,
+    "is_corporate": false,
+    "max_seats": 10,
+    "order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "movie.subscriptionplan",
+  "pk": 2,
+  "fields": {
+    "name": "Choraklik",
+    "price": "79900.00",
+    "duration_days": 90,
+    "description": "3 oylik obuna",
+    "access_movies": true,
+    "access_live": true,
+    "is_corporate": false,
+    "max_seats": 10,
+    "order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "movie.subscriptionplan",
+  "pk": 3,
+  "fields": {
+    "name": "Yillik",
+    "price": "249900.00",
+    "duration_days": 365,
+    "description": "1 yillik obuna",
+    "access_movies": true,
+    "access_live": true,
+    "is_corporate": false,
+    "max_seats": 10,
+    "order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "movie.subscriptionplan",
+  "pk": 4,
+  "fields": {
+    "name": "Korparativ obuna",
+    "price": "2000000.00",
+    "duration_days": 30,
+    "description": "",
+    "access_movies": true,
+    "access_live": true,
+    "is_corporate": true,
+    "max_seats": 30,
+    "order": 0,
+    "is_active": true
+  }
+},
+{
+  "model": "movie.usersubscription",
+  "pk": 1,
+  "fields": {
+    "user": 14,
+    "plan": 1,
+    "start_date": "2026-06-09T14:42:54.230Z",
+    "end_date": "2026-07-09T14:42:54.230Z",
+    "payment_amount": "29900.00",
+    "is_active": true
+  }
+},
+{
+  "model": "movie.paymentsettings",
+  "pk": 1,
+  "fields": {
+    "click_merchant_id": "",
+    "click_service_id": "",
+    "click_secret_key": "",
+    "payme_merchant_id": "",
+    "payme_secret_key": "",
+    "test_mode_enabled": true
+  }
+},
+{
+  "model": "movie.paymentorder",
+  "pk": 1,
+  "fields": {
+    "order_id": "b1847a5f-4876-4b3d-80a5-c016fddf27e7",
+    "user": 14,
+    "plan": 1,
+    "provider": "test",
+    "amount": "29900.00",
+    "status": "paid",
+    "external_id": "test",
+    "prepare_id": "",
+    "created_at": "2026-06-09T14:42:54.191Z",
+    "paid_at": "2026-06-09T14:42:54.217Z"
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$QbYdm63bbYPR9yXJcFEUSg$mntUjYil+sOE9ugyhLZkpSIXIk9UEPgQFF7BAAcYlt0=",
+    "last_login": "2026-06-10T08:46:13.195Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2022-05-07T12:09:35Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$260000$aGBKn7wcRbykwK2gLNDNUl$U18rjwJN67C8Xgbn7ug2aymT/lk1+MalQ1eGhJbu3Ms=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "mahatmagandi",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2022-05-12T13:20:58.879Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$260000$QI9RFIx0j44AUjxYtxcYzq$r7IBK2JaCnSR8gPc+cm4WLSgInJ2N8IgiY9rNzsKM8s=",
+    "last_login": "2022-05-12T13:22:18.785Z",
+    "is_superuser": false,
+    "username": "lukeskywaker",
+    "first_name": "",
+    "last_name": "",
+    "email": "ea@com.ru",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2022-05-12T13:22:10.070Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$260000$5vQcaimBMqNM0pFbp2ExRf$Aquc6KHypi0A1at6D60W55/yl6jzR7z1PxsjE4X1Wd4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "gandi",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2022-05-24T12:22:16.503Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$260000$cXDQ7lXeOFWlqTWOYTTKov$BcnINdzhHlTdaKQj14n2sU296gW+6RLKzIciLA0v/4A=",
+    "last_login": "2022-05-24T12:46:18.515Z",
+    "is_superuser": false,
+    "username": "master",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2022-05-24T12:28:20.688Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$260000$93L7OKpiq05hapGsFot7VM$Y8yyDK7qx71zx316oT+TaQhvFuUpINTEYb/jLKZBrYY=",
+    "last_login": "2022-05-24T12:51:01.499Z",
+    "is_superuser": false,
+    "username": "pabloescobar",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2022-05-24T12:49:43.688Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 8,
+  "fields": {
+    "password": "!J6ehAVfcd8xh7AM39ZyYamlnyImut8UBGdwZ8J01",
+    "last_login": "2022-05-24T13:04:34.968Z",
+    "is_superuser": false,
+    "username": "4cc1439695eb44eb",
+    "first_name": "Абдурахман",
+    "last_name": "Рашидов",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2022-05-24T13:03:53.765Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 9,
+  "fields": {
+    "password": "!q39MVbqJo1bz8az7R2OlzyS3Jvl2zgQ5ozAlqA3T",
+    "last_login": "2022-05-24T13:05:22.982Z",
+    "is_superuser": false,
+    "username": "26c35134a0444825",
+    "first_name": "Абдурахман",
+    "last_name": "Рашидов",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2022-05-24T13:05:22.947Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 10,
+  "fields": {
+    "password": "!bYNv5RZxxxcTTz0d9ZiVigkxuDp6sTZbYxSn47UQ",
+    "last_login": "2022-05-24T13:36:39.347Z",
+    "is_superuser": false,
+    "username": "infoedupy",
+    "first_name": "",
+    "last_name": "",
+    "email": "infoedupy@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2022-05-24T13:36:39.309Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 11,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$bmnGxOyiKCZtNveWreANKz$JIbHWtTr1CYBb1kU4KVy+vubRCk5MIx89feMeLprNzI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "testuser99",
+    "first_name": "",
+    "last_name": "",
+    "email": "test99@test.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-09T13:41:38.457Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 12,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$kBE5HEhs3QgeMNScw8j9dq$N9YvEo6w+WaxaSwnUcJaG/QIGkewZNWNLdbiWqAaTo0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "user2026a",
+    "first_name": "",
+    "last_name": "",
+    "email": "user2026a@test.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-09T13:43:36.503Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 13,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$UY7VxrA949MTM1tHOZ2z3n$2Q9cx2oIB3/5BWUeceEk5d4BEVXJPgkla6B7bqoisCk=",
+    "last_login": "2026-06-09T13:44:21.605Z",
+    "is_superuser": false,
+    "username": "user2026b",
+    "first_name": "",
+    "last_name": "",
+    "email": "user2026b@test.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-09T13:44:21.193Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 14,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$Q3lyuyXRx1hkSWclM8sHZr$fopP88dBx9FlGvb/ZRVfGFWGjlKuMpLJI8PLzHx6gMg=",
+    "last_login": "2026-06-09T14:38:16.818Z",
+    "is_superuser": false,
+    "username": "Valijon",
+    "first_name": "",
+    "last_name": "",
+    "email": "mamatovvalijon54@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-09T13:44:56.325Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]
