@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="premiere-section">
     <div class="premiere-section-head">
-        <h2>{{ section_title|default:_('Premyeralar') }}</h2>
+        <h2>{% if section_title %}{{ section_title }}{% else %}{% trans 'Premyeralar' %}{% endif %}</h2>
         <div class="premiere-nav">
             <button type="button" class="premiere-prev" aria-label="{% trans 'Oldingi' %}">‹</button>
             <button type="button" class="premiere-next" aria-label="{% trans 'Keyingi' %}">›</button>

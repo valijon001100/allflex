@@ -1,3 +1,4 @@
+{% load i18n %}
 <a href="{{ event.get_absolute_url }}" class="premiere-card">
     {% if event.poster %}
     <div class="premiere-card-bg" style="background-image:url('{{ event.poster.url }}')"></div>
