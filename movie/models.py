@@ -103,6 +103,10 @@ class Movie(models.Model):
     video_url = models.URLField("Video URL", blank=True, default="")
     is_premium = models.BooleanField("Premium only", default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
+    movie_uid = models.CharField('Yagona ID', max_length=20, unique=True, blank=True, null=True)
+    digital_passport = models.TextField('Raqamli pasport (JSON)', blank=True, default='')
+    digital_passport_code = models.CharField('Pasport kodi', max_length=64, blank=True, default='')
+    watermark_token = models.CharField('Yashirin watermark', max_length=32, blank=True, default='')
 
     class Meta:
         """Meta definition for Movie."""
@@ -122,6 +126,42 @@ class Movie(models.Model):
     def __str__(self):
         """Unicode representation of Movie."""
         return f"{self.title}"
+
+    def ensure_protection_ids(self):
+        from .protection_utils import (
+            generate_digital_passport,
+            generate_movie_uid,
+            generate_watermark_token,
+        )
+        changed = []
+        if not self.movie_uid:
+            for _ in range(30):
+                code = generate_movie_uid()
+                if not Movie.objects.filter(movie_uid=code).exclude(pk=self.pk).exists():
+                    self.movie_uid = code
+                    changed.append('movie_uid')
+                    break
+        if not self.watermark_token:
+            self.watermark_token = generate_watermark_token()
+            changed.append('watermark_token')
+        if not self.digital_passport or not self.digital_passport_code:
+            passport_json, passport_code = generate_digital_passport(
+                self.movie_uid or 'PENDING',
+                self.title or 'Untitled',
+                self.watermark_token or 'PENDING',
+            )
+            self.digital_passport = passport_json
+            self.digital_passport_code = passport_code
+            changed.extend(['digital_passport', 'digital_passport_code'])
+        return changed
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new or not self.movie_uid or not self.watermark_token:
+            changed = self.ensure_protection_ids()
+            if changed:
+                super().save(update_fields=changed)
 
     def get_streams_dict(self):
         streams = {}
@@ -576,6 +616,113 @@ class PurchasedTicket(models.Model):
 
   def __str__(self):
     return f'{self.ticket_code} — {self.event.title}'
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    subscriber_code = models.CharField(max_length=10, unique=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Foydalanuvchi profili'
+        verbose_name_plural = 'Foydalanuvchi profillari'
+
+    def ensure_subscriber_code(self):
+        from .protection_utils import generate_subscriber_code
+        if self.subscriber_code:
+            return False
+        for _ in range(30):
+            code = generate_subscriber_code()
+            if not UserProfile.objects.filter(subscriber_code=code).exclude(pk=self.pk).exists():
+                self.subscriber_code = code
+                return True
+        return False
+
+    def save(self, *args, **kwargs):
+        self.ensure_subscriber_code()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.user.username} — {self.subscriber_code}'
+
+
+class APIPartner(models.Model):
+    TYPE_TELEGRAM = 'telegram'
+    TYPE_SITE = 'site'
+    TYPE_PLATFORM = 'platform'
+    TYPE_CHOICES = [
+        (TYPE_TELEGRAM, 'Telegram kanal'),
+        (TYPE_SITE, 'Sayt'),
+        (TYPE_PLATFORM, 'Platforma'),
+    ]
+
+    name = models.CharField(max_length=200)
+    partner_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=TYPE_SITE)
+    contact_email = models.EmailField(blank=True, default='')
+    website = models.URLField(blank=True, default='')
+    api_key = models.CharField(max_length=64, unique=True, blank=True)
+    revenue_share_percent = models.PositiveIntegerField(default=30)
+    is_active = models.BooleanField(default=True)
+    total_requests = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'API hamkor'
+        verbose_name_plural = 'API hamkorlar'
+        ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if not self.api_key:
+            from .protection_utils import generate_api_key
+            self.api_key = generate_api_key()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class APIAccessLog(models.Model):
+    partner = models.ForeignKey(
+        APIPartner, null=True, blank=True, on_delete=models.SET_NULL, related_name='access_logs',
+    )
+    endpoint = models.CharField(max_length=200)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=300, blank=True, default='')
+    is_authorized = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class PiracyAlert(models.Model):
+    STATUS_NEW = 'new'
+    STATUS_REVIEWED = 'reviewed'
+    STATUS_RESOLVED = 'resolved'
+    STATUS_CHOICES = [
+        (STATUS_NEW, 'Yangi'),
+        (STATUS_REVIEWED, 'Ko\'rib chiqilgan'),
+        (STATUS_RESOLVED, 'Hal qilingan'),
+    ]
+
+    movie = models.ForeignKey(
+        Movie, null=True, blank=True, on_delete=models.SET_NULL, related_name='piracy_alerts',
+    )
+    detected_url = models.URLField(blank=True, default='')
+    detected_domain = models.CharField(max_length=200, blank=True, default='')
+    description = models.TextField(blank=True, default='')
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
+    notified_rights_holder = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Piratlik ogohlantirishi'
+        verbose_name_plural = 'Piratlik ogohlantirishlari'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.detected_domain or "Noma\'lum"} — {self.get_status_display()}'
 
 
 class LiveStream(models.Model):

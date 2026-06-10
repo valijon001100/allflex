@@ -101,8 +101,17 @@ class MovieDetailView(FormMixin,DetailView):
         context['is_authenticated'] = user.is_authenticated
         if has_access:
             context['video_streams_json'] = json.dumps(self.object.get_protected_streams_dict())
+            profile = getattr(user, 'profile', None)
+            if profile and profile.subscriber_code:
+                context['viewer_watermark'] = profile.subscriber_code
+            else:
+                from .models import UserProfile
+                prof, _ = UserProfile.objects.get_or_create(user=user)
+                context['viewer_watermark'] = prof.subscriber_code
+            context['movie_uid'] = self.object.movie_uid
         else:
             context['video_streams_json'] = '{}'
+            context['viewer_watermark'] = ''
         return context
 
     def post(self, request, *args, **kwargs):

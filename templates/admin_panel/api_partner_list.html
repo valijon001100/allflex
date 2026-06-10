@@ -1,0 +1,40 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'API hamkorlar' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🔌 {% trans 'API hamkorlar' %}</h1>
+    <a href="{% url 'movie:admin_api_partner_add' %}" class="btn-admin">+ {% trans 'Qo\'shish' %}</a>
+</div>
+
+<div class="panel-card panel-card--table">
+    <div class="table-responsive">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Nomi' %}</th>
+                <th>{% trans 'Turi' %}</th>
+                <th>{% trans 'API kalit' %}</th>
+                <th>{% trans 'Ulush' %}</th>
+                <th>{% trans 'So\'rovlar' %}</th>
+                <th>{% trans 'Holat' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in page_obj %}
+        <tr>
+            <td><strong>{{ p.name }}</strong></td>
+            <td>{{ p.get_partner_type_display }}</td>
+            <td><code style="color:#f5c518;font-size:11px">{{ p.api_key }}</code></td>
+            <td>{{ p.revenue_share_percent }}%</td>
+            <td>{{ p.total_requests }}</td>
+            <td>{% if p.is_active %}<span class="badge-active">{% trans 'Faol' %}</span>{% else %}<span class="badge-expired">{% trans 'O\'chiq' %}</span>{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:32px">{% trans 'Hamkorlar yo\'q.' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

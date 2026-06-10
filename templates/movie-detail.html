@@ -128,8 +128,11 @@
                         <div class="tab-content">
                             <div class="tab-pane active" id="online">
                                 {% if can_watch %}
-                                <div id="videoplayer_content">
+                                <div id="videoplayer_content" class="videoplayer-wrap">
                                     <div id="videoplayer"></div>
+                                    {% if viewer_watermark %}
+                                    <div class="movie-viewer-watermark" id="viewerWatermark">{{ viewer_watermark }}</div>
+                                    {% endif %}
                                 </div>
                                 {% elif is_authenticated %}
                                 <div class="watch-lock">
@@ -228,10 +231,25 @@
 
 
     <style>
-    #videoplayer_content {
+    #videoplayer_content, .videoplayer-wrap {
         background: #000;
         border-radius: 4px;
         overflow: hidden;
+        position: relative;
+    }
+    .movie-viewer-watermark {
+        position: absolute;
+        right: 12px;
+        bottom: 48px;
+        z-index: 20;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: rgba(255,255,255,.22);
+        text-shadow: 0 1px 2px rgba(0,0,0,.8);
+        pointer-events: none;
+        user-select: none;
+        font-family: monospace;
     }
     #videoplayer video {
         display: block;

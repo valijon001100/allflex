@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:32px 20px 48px;max-width:900px">
+    <h1 style="color:#fff;margin-bottom:8px">🛡️ {% trans 'AL-FLIX Content API' %}</h1>
+    <p style="color:#9ca3af;margin-bottom:28px">{% trans 'Telegram adminlari, saytlar va platformalar uchun bepul rasmiy API' %}</p>
+
+    <div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:24px;margin-bottom:20px">
+        <h3 style="color:#fff;margin:0 0 12px">{% trans 'Afzalliklar' %}</h3>
+        <ul style="color:#d1d5db;line-height:1.9">
+            <li>✅ {% trans 'Qonuniy tarqatish — har bir film raqamli pasport bilan' %}</li>
+            <li>💰 {% trans 'Reklama daromadidan ulush (30% gacha)' %}</li>
+            <li>🔒 {% trans 'Yashirin watermark himoyasi' %}</li>
+            <li>🚨 {% trans 'Noqonuniy joylashtirish avtomatik aniqlanadi' %}</li>
+        </ul>
+    </div>
+
+    <div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:24px;margin-bottom:20px">
+        <h3 style="color:#fff;margin:0 0 12px">{% trans 'API endpointlar' %}</h3>
+        <p style="color:#9ca3af;font-size:14px"><code>GET /api/v1/movies/</code> — {% trans 'Film ro\'yxati' %}</p>
+        <p style="color:#9ca3af;font-size:14px"><code>GET /api/v1/movies/AFLX-XXXXXXXX/</code> — {% trans 'Film ma\'lumoti' %}</p>
+        <p style="color:#9ca3af;font-size:14px"><code>POST /api/v1/report-piracy/</code> — {% trans 'Piratlik xabari' %}</p>
+        <p style="color:#9ca3af;font-size:13px;margin-top:12px">{% trans 'Header' %}: <code>X-API-Key: sizning_kalitingiz</code></p>
+    </div>
+
+    <p style="color:#9ca3af">{% trans 'API kalit olish uchun admin bilan bog\'laning.' %} {% trans 'Faol hamkorlar' %}: {{ partners_count }}</p>
+    <a href="{% url 'movie:home' %}" class="btn btn-default">← {% trans 'Bosh sahifa' %}</a>
+</div>
+{% endblock %}

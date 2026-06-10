@@ -1,0 +1,53 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Piratlik' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🚨 {% trans 'Piratlik ogohlantirishlari' %} {% if new_count %}<span class="badge-expired">{{ new_count }} {% trans 'yangi' %}</span>{% endif %}</h1>
+    <a href="{% url 'movie:admin_content_protection' %}" class="btn-outline">{% trans 'Himoya' %}</a>
+</div>
+
+<div style="margin-bottom:16px;display:flex;gap:8px">
+    <a href="?status=" class="btn-outline btn-sm {% if not status %}active{% endif %}">{% trans 'Barchasi' %}</a>
+    <a href="?status=new" class="btn-outline btn-sm {% if status == 'new' %}active{% endif %}">{% trans 'Yangi' %}</a>
+    <a href="?status=resolved" class="btn-outline btn-sm {% if status == 'resolved' %}active{% endif %}">{% trans 'Hal qilingan' %}</a>
+</div>
+
+<div class="panel-card panel-card--table">
+    <div class="table-responsive">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Domen' %}</th>
+                <th>{% trans 'Kino' %}</th>
+                <th>{% trans 'Tavsif' %}</th>
+                <th>{% trans 'Sana' %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for a in page_obj %}
+        <tr>
+            <td><strong>{{ a.detected_domain|default:"—" }}</strong></td>
+            <td>{{ a.movie.title|default:"—" }}</td>
+            <td style="color:#9ca3af;font-size:13px;max-width:280px">{{ a.description|truncatechars:80 }}</td>
+            <td>{{ a.created_at|date:"d.m.Y H:i" }}</td>
+            <td>
+                {% if a.status != 'resolved' %}
+                <form method="post" action="{% url 'movie:admin_piracy_resolve' a.pk %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-outline btn-sm">{% trans 'Hal qilish' %}</button>
+                </form>
+                {% else %}
+                <span class="badge-active">✓</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:32px">{% trans 'Ogohlantirishlar yo\'q.' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

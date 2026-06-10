@@ -196,6 +196,7 @@
             <a href="{% url 'movie:admin_subscription_list' %}" class="{% if 'admin_subscription' in request.resolver_match.url_name %}active{% endif %}">💳 {% trans 'Подписки' %}</a>
             <a href="{% url 'movie:admin_plan_list' %}" class="{% if 'admin_plan' in request.resolver_match.url_name %}active{% endif %}">📋 {% trans 'Тарифы' %}</a>
             <a href="{% url 'movie:admin_payment_settings' %}" class="{% if request.resolver_match.url_name == 'admin_payment_settings' %}active{% endif %}">💳 {% trans 'To\'lov sozlamalari' %}</a>
+            <a href="{% url 'movie:admin_content_protection' %}" class="{% if 'admin_content' in request.resolver_match.url_name or 'admin_api' in request.resolver_match.url_name or 'admin_piracy' in request.resolver_match.url_name %}active{% endif %}">🛡️ {% trans 'Kontent himoyasi' %}</a>
             <div class="divider"></div>
             <a href="{% url 'movie:logout' %}">🚪 {% trans 'Выход' %}</a>
         </nav>

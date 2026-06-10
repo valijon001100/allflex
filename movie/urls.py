@@ -7,6 +7,7 @@ from . import payment_views
 from . import stream_views
 from . import ticket_views
 from . import corporate_views
+from . import api_views
 
 app_name= 'movie'
 
@@ -42,6 +43,11 @@ urlpatterns = [
     path("payment/click/", payment_views.click_callback, name='click_callback'),
     path("payment/payme/", payment_views.payme_callback, name='payme_callback'),
     path("stream/<int:movie_id>/<str:quality>/", stream_views.protected_stream, name='protected_stream'),
+
+    path("content-api/", api_views.content_api_info, name='content_api_info'),
+    path("api/v1/movies/", api_views.api_movies_list, name='api_movies_list'),
+    path("api/v1/movies/<str:movie_uid>/", api_views.api_movie_detail, name='api_movie_detail'),
+    path("api/v1/report-piracy/", api_views.api_report_piracy, name='api_report_piracy'),
 
     # SORTING 
     path("films/<str:sort_params>", views.movie_sorting, name="sort"),
@@ -96,4 +102,9 @@ urlpatterns = [
     path('panel/tickets/<int:pk>/edit/', admin_views.ticket_edit, name='admin_ticket_edit'),
     path('panel/tickets/<int:pk>/delete/', admin_views.ticket_delete, name='admin_ticket_delete'),
     path('panel/ticket-sales/', admin_views.ticket_sales, name='admin_ticket_sales'),
+    path('panel/content-protection/', admin_views.content_protection, name='admin_content_protection'),
+    path('panel/api-partners/', admin_views.api_partner_list, name='admin_api_partners'),
+    path('panel/api-partners/add/', admin_views.api_partner_add, name='admin_api_partner_add'),
+    path('panel/piracy-alerts/', admin_views.piracy_alert_list, name='admin_piracy_alerts'),
+    path('panel/piracy-alerts/<int:pk>/resolve/', admin_views.piracy_alert_resolve, name='admin_piracy_resolve'),
 ]

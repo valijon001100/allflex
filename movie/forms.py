@@ -214,6 +214,35 @@ class CategoryForm(forms.ModelForm):
         return parent
 
 
+class APIPartnerForm(forms.ModelForm):
+    class Meta:
+        from .models import APIPartner
+        model = APIPartner
+        fields = [
+            'name', 'partner_type', 'contact_email', 'website',
+            'revenue_share_percent', 'is_active',
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'partner_type': forms.Select(attrs={'class': 'form-control'}),
+            'contact_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'website': forms.URLInput(attrs={'class': 'form-control'}),
+            'revenue_share_percent': forms.NumberInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _apply_labels(self, {
+            'name': _('Nomi'),
+            'partner_type': _('Turi'),
+            'contact_email': _('Email'),
+            'website': _('Sayt'),
+            'revenue_share_percent': _('Reklama ulushi (%)'),
+            'is_active': _('Faol'),
+        })
+
+
 class TicketEventForm(forms.ModelForm):
     class Meta:
         from .models import TicketEvent

@@ -1,0 +1,46 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Kontent himoyasi' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🛡️ {% trans 'Kontent himoyasi' %}</h1>
+    <a href="{% url 'movie:content_api_info' %}" class="btn-outline" target="_blank">{% trans 'API hujjat' %}</a>
+</div>
+
+<div class="stat-grid" style="margin-bottom:24px">
+    <div class="stat-card green"><div class="label">{% trans 'Himoyalangan kinolar' %}</div><div class="value">{{ movies_protected }}</div></div>
+    <div class="stat-card blue"><div class="label">{% trans 'API hamkorlar' %}</div><div class="value">{{ partners_count }}</div></div>
+    <div class="stat-card red"><div class="label">{% trans 'Yangi ogohlantirishlar' %}</div><div class="value">{{ alerts_new }}</div></div>
+    <div class="stat-card yellow"><div class="label">{% trans 'Obunachi kodlari' %}</div><div class="value">{{ subscribers_with_code }}</div></div>
+</div>
+
+<div class="grid-2">
+    <div class="panel-card">
+        <h3>{% trans 'Qanday ishlaydi' %}</h3>
+        <ul style="color:#9ca3af;line-height:1.8;padding-left:20px;margin:0">
+            <li>{% trans 'Har bir yangi film: yagona ID, raqamli pasport, yashirin watermark oladi' %}</li>
+            <li>{% trans 'Har bir obunachi: 10 belgili kod (faqat admin ko\'radi)' %}</li>
+            <li>{% trans 'Kino tomoshada kod kichik watermark sifatida ko\'rinadi' %}</li>
+            <li>{% trans 'Telegram, sayt va platformalar bepul API oladi' %}</li>
+            <li>{% trans 'Rasmiy API orqali — qonuniy, reklama ulushi' %}</li>
+            <li>{% trans 'Noqonuniy joylashtirish avtomatik aniqlanadi' %}</li>
+        </ul>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+            <a href="{% url 'movie:admin_api_partners' %}" class="btn-admin btn-sm">{% trans 'API hamkorlar' %}</a>
+            <a href="{% url 'movie:admin_piracy_alerts' %}" class="btn-outline btn-sm">{% trans 'Piratlik ogohlantirishlari' %}</a>
+        </div>
+    </div>
+    <div class="panel-card">
+        <h3>{% trans 'So\'nggi API so\'rovlari' %}</h3>
+        {% for log in recent_logs %}
+        <p style="color:#9ca3af;font-size:13px;margin:0 0 8px">
+            {% if log.is_authorized %}<span style="color:#2ecc71">✓</span>{% else %}<span style="color:#e74c3c">✗</span>{% endif %}
+            {{ log.endpoint }} — {{ log.created_at|date:"d.m H:i" }}
+            {% if log.partner %}({{ log.partner.name }}){% endif %}
+        </p>
+        {% empty %}
+        <p style="color:#9ca3af">{% trans 'Hali so\'rovlar yo\'q.' %}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

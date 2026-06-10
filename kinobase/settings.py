@@ -93,7 +93,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'movie',
+    'movie.apps.MovieConfig',
     'social_django',
     # "debug_toolbar",
 ]

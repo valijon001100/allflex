@@ -18,6 +18,7 @@
         <thead>
             <tr>
                 <th>{% trans 'Постер' %}</th>
+                <th>{% trans 'ID' %}</th>
                 <th>{% trans 'Название' %}</th>
                 <th>{% trans 'Категория' %}</th>
                 <th>{% trans 'Год' %}</th>
@@ -34,6 +35,7 @@
                 <img src="{{ movie.poster.url }}" class="poster-thumb" alt="">
                 {% else %}—{% endif %}
             </td>
+            <td><code style="color:#2ecc71;font-size:11px">{{ movie.movie_uid|default:"—" }}</code></td>
             <td><strong>{{ movie.title }}</strong></td>
             <td>{{ movie.category.name }}</td>
             <td>{{ movie.year }}</td>
@@ -45,7 +47,7 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="7" style="text-align:center;padding:32px">{% trans 'Фильм не найден' %}</td></tr>
+        <tr><td colspan="8" style="text-align:center;padding:32px">{% trans 'Фильм не найден' %}</td></tr>
         {% endfor %}
         </tbody>
     </table>

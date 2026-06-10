@@ -13,15 +13,15 @@ from django.views.decorators.http import require_POST
 
 from .decorators import admin_required
 from .forms import (
-    CategoryForm, CorporateMemberForm, LiveStreamForm, MovieForm,
+    APIPartnerForm, CategoryForm, CorporateMemberForm, LiveStreamForm, MovieForm,
     PaymentSettingsForm, SubscriptionForm, SubscriptionPlanForm, TicketEventForm,
 )
 from .payment_config import click_configured, payme_configured
 from .models import (
-    Category, Comment, CorporateMember, CorporateOrganization,
+    APIAccessLog, APIPartner, Category, Comment, CorporateMember, CorporateOrganization,
     CorporateSubscriptionRequest, Genre, LiveStream, Movie, MovieStream,
-    PaymentSettings, PurchasedTicket, SubscriptionPlan, TicketEvent,
-    UserSubscription,
+    PaymentSettings, PiracyAlert, PurchasedTicket, SubscriptionPlan, TicketEvent,
+    UserProfile, UserSubscription,
 )
 from .utils import approve_corporate_request
 
@@ -176,7 +176,12 @@ def movie_edit(request, pk):
             return redirect('movie:admin_movie_list')
     else:
         form = MovieForm(instance=movie)
-    return render(request, 'admin_panel/movie_form.html', {'form': form, 'title': _('Редактировать фильм'), 'movie': movie})
+    changed = movie.ensure_protection_ids()
+    if changed:
+        movie.save(update_fields=changed)
+    return render(request, 'admin_panel/movie_form.html', {
+        'form': form, 'title': _('Редактировать фильм'), 'movie': movie,
+    })
 
 
 @admin_required
@@ -191,7 +196,7 @@ def movie_delete(request, pk):
 
 @admin_required
 def user_list(request):
-    users = User.objects.annotate(
+    users = User.objects.select_related('profile').annotate(
         sub_count=Count('subscriptions'),
         comment_count=Count('subscriptions'),
     ).order_by('-date_joined')
@@ -200,6 +205,9 @@ def user_list(request):
         users = users.filter(username__icontains=q)
     paginator = Paginator(users, 20)
     page_obj = paginator.get_page(request.GET.get('page'))
+    for u in page_obj:
+        profile, _ = UserProfile.objects.get_or_create(user=u)
+        u.profile = profile
 
     now = timezone.now()
     active_user_ids = set(
@@ -549,3 +557,61 @@ def ticket_sales(request):
     paginator = Paginator(tickets, 20)
     page_obj = paginator.get_page(request.GET.get('page'))
     return render(request, 'admin_panel/ticket_sales.html', {'page_obj': page_obj})
+
+
+@admin_required
+def api_partner_list(request):
+    partners = APIPartner.objects.order_by('-created_at')
+    paginator = Paginator(partners, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_panel/api_partner_list.html', {'page_obj': page_obj})
+
+
+@admin_required
+def api_partner_add(request):
+    if request.method == 'POST':
+        form = APIPartnerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('API hamkor qo\'shildi!'))
+            return redirect('movie:admin_api_partners')
+    else:
+        form = APIPartnerForm()
+    return render(request, 'admin_panel/api_partner_form.html', {
+        'form': form, 'title': _('API hamkor qo\'shish'),
+    })
+
+
+@admin_required
+def piracy_alert_list(request):
+    alerts = PiracyAlert.objects.select_related('movie').order_by('-created_at')
+    status = request.GET.get('status', '')
+    if status:
+        alerts = alerts.filter(status=status)
+    paginator = Paginator(alerts, 20)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_panel/piracy_alert_list.html', {
+        'page_obj': page_obj, 'status': status,
+        'new_count': PiracyAlert.objects.filter(status=PiracyAlert.STATUS_NEW).count(),
+    })
+
+
+@admin_required
+@require_POST
+def piracy_alert_resolve(request, pk):
+    alert = get_object_or_404(PiracyAlert, pk=pk)
+    alert.status = PiracyAlert.STATUS_RESOLVED
+    alert.save(update_fields=['status'])
+    messages.success(request, _('Ogohlantirish hal qilindi.'))
+    return redirect('movie:admin_piracy_alerts')
+
+
+@admin_required
+def content_protection(request):
+    return render(request, 'admin_panel/content_protection.html', {
+        'movies_protected': Movie.objects.exclude(movie_uid='').count(),
+        'partners_count': APIPartner.objects.filter(is_active=True).count(),
+        'alerts_new': PiracyAlert.objects.filter(status=PiracyAlert.STATUS_NEW).count(),
+        'subscribers_with_code': UserProfile.objects.exclude(subscriber_code='').count(),
+        'recent_logs': APIAccessLog.objects.select_related('partner').order_by('-created_at')[:10],
+    })

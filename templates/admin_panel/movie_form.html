@@ -7,6 +7,15 @@
     <a href="{% url 'movie:admin_movie_list' %}" class="btn-outline">← {% trans 'Назад' %}</a>
 </div>
 
+{% if movie and movie.movie_uid %}
+<div class="panel-card" style="max-width:800px;margin-bottom:20px">
+    <h4 style="color:#fff;margin:0 0 12px">🛡️ {% trans 'Kontent himoyasi' %}</h4>
+    <p style="color:#9ca3af;font-size:13px;margin:4px 0"><strong style="color:#2ecc71">{% trans 'Yagona ID' %}:</strong> {{ movie.movie_uid }}</p>
+    <p style="color:#9ca3af;font-size:13px;margin:4px 0"><strong style="color:#2ecc71">{% trans 'Raqamli pasport' %}:</strong> {{ movie.digital_passport_code }}</p>
+    <p style="color:#9ca3af;font-size:13px;margin:4px 0"><strong style="color:#2ecc71">{% trans 'Watermark' %}:</strong> {{ movie.watermark_token }}</p>
+</div>
+{% endif %}
+
 <div class="panel-card" style="max-width:800px">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
