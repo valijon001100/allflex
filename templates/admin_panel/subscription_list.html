@@ -13,7 +13,8 @@
     <a href="?status=expired" class="{% if status == 'expired' %}active{% endif %}">{% trans 'Истекшие' %}</a>
 </div>
 
-<div class="panel-card" style="padding:0;overflow:hidden">
+<div class="panel-card panel-card--table">
+    <div class="table-responsive">
     <table class="admin-table">
         <thead>
             <tr>
@@ -63,6 +64,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 
 {% if page_obj.has_other_pages %}

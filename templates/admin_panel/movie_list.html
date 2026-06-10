@@ -12,7 +12,8 @@
     <button type="submit" class="btn-admin">{% trans 'Поиск' %}</button>
 </form>
 
-<div class="panel-card" style="padding:0; overflow:hidden">
+<div class="panel-card panel-card--table">
+    <div class="table-responsive">
     <table class="admin-table">
         <thead>
             <tr>
@@ -48,6 +49,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 
 {% if page_obj.has_other_pages %}

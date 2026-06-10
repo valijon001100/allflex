@@ -35,12 +35,13 @@
 </div>
 
 {% if category and category.is_parent %}
-<div class="panel-card" style="margin-top:24px;padding:0;overflow:hidden">
-    <div style="padding:16px 20px;border-bottom:1px solid #2a2d3a;display:flex;justify-content:space-between;align-items:center">
+<div class="panel-card panel-card--table" style="margin-top:24px">
+    <div style="padding:16px 20px;border-bottom:1px solid #2a2d3a;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
         <h3 style="margin:0;color:#fff;font-size:16px">{% trans 'Ichki bo\'limlar' %}</h3>
         <a href="{% url 'movie:admin_category_add' %}?parent={{ category.pk }}" class="btn-admin btn-sm">+ {% trans 'Ichki bo\'lim qo\'shish' %}</a>
     </div>
     {% if children %}
+    <div class="table-responsive">
     <table class="admin-table">
         <thead>
             <tr>
@@ -66,6 +67,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
     {% else %}
     <p style="padding:24px;color:#9ca3af;text-align:center;margin:0">{% trans 'Ichki bo\'limlar hali yo\'q.' %}</p>
     {% endif %}
