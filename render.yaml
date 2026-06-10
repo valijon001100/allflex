@@ -10,7 +10,7 @@ services:
     runtime: python
     plan: free
     buildCommand: "./build.sh"
-    startCommand: "gunicorn kinobase.wsgi:application --bind 0.0.0.0:$PORT"
+    startCommand: "./start.sh"
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.10
