@@ -225,6 +225,9 @@ msgstr "User list"
 msgid "Поиск по логину..."
 msgstr "Search by login..."
 
+msgid "Поиск по логину или коду подписчика..."
+msgstr "Search by login or subscriber code..."
+
 msgid "Имя"
 msgstr "Name"
 

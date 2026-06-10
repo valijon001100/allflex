@@ -47,9 +47,13 @@ def protected_stream(request, movie_id, quality):
             response = FileResponse(
                 stream.video_file.open('rb'),
                 content_type=content_type or 'video/mp4',
+                as_attachment=False,
             )
             response['Content-Disposition'] = 'inline'
             response['Cache-Control'] = 'no-store'
+            response['Accept-Ranges'] = 'bytes'
+            if stream.video_file.size:
+                response['Content-Length'] = stream.video_file.size
             if profile:
                 response['X-Alflix-Viewer'] = profile.subscriber_code
             if movie.watermark_token:

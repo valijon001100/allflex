@@ -74,16 +74,7 @@
             '.player-capture-shield-global{display:none;position:fixed;inset:0;z-index:2147483646;background:#000}',
             '.player-capture-shield-global.is-active{display:block}',
             '.player-video-wrap video{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}',
-            '.movie-viewer-watermark{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:35;font-size:10px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.6);pointer-events:none;user-select:none;font-family:Arial,Helvetica,sans-serif;white-space:nowrap}',
-            '.player-seek-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#1a1d27;color:#fff}',
-            '.player-seek-btn{background:#2a2d3a;border:1px solid #4067b7;color:#fff;border-radius:4px;padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;line-height:1.2}',
-            '.player-seek-btn:hover{background:#4067b7}',
-            '.player-seek-range{flex:1;min-width:0;height:6px;cursor:pointer;accent-color:#e50914}',
-            '.player-seek-time{font-size:12px;color:#9ca3af;white-space:nowrap;min-width:96px;text-align:right}',
-            '.player-fs-btn{min-width:36px;padding:4px 8px}',
-            '.player-video-wrap:fullscreen,.player-video-wrap:-webkit-full-screen{width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center}',
-            '.player-video-wrap:fullscreen video,.player-video-wrap:-webkit-full-screen video{width:100%;height:100%;max-height:100%;object-fit:contain}',
-            '.player-video-wrap:fullscreen .movie-viewer-watermark,.player-video-wrap:-webkit-full-screen .movie-viewer-watermark{bottom:24px;font-size:12px;z-index:2147483647}'
+            '.movie-viewer-watermark{position:absolute;left:12px;bottom:12px;z-index:25;font-size:10px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.6);pointer-events:none;user-select:none;font-family:Arial,Helvetica,sans-serif}'
         ].join('');
         document.head.appendChild(style);
     }
@@ -230,9 +221,6 @@
                 var watermark = document.createElement('div');
                 watermark.className = 'movie-viewer-watermark';
                 watermark.textContent = options.watermark;
-                if (video.controls) {
-                    watermark.style.bottom = '52px';
-                }
                 wrap.appendChild(watermark);
             }
 
@@ -265,185 +253,9 @@
             controls.appendChild(select);
             controls.appendChild(statusEl);
 
-            var seekBar = document.createElement('div');
-            seekBar.className = 'player-seek-bar';
-
-            var skipBackBtn = document.createElement('button');
-            skipBackBtn.type = 'button';
-            skipBackBtn.className = 'player-seek-btn';
-            skipBackBtn.textContent = '−10s';
-
-            var seekRange = document.createElement('input');
-            seekRange.type = 'range';
-            seekRange.className = 'player-seek-range';
-            seekRange.value = 0;
-            seekRange.min = 0;
-            seekRange.max = 100;
-            seekRange.step = 0.1;
-
-            var skipFwdBtn = document.createElement('button');
-            skipFwdBtn.type = 'button';
-            skipFwdBtn.className = 'player-seek-btn';
-            skipFwdBtn.textContent = '+10s';
-
-            var timeEl = document.createElement('span');
-            timeEl.className = 'player-seek-time';
-            timeEl.textContent = '0:00 / 0:00';
-
-            var fsBtn = document.createElement('button');
-            fsBtn.type = 'button';
-            fsBtn.className = 'player-seek-btn player-fs-btn';
-            fsBtn.textContent = '\u26F6';
-            fsBtn.setAttribute('aria-label', 'Fullscreen');
-
-            seekBar.appendChild(skipBackBtn);
-            seekBar.appendChild(seekRange);
-            seekBar.appendChild(skipFwdBtn);
-            seekBar.appendChild(timeEl);
-            seekBar.appendChild(fsBtn);
-
             container.innerHTML = '';
             container.appendChild(wrap);
-            container.appendChild(seekBar);
             container.appendChild(controls);
-
-            var seeking = false;
-
-            function formatTime(sec) {
-                if (!isFinite(sec) || sec < 0) return '0:00';
-                var m = Math.floor(sec / 60);
-                var s = Math.floor(sec % 60);
-                return m + ':' + (s < 10 ? '0' : '') + s;
-            }
-
-            function updateSeekUI() {
-                var dur = video.duration;
-                if (!isFinite(dur) || dur <= 0) {
-                    timeEl.textContent = formatTime(video.currentTime) + ' / --:--';
-                    return;
-                }
-                if (!seeking) {
-                    seekRange.max = dur;
-                    seekRange.value = video.currentTime;
-                }
-                timeEl.textContent = formatTime(video.currentTime) + ' / ' + formatTime(dur);
-            }
-
-            function seekTo(time) {
-                var dur = video.duration;
-                if (!isFinite(dur) || dur <= 0) return;
-                video.currentTime = Math.max(0, Math.min(time, dur));
-                updateSeekUI();
-            }
-
-            video.addEventListener('timeupdate', updateSeekUI);
-            video.addEventListener('loadedmetadata', updateSeekUI);
-            video.addEventListener('durationchange', updateSeekUI);
-
-            seekRange.addEventListener('input', function () {
-                seeking = true;
-                var t = parseFloat(seekRange.value);
-                timeEl.textContent = formatTime(t) + ' / ' + formatTime(video.duration);
-            });
-            seekRange.addEventListener('change', function () {
-                seeking = false;
-                seekTo(parseFloat(seekRange.value));
-            });
-            skipBackBtn.addEventListener('click', function () { seekTo(video.currentTime - 10); });
-            skipFwdBtn.addEventListener('click', function () { seekTo(video.currentTime + 10); });
-
-            function getFsElement() {
-                return document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || null;
-            }
-
-            function requestFs(el) {
-                var fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-                if (fn) return fn.call(el);
-                return Promise.reject();
-            }
-
-            function exitFs() {
-                var fn = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
-                if (fn) return fn.call(document);
-                return Promise.resolve();
-            }
-
-            function isWrapFullscreen() {
-                return getFsElement() === wrap;
-            }
-
-            function updateFsButton() {
-                fsBtn.textContent = isWrapFullscreen() ? '\u2715' : '\u26F6';
-            }
-
-            function updateWatermarkLayout() {
-                var wm = wrap.querySelector('.movie-viewer-watermark');
-                if (!wm) return;
-                if (isWrapFullscreen()) {
-                    wm.style.bottom = '24px';
-                    wm.style.fontSize = '12px';
-                } else {
-                    wm.style.bottom = video.controls ? '52px' : '12px';
-                    wm.style.fontSize = '10px';
-                }
-            }
-
-            var fsRedirecting = false;
-
-            function enterWrapFullscreen() {
-                var wasPlaying = !video.paused && !video.ended;
-                var savedTime = video.currentTime;
-                return requestFs(wrap).then(function () {
-                    if (savedTime > 0 && isFinite(video.duration)) {
-                        video.currentTime = Math.min(savedTime, video.duration);
-                    }
-                    if (wasPlaying) {
-                        video.play().catch(function () {});
-                    }
-                    updateFsButton();
-                    updateWatermarkLayout();
-                });
-            }
-
-            function onFullscreenChange() {
-                if (fsRedirecting) return;
-                var fsEl = getFsElement();
-                if (fsEl === video) {
-                    fsRedirecting = true;
-                    exitFs().finally(function () {
-                        setTimeout(function () {
-                            enterWrapFullscreen().finally(function () {
-                                fsRedirecting = false;
-                            });
-                        }, 50);
-                    });
-                    return;
-                }
-                updateFsButton();
-                updateWatermarkLayout();
-            }
-
-            document.addEventListener('fullscreenchange', onFullscreenChange);
-            document.addEventListener('webkitfullscreenchange', onFullscreenChange);
-            video.addEventListener('fullscreenchange', onFullscreenChange);
-            video.addEventListener('webkitfullscreenchange', onFullscreenChange);
-
-            fsBtn.addEventListener('click', function () {
-                if (isWrapFullscreen()) {
-                    exitFs();
-                } else {
-                    enterWrapFullscreen();
-                }
-            });
-
-            video.addEventListener('dblclick', function (e) {
-                e.preventDefault();
-                if (isWrapFullscreen()) {
-                    exitFs();
-                } else {
-                    enterWrapFullscreen();
-                }
-            });
 
             function updateStatus(q, isAuto) {
                 statusEl.textContent = isAuto
@@ -465,83 +277,63 @@
                 video.load();
             }
 
-            function loadQuality(quality, isAuto, resumeAt) {
+            function loadQuality(quality, isAuto) {
                 var url = streams[quality];
                 if (!url) return;
                 currentQuality = quality;
-                var resume = (typeof resumeAt === 'number' && resumeAt > 0) ? resumeAt : 0;
                 destroyHls();
                 video.pause();
-
-                function tryResume() {
-                    if (resume > 0 && isFinite(video.duration) && video.duration > 0) {
-                        video.currentTime = Math.min(resume, video.duration);
-                        resume = 0;
-                        updateSeekUI();
-                    }
-                }
-
-                function tryPlay() {
-                    if (!wrap.classList.contains('is-protected')) {
-                        video.play().catch(function () {});
-                    }
-                }
 
                 if (isHls(url) && window.Hls && Hls.isSupported()) {
                     hlsInstance = new Hls({
                         startLevel: -1,
                         capLevelToPlayerSize: true,
-                        maxBufferHole: 0.5,
                     });
                     hlsInstance.loadSource(url);
                     hlsInstance.attachMedia(video);
                     hlsInstance.on(Hls.Events.MANIFEST_PARSED, function () {
-                        tryResume();
-                        tryPlay();
+                        if (!wrap.classList.contains('is-protected')) {
+                            video.play().catch(function () {});
+                        }
                     });
-                    video.addEventListener('loadedmetadata', tryResume, { once: true });
                 } else if (video.canPlayType('application/vnd.apple.mpegurl') && isHls(url)) {
-                    video.addEventListener('loadedmetadata', function () {
-                        tryResume();
-                        tryPlay();
-                    }, { once: true });
                     video.src = url;
+                    if (!wrap.classList.contains('is-protected')) {
+                        video.play().catch(function () {});
+                    }
                 } else {
-                    video.addEventListener('loadedmetadata', function () {
-                        tryResume();
-                        tryPlay();
-                    }, { once: true });
                     video.src = url;
+                    if (!wrap.classList.contains('is-protected')) {
+                        video.play().catch(function () {});
+                    }
                 }
                 updateStatus(quality, isAuto);
             }
 
             function reloadCurrent() {
                 if (!currentQuality) return;
-                var t = (video.currentTime && isFinite(video.currentTime)) ? video.currentTime : 0;
-                loadQuality(currentQuality, currentMode === 'auto', t);
+                loadQuality(currentQuality, currentMode === 'auto');
             }
 
             setupCaptureProtection(wrap, video, clearVideoSource, reloadCurrent);
 
-            function applyMode(mode, resumeAt) {
+            function applyMode(mode) {
                 currentMode = mode;
                 localStorage.setItem('kino_quality_mode', mode);
                 if (mode === 'auto') {
                     select.value = 'auto';
                     estimateByProbe(streams, function (detected) {
                         var best = pickBestQuality(streams, detected);
-                        loadQuality(best, true, resumeAt);
+                        loadQuality(best, true);
                     });
                 } else {
                     select.value = mode;
-                    loadQuality(mode, false, resumeAt);
+                    loadQuality(mode, false);
                 }
             }
 
             select.addEventListener('change', function () {
-                var t = (video.currentTime && isFinite(video.currentTime)) ? video.currentTime : 0;
-                applyMode(select.value, t);
+                applyMode(select.value);
             });
 
             if (currentMode !== 'auto' && streams[currentMode]) {

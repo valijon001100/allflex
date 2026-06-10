@@ -130,9 +130,6 @@
                                 {% if can_watch %}
                                 <div id="videoplayer_content" class="videoplayer-wrap">
                                     <div id="videoplayer"></div>
-                                    {% if viewer_watermark %}
-                                    <div class="movie-viewer-watermark" id="viewerWatermark">{{ viewer_watermark }}</div>
-                                    {% endif %}
                                 </div>
                                 {% elif is_authenticated %}
                                 <div class="watch-lock">
@@ -237,19 +234,27 @@
         overflow: hidden;
         position: relative;
     }
-    .movie-viewer-watermark {
+    .player-video-wrap { position: relative; }
+    .player-video-wrap .movie-viewer-watermark {
         position: absolute;
-        right: 12px;
-        bottom: 48px;
-        z-index: 20;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        color: rgba(255,255,255,.22);
-        text-shadow: 0 1px 2px rgba(0,0,0,.8);
+        left: 50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+        z-index: 35;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: .5px;
+        color: rgba(255,255,255,.92);
+        text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.6);
         pointer-events: none;
         user-select: none;
-        font-family: monospace;
+        font-family: Arial, Helvetica, sans-serif;
+        white-space: nowrap;
+    }
+    .player-video-wrap:fullscreen .movie-viewer-watermark,
+    .player-video-wrap:-webkit-full-screen .movie-viewer-watermark {
+        bottom: 24px;
+        font-size: 12px;
     }
     #videoplayer video {
         display: block;
@@ -320,7 +325,20 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var streams = {{ video_streams_json|safe }};
-            KinoPlayer.init('videoplayer', streams);
+            var viewerCode = '{{ viewer_watermark|escapejs }}';
+            KinoPlayer.init('videoplayer', streams, { watermark: viewerCode });
+            if (viewerCode) {
+                var wrap = document.querySelector('#videoplayer .player-video-wrap');
+                if (wrap && !wrap.querySelector('.movie-viewer-watermark')) {
+                    var wm = document.createElement('div');
+                    wm.className = 'movie-viewer-watermark';
+                    wm.textContent = viewerCode;
+                    if (wrap.querySelector('video[controls]')) {
+                        wm.style.bottom = '52px';
+                    }
+                    wrap.appendChild(wm);
+                }
+            }
         });
     </script>
     {% endif %}

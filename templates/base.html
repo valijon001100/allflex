@@ -187,6 +187,9 @@
                         {% endif %}
                     </ul>
                 </li>
+                {% if not request.user.is_authenticated %}
+                <li><a href="{% url 'movie:login' %}" class="modal login">{% trans 'Вход' %}</a></li>
+                {% endif %}
                 {% if request.user.is_authenticated %}
                     {% if not request.user.is_staff %}
                     <li><a href="{% url 'movie:likedMovies' %}" class="modal login">{% trans 'Избранное' %}</a></li>

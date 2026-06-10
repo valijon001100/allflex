@@ -23,6 +23,18 @@ from .utils import (
 )
 
 
+def _viewer_subscriber_code(user):
+    if not user.is_authenticated:
+        return ''
+    profile = getattr(user, 'profile', None)
+    if profile is None:
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+    elif not profile.subscriber_code:
+        if profile.ensure_subscriber_code():
+            profile.save(update_fields=['subscriber_code'])
+    return profile.subscriber_code
+
+
 def category_list(request, slug):
     category = get_object_or_404(Category, slug=slug)
     subcategories = Category.objects.filter(parent=category, is_active=True).order_by('order', 'name')
@@ -101,13 +113,7 @@ class MovieDetailView(FormMixin,DetailView):
         context['is_authenticated'] = user.is_authenticated
         if has_access:
             context['video_streams_json'] = json.dumps(self.object.get_protected_streams_dict())
-            profile = getattr(user, 'profile', None)
-            if profile and profile.subscriber_code:
-                context['viewer_watermark'] = profile.subscriber_code
-            else:
-                from .models import UserProfile
-                prof, _ = UserProfile.objects.get_or_create(user=user)
-                context['viewer_watermark'] = prof.subscriber_code
+            context['viewer_watermark'] = _viewer_subscriber_code(user)
             context['movie_uid'] = self.object.movie_uid
         else:
             context['video_streams_json'] = '{}'
@@ -192,8 +198,10 @@ def live_list(request):
 
 def live_watch(request, slug):
     stream = get_object_or_404(LiveStream, slug=slug, is_active=True)
-    has_access = user_can_watch_live(request.user)
+    user = request.user
+    has_access = user_can_watch_live(user)
     return render(request, 'live_watch.html', {
         'stream': stream,
         'has_access': has_access,
+        'viewer_watermark': _viewer_subscriber_code(user) if has_access else '',
     })

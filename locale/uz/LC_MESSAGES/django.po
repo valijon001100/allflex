@@ -234,6 +234,9 @@ msgstr "Foydalanuvchilar ro'yxati"
 msgid "Поиск по логину..."
 msgstr "Login bo'yicha qidirish..."
 
+msgid "Поиск по логину или коду подписчика..."
+msgstr "Login yoki obunachi kodi bo'yicha qidirish..."
+
 msgid "Имя"
 msgstr "Ism"
 

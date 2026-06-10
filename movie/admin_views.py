@@ -202,7 +202,9 @@ def user_list(request):
     ).order_by('-date_joined')
     q = request.GET.get('q', '')
     if q:
-        users = users.filter(username__icontains=q)
+        users = users.filter(
+            Q(username__icontains=q) | Q(profile__subscriber_code__icontains=q)
+        )
     paginator = Paginator(users, 20)
     page_obj = paginator.get_page(request.GET.get('page'))
     for u in page_obj:
