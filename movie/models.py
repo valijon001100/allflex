@@ -458,12 +458,17 @@ class TicketEvent(models.Model):
   )
   title = models.CharField(max_length=250)
   slug = models.SlugField(max_length=120, unique=True)
+  subtitle = models.CharField(max_length=200, blank=True, default='')
   description = models.TextField(blank=True)
   venue = models.CharField(max_length=200)
+  venue_address = models.CharField(max_length=300, blank=True, default='')
   city = models.CharField(max_length=100, default='Toshkent')
   event_date = models.DateTimeField()
   poster = models.ImageField(upload_to='ticket_posters/%Y/%m', blank=True, null=True)
   price = models.DecimalField(max_digits=10, decimal_places=2)
+  age_limit = models.CharField(max_length=20, blank=True, default='6+')
+  language = models.CharField(max_length=80, blank=True, default='')
+  is_premiere = models.BooleanField('Premyera', default=True)
   quantity_total = models.PositiveIntegerField(default=100)
   quantity_sold = models.PositiveIntegerField(default=0)
   is_active = models.BooleanField(default=True)
@@ -484,6 +489,11 @@ class TicketEvent(models.Model):
 
   def get_absolute_url(self):
     return reverse('movie:ticket_detail', kwargs={'slug': self.slug})
+
+  def get_map_query(self):
+    if self.venue_address:
+      return self.venue_address
+    return f'{self.venue}, {self.city}'
 
   def __str__(self):
     return self.title

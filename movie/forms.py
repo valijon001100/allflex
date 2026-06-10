@@ -219,16 +219,23 @@ class TicketEventForm(forms.ModelForm):
         from .models import TicketEvent
         model = TicketEvent
         fields = [
-            'category', 'title', 'slug', 'description', 'venue', 'city',
-            'event_date', 'poster', 'price', 'quantity_total', 'is_active',
+            'category', 'title', 'slug', 'subtitle', 'description',
+            'venue', 'venue_address', 'city', 'event_date', 'poster',
+            'price', 'age_limit', 'language', 'is_premiere',
+            'quantity_total', 'is_active',
         ]
         widgets = {
             'category': forms.Select(attrs={'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'slug': forms.TextInput(attrs={'class': 'form-control'}),
+            'subtitle': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'venue': forms.TextInput(attrs={'class': 'form-control'}),
+            'venue_address': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
+            'age_limit': forms.TextInput(attrs={'class': 'form-control'}),
+            'language': forms.TextInput(attrs={'class': 'form-control'}),
+            'is_premiere': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'event_date': forms.DateTimeInput(
                 attrs={'class': 'form-control', 'type': 'datetime-local'},
                 format='%Y-%m-%dT%H:%M',
@@ -248,12 +255,17 @@ class TicketEventForm(forms.ModelForm):
             'category': _('Bo\'lim'),
             'title': _('Nomi'),
             'slug': _('Slug (URL)'),
+            'subtitle': _('Qisqa sarlavha'),
             'description': _('Tavsif'),
-            'venue': _('Joy'),
+            'venue': _('Joy nomi'),
+            'venue_address': _('Manzil (xarita uchun)'),
             'city': _('Shahar'),
             'event_date': _('Sana va vaqt'),
             'poster': _('Poster'),
             'price': _('Bilet narxi (so\'m)'),
+            'age_limit': _('Yosh chegarasi'),
+            'language': _('Til'),
+            'is_premiere': _('Premyera'),
             'quantity_total': _('Biletlar soni'),
             'is_active': _('Faol'),
         })

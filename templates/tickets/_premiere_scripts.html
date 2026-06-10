@@ -1,0 +1,28 @@
+<script>
+(function() {
+    document.querySelectorAll('[data-carousel]').forEach(function(carousel) {
+        var wrap = carousel.closest('.premiere-section');
+        if (!wrap) return;
+        var prev = wrap.querySelector('.premiere-prev');
+        var next = wrap.querySelector('.premiere-next');
+        var step = 236;
+        function scrollBy(dx) {
+            carousel.scrollBy({ left: dx, behavior: 'smooth' });
+        }
+        if (prev) prev.addEventListener('click', function() { scrollBy(-step); });
+        if (next) next.addEventListener('click', function() { scrollBy(step); });
+    });
+
+    document.querySelectorAll('.ticket-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            var group = tab.closest('.ticket-tabs-wrap');
+            if (!group) return;
+            group.querySelectorAll('.ticket-tab').forEach(function(t) { t.classList.remove('active'); });
+            group.querySelectorAll('.ticket-panel').forEach(function(p) { p.hidden = true; });
+            tab.classList.add('active');
+            var panel = group.querySelector('[data-panel="' + tab.dataset.tab + '"]');
+            if (panel) panel.hidden = false;
+        });
+    });
+})();
+</script>

@@ -1,0 +1,41 @@
+{% load i18n %}
+{% if not event.is_sold_out %}
+{% if request.user.is_authenticated %}
+<div class="ticket-qty-row">
+    <label>{% trans 'Bilet soni' %}:</label>
+    <input type="number" name="quantity" value="1" min="1" max="10" class="ticket-qty-input" form="ticket-form-click">
+</div>
+{% if click_ready %}
+<form id="ticket-form-click" method="post" action="{% url 'movie:ticket_checkout' %}">
+    {% csrf_token %}
+    <input type="hidden" name="event_id" value="{{ event.pk }}">
+    <input type="hidden" name="provider" value="click">
+    <button type="submit" class="ticket-pay-btn click">Click — {% trans 'To\'lash' %}</button>
+</form>
+{% endif %}
+{% if payme_ready %}
+<form method="post" action="{% url 'movie:ticket_checkout' %}">
+    {% csrf_token %}
+    <input type="hidden" name="event_id" value="{{ event.pk }}">
+    <input type="hidden" name="provider" value="payme">
+    <input type="hidden" name="quantity" value="1" class="ticket-qty-mirror">
+    <button type="submit" class="ticket-pay-btn payme">Payme — {% trans 'To\'lash' %}</button>
+</form>
+{% endif %}
+{% if test_mode %}
+<form method="post" action="{% url 'movie:test_ticket_purchase' %}">
+    {% csrf_token %}
+    <input type="hidden" name="event_id" value="{{ event.pk }}">
+    <input type="hidden" name="quantity" value="1" class="ticket-qty-mirror">
+    <button type="submit" class="ticket-pay-btn test">{% trans 'Sinov (DEBUG)' %}</button>
+</form>
+{% endif %}
+{% if not click_ready and not payme_ready and not test_mode %}
+<p style="color:#9ca3af;font-size:13px">{% trans 'To\'lov tizimi sozlanmagan.' %}</p>
+{% endif %}
+{% else %}
+<p style="color:#9ca3af;margin-bottom:12px">{% trans 'Bilet sotib olish uchun' %} <a href="{% url 'movie:login' %}?next={{ request.path }}" style="color:#f5c518">{% trans 'kiring' %}</a>.</p>
+{% endif %}
+{% else %}
+<p style="color:#e74c3c;font-weight:600">{% trans 'Biletlar tugagan.' %}</p>
+{% endif %}

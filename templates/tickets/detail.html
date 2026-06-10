@@ -2,74 +2,159 @@
 {% load i18n %}
 
 {% block content %}
-<div id="main" class="container" style="padding:24px 20px 48px;max-width:900px">
-    <p style="margin-bottom:8px"><a href="{{ event.category.get_absolute_url }}" style="color:#9ca3af">← {{ category_name }}</a></p>
+{% include 'tickets/_premiere_styles.html' %}
+<div class="ticket-page" style="padding-bottom:0">
+    <p style="max-width:1200px;margin:0 auto;padding:16px 20px 0">
+        <a href="{{ event.category.get_absolute_url }}" style="color:#9ca3af">← {{ category_name }}</a>
+    </p>
 
-    <div style="display:flex;flex-wrap:wrap;gap:24px">
-        <div style="flex:0 0 280px;max-width:100%">
+    <section class="ticket-hero">
+        {% if event.poster %}
+        <div class="ticket-hero-bg" style="background-image:url('{{ event.poster.url }}')"></div>
+        {% else %}
+        <div class="ticket-hero-bg placeholder"></div>
+        {% endif %}
+        <div class="ticket-hero-shade"></div>
+        <div class="ticket-hero-inner">
+            <div class="ticket-hero-info">
+                <div class="ticket-hero-tag">{{ event.category.icon }} {{ category_name }}{% if event.subtitle %} · {{ event.subtitle }}{% endif %}</div>
+                <h1 class="ticket-hero-title">{{ event.title }}</h1>
+                {% if event.subtitle %}<p class="ticket-hero-sub">{{ event.subtitle }}</p>{% endif %}
+                <div class="ticket-hero-chip">
+                    {{ event.venue|upper }}, {{ event.city|upper }} &nbsp;|&nbsp; {{ event.event_date|date:"d E, H:i" }}
+                </div>
+                <div class="ticket-hero-buy">
+                    {% if not event.is_sold_out %}
+                    <span class="ticket-btn-buy">{% trans 'dan' %} {{ event.price|floatformat:0 }} {% trans 'so\'m' %}</span>
+                    {% else %}
+                    <span class="ticket-btn-buy" style="background:#4b5563;color:#d1d5db">{% trans 'Tugagan' %}</span>
+                    {% endif %}
+                </div>
+            </div>
             {% if event.poster %}
-            <img src="{{ event.poster.url }}" alt="{{ event.title }}" style="width:100%;border-radius:12px">
-            {% else %}
-            <div style="width:100%;aspect-ratio:2/3;background:linear-gradient(135deg,#1a1d27,#2a1040);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:72px">{{ event.category.icon }}</div>
+            <div class="ticket-hero-poster">
+                <img src="{{ event.poster.url }}" alt="{{ event.title }}">
+            </div>
             {% endif %}
         </div>
-        <div style="flex:1;min-width:260px">
-            <h1 style="color:#fff;margin:0 0 12px">{{ event.title }}</h1>
-            <p style="color:#9ca3af;margin-bottom:8px">📅 {{ event.event_date|date:"d.m.Y H:i" }}</p>
-            <p style="color:#9ca3af;margin-bottom:8px">📍 {{ event.venue }}, {{ event.city }}</p>
-            <p style="color:#fff;font-size:28px;font-weight:700;margin:16px 0">{{ event.price|floatformat:0 }} <span style="font-size:16px;color:#9ca3af">{% trans 'so\'m' %}</span></p>
-            {% if event.is_sold_out %}
-            <div class="alert alert-warning">{% trans 'Biletlar tugagan.' %}</div>
-            {% else %}
-            <p style="color:#2ecc71;margin-bottom:20px">{% trans 'Qolgan biletlar' %}: {{ event.tickets_left }}</p>
-            {% endif %}
-            {% if event.description %}
-            <div style="color:#ccc;line-height:1.6;margin-bottom:24px">{{ event.description|linebreaks }}</div>
-            {% endif %}
+    </section>
 
-            {% if not event.is_sold_out %}
-            {% if request.user.is_authenticated %}
-            <div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:20px">
-                <h3 style="color:#fff;margin:0 0 16px;font-size:18px">{% trans 'Bilet sotib olish' %}</h3>
-                {% if click_ready %}
-                <form method="post" action="{% url 'movie:ticket_checkout' %}" style="margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-                    {% csrf_token %}
-                    <input type="hidden" name="event_id" value="{{ event.pk }}">
-                    <input type="hidden" name="provider" value="click">
-                    <label style="color:#9ca3af">{% trans 'Soni' %}:</label>
-                    <input type="number" name="quantity" value="1" min="1" max="10" class="form-control" style="width:70px;display:inline-block">
-                    <button type="submit" class="btn btn-primary" style="background:#2b7cff;border:none;padding:12px 24px;font-weight:600">Click</button>
-                </form>
-                {% endif %}
-                {% if payme_ready %}
-                <form method="post" action="{% url 'movie:ticket_checkout' %}" style="margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-                    {% csrf_token %}
-                    <input type="hidden" name="event_id" value="{{ event.pk }}">
-                    <input type="hidden" name="provider" value="payme">
-                    <label style="color:#9ca3af">{% trans 'Soni' %}:</label>
-                    <input type="number" name="quantity" value="1" min="1" max="10" class="form-control" style="width:70px;display:inline-block">
-                    <button type="submit" class="btn btn-default" style="background:#00cbcb;color:#003;padding:12px 24px;font-weight:600;border:none">Payme</button>
-                </form>
-                {% endif %}
-                {% if test_mode %}
-                <form method="post" action="{% url 'movie:test_ticket_purchase' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="event_id" value="{{ event.pk }}">
-                    <input type="number" name="quantity" value="1" min="1" max="10" class="form-control" style="width:70px;display:inline-block;margin-right:8px">
-                    <button type="submit" class="btn btn-default" style="border:1px dashed #6b7280;color:#9ca3af;background:transparent">{% trans 'Sinov (DEBUG)' %}</button>
-                </form>
-                {% endif %}
-                {% if not click_ready and not payme_ready and not test_mode %}
-                <p style="color:#9ca3af">{% trans 'To\'lov tizimi sozlanmagan. Admin bilan bog\'laning.' %}</p>
-                {% endif %}
+    <div class="ticket-info-row">
+        <div class="ticket-info-card">
+            <span class="ico">📍</span>
+            <div>
+                <div class="lbl">{% trans 'Joy va sana' %}</div>
+                <div class="val">{{ event.venue }}, {{ event.event_date|date:"d.m.Y H:i" }}</div>
             </div>
-            {% else %}
-            <div class="alert alert-info">
-                {% trans 'Bilet sotib olish uchun' %} <a href="{% url 'movie:login' %}?next={{ request.path }}">{% trans 'kiring' %}</a>.
+        </div>
+        <div class="ticket-info-card">
+            <span class="ico">💰</span>
+            <div>
+                <div class="lbl">{% trans 'Narx' %}</div>
+                <div class="val">{% trans 'dan' %} {{ event.price|floatformat:0 }} {% trans 'so\'m' %}</div>
             </div>
-            {% endif %}
-            {% endif %}
+        </div>
+        <div class="ticket-info-card">
+            <span class="ico">🔞</span>
+            <div>
+                <div class="lbl">{% trans 'Yosh chegarasi' %}</div>
+                <div class="val">{{ event.age_limit|default:"6+" }}</div>
+            </div>
+        </div>
+        <div class="ticket-info-card">
+            <span class="ico">🌐</span>
+            <div>
+                <div class="lbl">{% trans 'Til' %}</div>
+                <div class="val">{{ event.language|default:_('Ko\'p tilli') }}</div>
+            </div>
         </div>
     </div>
+
+    <div class="ticket-detail-grid">
+        <div>
+            <div class="ticket-seat-placeholder">
+                <div class="stage">{% trans 'SAHNA' %}</div>
+                <div class="ticket-seat-zones">
+                    <span class="ticket-seat-zone c">C1</span>
+                    <span class="ticket-seat-zone c">C2</span>
+                    <span class="ticket-seat-zone b">B1</span>
+                    <span class="ticket-seat-zone b">B2</span>
+                    <span class="ticket-seat-zone b">B3</span>
+                    <span class="ticket-seat-zone a">A1</span>
+                    <span class="ticket-seat-zone a">A2</span>
+                </div>
+                <p style="color:#9ca3af;font-size:13px;margin:16px 0 0">{% trans 'Joy tanlash tez orada. Hozir bilet sonini tanlang.' %}</p>
+            </div>
+
+            <div class="ticket-tabs-wrap">
+                <div class="ticket-tabs">
+                    <button type="button" class="ticket-tab active" data-tab="about">{% trans 'Tadbir haqida' %}</button>
+                    <button type="button" class="ticket-tab" data-tab="info">{% trans 'Yosh chegarasi / Til' %}</button>
+                </div>
+                <div class="ticket-panel" data-panel="about">
+                    {% if event.description %}
+                    {{ event.description|linebreaks }}
+                    {% else %}
+                    <p>{% trans 'Tadbir tavsifi tez orada qo\'shiladi.' %}</p>
+                    {% endif %}
+                    {% if event.poster %}
+                    <div class="ticket-panel-thumb">
+                        <img src="{{ event.poster.url }}" alt="{{ event.title }}">
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="ticket-panel" data-panel="info" hidden>
+                    <p><strong>{% trans 'Yosh chegarasi' %}:</strong> {{ event.age_limit|default:"6+" }}</p>
+                    <p><strong>{% trans 'Til' %}:</strong> {{ event.language|default:_('Ko\'p tilli') }}</p>
+                    <p><strong>{% trans 'Qolgan biletlar' %}:</strong> {{ event.tickets_left }}</p>
+                    <p><strong>{% trans 'Kategoriya' %}:</strong> {{ category_name }}</p>
+                </div>
+            </div>
+        </div>
+
+        <aside class="ticket-buy-box">
+            <h3>{% trans 'Bilet sotib olish' %}</h3>
+            <div class="ticket-buy-price">{{ event.price|floatformat:0 }} <span style="font-size:14px;color:#9ca3af">{% trans 'so\'m' %}</span></div>
+            <div class="ticket-buy-meta">
+                {{ event.event_date|date:"d.m.Y H:i" }}<br>
+                {% if not event.is_sold_out %}
+                {% trans 'Qolgan' %}: {{ event.tickets_left }} {% trans 'ta' %}
+                {% endif %}
+            </div>
+            {% include 'tickets/_buy_forms.html' %}
+        </aside>
+    </div>
+
+    <section class="ticket-venue-section">
+        <h2>{% trans 'O\'tkazilish joyi' %}</h2>
+        <div class="ticket-venue-grid">
+            <div class="ticket-map">
+                <iframe
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://maps.google.com/maps?q={{ event.get_map_query|urlencode }}&z=15&output=embed"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <div class="ticket-venue-card">
+                <h3>{{ event.venue }}</h3>
+                <p>
+                    {% if event.venue_address %}{{ event.venue_address }}{% else %}{{ event.venue }}, {{ event.city }}{% endif %}
+                </p>
+                <a href="https://www.google.com/maps/search/?api=1&query={{ event.get_map_query|urlencode }}"
+                   target="_blank" rel="noopener" class="ticket-direction-btn">
+                    {% trans 'Yo\'nalish olish' %}
+                </a>
+            </div>
+        </div>
+    </section>
 </div>
+{% include 'tickets/_premiere_scripts.html' %}
+<script>
+document.querySelectorAll('.ticket-qty-input').forEach(function(inp) {
+    inp.addEventListener('input', function() {
+        document.querySelectorAll('.ticket-qty-mirror').forEach(function(m) { m.value = inp.value; });
+    });
+});
+</script>
 {% endblock %}

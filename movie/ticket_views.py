@@ -21,11 +21,14 @@ def _ticket_categories(lang):
 
 def ticket_home(request):
     lang = getattr(request, 'LANGUAGE_CODE', 'ru') or 'ru'
-    events = TicketEvent.objects.filter(
+    base_qs = TicketEvent.objects.filter(
         is_active=True, event_date__gte=timezone.now(),
-    ).select_related('category').order_by('event_date')[:12]
+    ).select_related('category')
+    premieres = base_qs.filter(is_premiere=True).order_by('event_date')[:16]
+    events = base_qs.order_by('event_date')[:12]
     return render(request, 'tickets/home.html', {
         'categories': _ticket_categories(lang),
+        'premieres': premieres,
         'events': events,
     })
 
@@ -33,13 +36,16 @@ def ticket_home(request):
 def ticket_category(request, slug):
     lang = getattr(request, 'LANGUAGE_CODE', 'ru') or 'ru'
     category = get_object_or_404(TicketCategory, slug=slug, is_active=True)
-    events = category.events.filter(
+    base_qs = category.events.filter(
         is_active=True, event_date__gte=timezone.now(),
-    ).order_by('event_date')
+    )
+    premieres = base_qs.filter(is_premiere=True).order_by('event_date')
+    events = base_qs.order_by('event_date')
     return render(request, 'tickets/category.html', {
         'category': category,
         'category_name': category.get_translated_name(lang),
         'categories': _ticket_categories(lang),
+        'premieres': premieres,
         'events': events,
     })
 

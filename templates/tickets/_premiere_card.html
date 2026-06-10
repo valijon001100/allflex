@@ -1,0 +1,24 @@
+<a href="{{ event.get_absolute_url }}" class="premiere-card">
+    {% if event.poster %}
+    <div class="premiere-card-bg" style="background-image:url('{{ event.poster.url }}')"></div>
+    {% else %}
+    <div class="premiere-card-bg placeholder">{{ event.category.icon }}</div>
+    {% endif %}
+    <div class="premiere-card-overlay"></div>
+    <div class="premiere-card-body">
+        {% if event.subtitle %}
+        <div class="premiere-card-tag">{{ event.subtitle }}</div>
+        {% else %}
+        <div class="premiere-card-tag">{{ event.category.name }}</div>
+        {% endif %}
+        <div class="premiere-card-title">{{ event.title }}</div>
+        <div class="premiere-card-foot">
+            <span class="premiere-card-date">{{ event.event_date|date:"d E Y" }}</span>
+            {% if event.is_sold_out %}
+            <span class="premiere-card-price sold">{% trans 'Tugagan' %}</span>
+            {% else %}
+            <span class="premiere-card-price">{% trans 'dan' %} {{ event.price|floatformat:0 }} {% trans 'so\'m' %}</span>
+            {% endif %}
+        </div>
+    </div>
+</a>

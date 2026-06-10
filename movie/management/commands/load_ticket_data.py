@@ -21,23 +21,32 @@ def seed_tickets():
 
     now = timezone.now()
     samples = [
-        ('kino', 'Avatar 3 — prem\'yera', 'avatar-3-premyera', 'Humo Arena', 85000, 200),
-        ('kino', 'O\'zbek kino kechasi', 'uzbek-kino-kechasi', 'Milliy kino markazi', 45000, 150),
-        ('teatr', 'Alisher Navoiy — spektakl', 'navoiy-spektakl', 'O\'zbek milliy teatri', 120000, 80),
-        ('teatr', 'Vijdon azobi', 'vijdon-azobi', 'Yoshlar teatri', 75000, 100),
-        ('sirk', 'Sirk shousi — bahor', 'sirk-bahor', 'Toshkent sirk', 60000, 300),
-        ('sirk', 'Delfinlar shousi', 'delfinlar-shousi', 'Aqua Park', 90000, 120),
+        ('kino', 'Avatar 3', 'avatar-3-premyera', 'PREMYERA', 'Humo Arena', 'Toshkent, Humo Arena', 85000, 200, '12+', 'O\'zbekcha'),
+        ('kino', 'O\'zbek kino kechasi', 'uzbek-kino-kechasi', 'JONLI TOMOSHA', 'Milliy kino markazi', 'Toshkent, Navoiy ko\'chasi 2', 45000, 150, '6+', 'O\'zbekcha'),
+        ('teatr', 'Alisher Navoiy', 'navoiy-spektakl', 'MILLIY TEATR', 'O\'zbek milliy teatri', 'Toshkent, Atamurat ota ko\'chasi 1', 120000, 80, '6+', 'O\'zbekcha'),
+        ('teatr', 'Vijdon azobi', 'vijdon-azobi', 'DRAMA', 'Yoshlar teatri', 'Toshkent, Amir Temur shoh ko\'chasi', 75000, 100, '16+', 'O\'zbekcha'),
+        ('sirk', 'Sirk shousi — bahor', 'sirk-bahor', 'SIRK SHOUSI', 'Toshkent sirk', 'Toshkent, Bobur ko\'chasi 14', 60000, 300, '3+', 'Ko\'p tilli'),
+        ('sirk', 'Delfinlar shousi', 'delfinlar-shousi', 'SHOU', 'Aqua Park', 'Toshkent, Yunusobod tumani', 90000, 120, '0+', 'Ko\'p tilli'),
     ]
-    for i, (slug, title, ev_slug, venue, price, qty) in enumerate(samples):
+    for i, row in enumerate(samples):
+        slug, title, ev_slug, subtitle, venue, address, price, qty, age, lang = row
         TicketEvent.objects.create(
             category=cat_map[slug],
             title=title,
             slug=ev_slug,
-            description=f'{title} — onlayn bilet orqali sotib oling.',
+            subtitle=subtitle,
+            description=(
+                f'{title} — {subtitle.lower()} bo\'yicha noyob tadbir. '
+                f'Joy: {venue}. Biletlarni onlayn xarid qiling va zavq bilan tomosha qiling.'
+            ),
             venue=venue,
+            venue_address=address,
             city='Toshkent',
             event_date=now + timedelta(days=7 + i * 3),
             price=price,
+            age_limit=age,
+            language=lang,
+            is_premiere=True,
             quantity_total=qty,
             is_active=True,
         )

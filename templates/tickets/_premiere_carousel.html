@@ -1,0 +1,19 @@
+{% load i18n %}
+<div class="premiere-section">
+    <div class="premiere-section-head">
+        <h2>{{ section_title|default:_('Premyeralar') }}</h2>
+        <div class="premiere-nav">
+            <button type="button" class="premiere-prev" aria-label="{% trans 'Oldingi' %}">‹</button>
+            <button type="button" class="premiere-next" aria-label="{% trans 'Keyingi' %}">›</button>
+        </div>
+    </div>
+    <div class="premiere-carousel-wrap">
+        <div class="premiere-carousel" data-carousel>
+            {% for event in premiere_events %}
+            {% include 'tickets/_premiere_card.html' with event=event %}
+            {% empty %}
+            <p style="color:#9ca3af;padding:20px 0">{% trans 'Premyeralar hozircha yo\'q.' %}</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
