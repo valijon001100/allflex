@@ -114,7 +114,22 @@
                     <a href="{% url 'movie:home' %}">{% trans 'Bosh sahifa' %}</a>
                 </li>
                 {% for cat in categories %}
-                     <li><a href="{{ cat.obj.get_absolute_url }}">{{ cat.name }}</a></li>
+                {% if cat.children %}
+                <li class="dropdown">
+                    <a href="{{ cat.obj.get_absolute_url }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        {{ cat.name }} <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ cat.obj.get_absolute_url }}"><strong>{{ cat.name }}</strong></a></li>
+                        <li role="separator" class="divider"></li>
+                        {% for child in cat.children %}
+                        <li><a href="{{ child.obj.get_absolute_url }}">{{ child.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% else %}
+                <li><a href="{{ cat.obj.get_absolute_url }}">{{ cat.name }}</a></li>
+                {% endif %}
                 {% endfor %}
                 <li><a href="{% url 'movie:live_list' %}" style="color:#ff6b6b">{% trans 'Прямой эфир' %}</a></li>
                 <li class="dropdown">
@@ -187,9 +202,6 @@
                             <li><a href="{% url 'movie:logout' %}">{% trans 'Выход' %}</a></li>
                         </ul>
                     </li>
-                {% else %}
-                    <li><a href="{% url 'movie:login' %}" class="modal login">{% trans 'Вход' %}</a></li>
-                    <li><a href="{% url 'movie:register' %}" class="register">{% trans 'Регистрация' %}</a></li>
                 {% endif %}
             </ul>
         </div>

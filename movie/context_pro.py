@@ -1,16 +1,34 @@
 from django.db import OperationalError
+from django.db.models import Prefetch
 from django.utils.translation import get_language
 from .models import Category, Genre, TicketCategory
 from .translations import translate_category
 from .utils import user_can_watch_live, user_can_watch_movies, user_has_subscription
 
 
+def _nav_categories(lang):
+    child_qs = Category.objects.filter(is_active=True).order_by('order', 'name')
+    parents = Category.objects.filter(
+        is_active=True, parent__isnull=True,
+    ).prefetch_related(
+        Prefetch('children', queryset=child_qs),
+    ).order_by('order', 'name')
+    return [
+        {
+            'obj': cat,
+            'name': translate_category(cat, lang),
+            'children': [
+                {'obj': child, 'name': translate_category(child, lang)}
+                for child in cat.children.all()
+            ],
+        }
+        for cat in parents
+    ]
+
+
 def view_all(request):
     lang = get_language() or 'ru'
-    categories = [
-        {'obj': cat, 'name': translate_category(cat, lang)}
-        for cat in Category.objects.filter(is_active=True, parent__isnull=True)
-    ]
+    categories = _nav_categories(lang)
     try:
         ticket_categories = [
             {'obj': cat, 'name': cat.get_translated_name(lang)}

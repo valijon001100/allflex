@@ -16,7 +16,7 @@
   "model": "movie.category",
   "pk": 2,
   "fields": {
-    "parent": null,
+    "parent": 1,
     "name": "Сериалы",
     "name_uz": "Seriallar",
     "name_en": "TV Series",
@@ -55,7 +55,7 @@
   "model": "movie.category",
   "pk": 5,
   "fields": {
-    "parent": null,
+    "parent": 1,
     "name": "Скоро на сайте",
     "name_uz": "Tez kunda",
     "name_en": "Coming Soon",
