@@ -2,18 +2,13 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
-.venv/
-venv/
-env/
 
-# Django
-db.sqlite3
+# Django (collected static — qayta yaratiladi)
 static/
-media/
+db.sqlite3
 *.log
 
-# Secrets & local
-.env
+# Local secrets (faqat shular yuklanmaydi)
 kinobase/config.py
 pagekite.pem
 pagekite.cfg
