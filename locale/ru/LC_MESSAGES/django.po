@@ -1,0 +1,757 @@
+#
+msgid ""
+msgstr ""
+"Language: ru\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Поиск"
+msgstr "Поиск"
+
+msgid "Избранное"
+msgstr "Избранное"
+
+msgid "Выход"
+msgstr "Выход"
+
+msgid "Вход"
+msgstr "Вход"
+
+msgid "Регистрация"
+msgstr "Регистрация"
+
+msgid "Фильмы"
+msgstr "Фильмы"
+
+msgid "Жанр"
+msgstr "Жанр"
+
+msgid "Год"
+msgstr "Год"
+
+msgid "Качество"
+msgstr "Качество"
+
+msgid "Добавить в избранное"
+msgstr "Добавить в избранное"
+
+msgid "Предыдущая"
+msgstr "Предыдущая"
+
+msgid "Следующая"
+msgstr "Следующая"
+
+msgid "Смотреть онлайн"
+msgstr "Смотреть онлайн"
+
+msgid "Трейлер"
+msgstr "Трейлер"
+
+msgid "В избранное"
+msgstr "В избранное"
+
+msgid "Добавить"
+msgstr "Добавить"
+
+msgid "комментариев"
+msgstr "комментариев"
+
+msgid "Забыли пароль?"
+msgstr "Забыли пароль?"
+
+msgid "Уже есть аккаунт? Войти"
+msgstr "Уже есть аккаунт? Войти"
+
+msgid "или через"
+msgstr "или через"
+
+msgid "Имя пользователя"
+msgstr "Имя пользователя"
+
+msgid "Электронная почта"
+msgstr "Электронная почта"
+
+msgid "Пароль"
+msgstr "Пароль"
+
+msgid "Подтвердите пароль"
+msgstr "Подтвердите пароль"
+
+msgid "Зарегистрироваться"
+msgstr "Зарегистрироваться"
+
+msgid "Электронная почта или логин"
+msgstr "Электронная почта или логин"
+
+msgid "Вы успешно зарегистрировались! Теперь войдите."
+msgstr "Вы успешно зарегистрировались! Теперь войдите."
+
+msgid "Вы вышли из аккаунта"
+msgstr "Вы вышли из аккаунта"
+
+msgid "Ro'yxatdan o'tsangiz, kino boshlanadi"
+msgstr "Ro'yxatdan o'tsangiz, kino boshlanadi"
+
+msgid "Onlayn ko'rish uchun ro'yxatdan o'ting yoki akkauntingizga kiring."
+msgstr "Onlayn ko'rish uchun ro'yxatdan o'ting yoki akkauntingizga kiring."
+
+msgid "Неверный логин или пароль"
+msgstr "Неверный логин или пароль"
+
+msgid "Качество:"
+msgstr "Качество:"
+
+msgid "Запомнить меня"
+msgstr "Запомнить меня"
+
+msgid "Нет аккаунта?"
+msgstr "Нет аккаунта?"
+
+msgid "Уже есть аккаунт?"
+msgstr "Уже есть аккаунт?"
+
+msgid "Панель администратора"
+msgstr "Панель администратора"
+
+msgid "Статистика"
+msgstr "Статистика"
+
+msgid "Фильмы"
+msgstr "Фильмы"
+
+msgid "Прямой эфир"
+msgstr "Прямой эфир"
+
+msgid "Пользователи"
+msgstr "Пользователи"
+
+msgid "Подписки"
+msgstr "Подписки"
+
+msgid "Тарифы"
+msgstr "Тарифы"
+
+msgid "Язык"
+msgstr "Язык"
+
+msgid "Привет"
+msgstr "Привет"
+
+msgid "Комментарии"
+msgstr "Комментарии"
+
+msgid "Активные подписчики"
+msgstr "Активные подписчики"
+
+msgid "Доход (сум)"
+msgstr "Доход (сум)"
+
+msgid "Категории"
+msgstr "Категории"
+
+msgid "Прямые эфиры"
+msgstr "Прямые эфиры"
+
+msgid "Сейчас в эфире"
+msgstr "Сейчас в эфире"
+
+msgid "Последние пользователи"
+msgstr "Последние пользователи"
+
+msgid "Дата"
+msgstr "Дата"
+
+msgid "Нет пользователей"
+msgstr "Нет пользователей"
+
+msgid "Смотреть все"
+msgstr "Смотреть все"
+
+msgid "Последние фильмы"
+msgstr "Последние фильмы"
+
+msgid "Название"
+msgstr "Название"
+
+msgid "Категория"
+msgstr "Категория"
+
+msgid "Рейтинг"
+msgstr "Рейтинг"
+
+msgid "Нет фильмов"
+msgstr "Нет фильмов"
+
+msgid "Самые популярные фильмы"
+msgstr "Самые популярные фильмы"
+
+msgid "Последние подписки"
+msgstr "Последние подписки"
+
+msgid "Пользователь"
+msgstr "Пользователь"
+
+msgid "Тариф"
+msgstr "Тариф"
+
+msgid "Статус"
+msgstr "Статус"
+
+msgid "Активна"
+msgstr "Активна"
+
+msgid "Истекла"
+msgstr "Истекла"
+
+msgid "Нет подписок"
+msgstr "Нет подписок"
+
+msgid "Список фильмов"
+msgstr "Список фильмов"
+
+msgid "Добавить фильм"
+msgstr "Добавить фильм"
+
+msgid "Поиск по названию фильма..."
+msgstr "Поиск по названию фильма..."
+
+msgid "Постер"
+msgstr "Постер"
+
+msgid "Действия"
+msgstr "Действия"
+
+msgid "Редактировать"
+msgstr "Редактировать"
+
+msgid "Удалить"
+msgstr "Удалить"
+
+msgid "Фильм не найден"
+msgstr "Фильм не найден"
+
+msgid "Список пользователей"
+msgstr "Список пользователей"
+
+msgid "Поиск по логину..."
+msgstr "Поиск по логину..."
+
+msgid "Имя"
+msgstr "Имя"
+
+msgid "Подписка"
+msgstr "Подписка"
+
+msgid "Роль"
+msgstr "Роль"
+
+msgid "Зарегистрирован"
+msgstr "Зарегистрирован"
+
+msgid "Подписчик"
+msgstr "Подписчик"
+
+msgid "Без подписки"
+msgstr "Без подписки"
+
+msgid "Обычный"
+msgstr "Обычный"
+
+msgid "Пользователь не найден"
+msgstr "Пользователь не найден"
+
+msgid "Добавить подписку"
+msgstr "Добавить подписку"
+
+msgid "Все"
+msgstr "Все"
+
+msgid "Активные"
+msgstr "Активные"
+
+msgid "Истекшие"
+msgstr "Истекшие"
+
+msgid "Начало"
+msgstr "Начало"
+
+msgid "Окончание"
+msgstr "Окончание"
+
+msgid "Оплата"
+msgstr "Оплата"
+
+msgid "сум"
+msgstr "сум"
+
+msgid "Подписка не найдена"
+msgstr "Подписка не найдена"
+
+msgid "Тарифные планы"
+msgstr "Тарифные планы"
+
+msgid "Добавить тариф"
+msgstr "Добавить тариф"
+
+msgid "дней"
+msgstr "дней"
+
+msgid "подписчиков"
+msgstr "подписчиков"
+
+msgid "Активен"
+msgstr "Активен"
+
+msgid "Неактивен"
+msgstr "Неактивен"
+
+msgid "Нет тарифов."
+msgstr "Нет тарифов."
+
+msgid "Добавьте первый тариф"
+msgstr "Добавьте первый тариф"
+
+msgid "Добавить эфир"
+msgstr "Добавить эфир"
+
+msgid "Поиск по названию эфира..."
+msgstr "Поиск по названию эфира..."
+
+msgid "Смотреть"
+msgstr "Смотреть"
+
+msgid "Прямой эфир не найден"
+msgstr "Прямой эфир не найден"
+
+msgid "Назад"
+msgstr "Назад"
+
+msgid "Качества видео"
+msgstr "Качества видео"
+
+msgid "Загрузите видеофайл для каждого качества (.mp4, .webm, .mkv)"
+msgstr "Загрузите видеофайл для каждого качества (.mp4, .webm, .mkv)"
+
+msgid "Сохранить"
+msgstr "Сохранить"
+
+msgid "Удаление фильма"
+msgstr "Удаление фильма"
+
+msgid "Вы уверены, что хотите удалить фильм"
+msgstr "Вы уверены, что хотите удалить фильм"
+
+msgid "Вы уверены, что хотите удалить"
+msgstr "Вы уверены, что хотите удалить"
+
+msgid "Это действие нельзя отменить."
+msgstr "Это действие нельзя отменить."
+
+msgid "Да, удалить"
+msgstr "Да, удалить"
+
+msgid "Отмена"
+msgstr "Отмена"
+
+msgid "Stream URL: может быть в формате .m3u8 (HLS) или .mp4"
+msgstr "Stream URL: может быть в формате .m3u8 (HLS) или .mp4"
+
+msgid "Удаление эфира"
+msgstr "Удаление эфира"
+
+msgid "Редактировать фильм"
+msgstr "Редактировать фильм"
+
+msgid "Добавить прямой эфир"
+msgstr "Добавить прямой эфир"
+
+msgid "Редактировать прямой эфир"
+msgstr "Редактировать прямой эфир"
+
+msgid "Фильм успешно добавлен!"
+msgstr "Фильм успешно добавлен!"
+
+msgid "Фильм обновлён!"
+msgstr "Фильм обновлён!"
+
+msgid "Фильм удалён!"
+msgstr "Фильм удалён!"
+
+msgid "Подписка добавлена!"
+msgstr "Подписка добавлена!"
+
+msgid "Прямой эфир добавлен!"
+msgstr "Прямой эфир добавлен!"
+
+msgid "Прямой эфир обновлён!"
+msgstr "Прямой эфир обновлён!"
+
+msgid "Прямой эфир удалён!"
+msgstr "Прямой эфир удалён!"
+
+msgid "Тариф добавлен!"
+msgstr "Тариф добавлен!"
+
+msgid "Разделы"
+msgstr "Разделы"
+
+msgid "Разделы сайта"
+msgstr "Разделы сайта"
+
+msgid "Добавить раздел"
+msgstr "Добавить раздел"
+
+msgid ""
+"Bu bo'limlar sayt navbarida ko'rinadi (Filmlar, Seriallar, Multfilmlar va "
+"h.k.)"
+msgstr ""
+"Bu bo'limlar sayt navbarida ko'rinadi (Filmlar, Seriallar, Multfilmlar va "
+"h.k.)"
+
+msgid "Название (RU)"
+msgstr "Название (RU)"
+
+msgid "Фильмов"
+msgstr "Фильмов"
+
+msgid "Скрыт"
+msgstr "Скрыт"
+
+msgid "Разделы не найдены"
+msgstr "Разделы не найдены"
+
+msgid "Slug — URL uchun (masalan: serialy, multfilmy)"
+msgstr "Slug — URL uchun (masalan: serialy, multfilmy)"
+
+msgid "Удаление раздела"
+msgstr "Удаление раздела"
+
+msgid "Вы уверены, что хотите удалить раздел"
+msgstr "Вы уверены, что хотите удалить раздел"
+
+msgid "В этом разделе есть фильмы — удаление невозможно."
+msgstr "В этом разделе есть фильмы — удаление невозможно."
+
+msgid "Редактировать раздел"
+msgstr "Редактировать раздел"
+
+msgid "Раздел добавлен!"
+msgstr "Раздел добавлен!"
+
+msgid "Раздел обновлён!"
+msgstr "Раздел обновлён!"
+
+msgid "Раздел удалён!"
+msgstr "Раздел удалён!"
+
+msgid "Нельзя удалить: в разделе есть фильмы!"
+msgstr "Нельзя удалить: в разделе есть фильмы!"
+
+msgid "Ro'yxatdan muvaffaqiyatli o'tdingiz!"
+msgstr "Ro'yxatdan muvaffaqiyatli o'tdingiz!"
+
+msgid "Ro'yxatdan o'tishda xato. Quyidagi maydonlarni tekshiring."
+msgstr "Ro'yxatdan o'tishda xato. Quyidagi maydonlarni tekshiring."
+
+msgid "Bu email allaqachon ro'yxatdan o'tgan"
+msgstr "Bu email allaqachon ro'yxatdan o'tgan"
+
+msgid "Bu foydalanuvchi nomi band"
+msgstr "Bu foydalanuvchi nomi band"
+
+msgid "Kamida 6 ta belgi"
+msgstr "Kamida 6 ta belgi"
+
+msgid "Parol kamida 6 ta belgidan iborat bo'lishi kerak"
+msgstr "Parol kamida 6 ta belgidan iborat bo'lishi kerak"
+
+msgid "Видео 480p"
+msgstr "Видео 480p"
+
+msgid "Видео 720p"
+msgstr "Видео 720p"
+
+msgid "Видео 1080p"
+msgstr "Видео 1080p"
+
+msgid "Видео 4K"
+msgstr "Видео 4K"
+
+msgid "Название (RU)"
+msgstr "Название (RU)"
+
+msgid "Название (UZ)"
+msgstr "Название (UZ)"
+
+msgid "Название (EN)"
+msgstr "Название (EN)"
+
+msgid "Slug (URL)"
+msgstr "Slug (URL)"
+
+msgid "Раздел"
+msgstr "Раздел"
+
+msgid "Постер"
+msgstr "Постер"
+
+msgid "Описание"
+msgstr "Описание"
+
+msgid "Краткое описание"
+msgstr "Краткое описание"
+
+msgid "Жанры"
+msgstr "Жанры"
+
+msgid "Актёры"
+msgstr "Актёры"
+
+msgid "Качество"
+msgstr "Качество"
+
+msgid "Длительность"
+msgstr "Длительность"
+
+msgid "Год"
+msgstr "Год"
+
+msgid "Страна"
+msgstr "Страна"
+
+msgid "Premium"
+msgstr "Premium"
+
+msgid "Рейтинг"
+msgstr "Рейтинг"
+
+msgid "Slug yaratib bo'lmadi. Qo'lda kiriting."
+msgstr "Slug yaratib bo'lmadi. Qo'lda kiriting."
+
+msgid "Bu slug allaqachon mavjud."
+msgstr "Bu slug allaqachon mavjud."
+
+msgid "Joriy fayl: %(file)s"
+msgstr "Joriy fayl: %(file)s"
+
+msgid "Показать в меню"
+msgstr "Показать в меню"
+
+msgid "Порядок"
+msgstr "Порядок"
+
+msgid "Название"
+msgstr "Название"
+
+msgid "URL прямого эфира"
+msgstr "URL прямого эфира"
+
+msgid "Сейчас в эфире"
+msgstr "Сейчас в эфире"
+
+msgid "Дата окончания"
+msgstr "Дата окончания"
+
+msgid "Сумма оплаты"
+msgstr "Сумма оплаты"
+
+msgid "Название тарифа"
+msgstr "Название тарифа"
+
+msgid "Цена (сум)"
+msgstr "Цена (сум)"
+
+msgid "Срок (дней)"
+msgstr "Срок (дней)"
+
+msgid "Fayl tanlang"
+msgstr "Fayl tanlang"
+
+msgid "Подписчики могут смотреть прямые эфиры."
+msgstr "Подписчики могут смотреть прямые эфиры."
+
+msgid "Для просмотра эфира нужна активная подписка."
+msgstr "Для просмотра эфира нужна активная подписка."
+
+msgid "Войдите и оформите подписку для просмотра эфира."
+msgstr "Войдите и оформите подписку для просмотра эфира."
+
+msgid "В эфире"
+msgstr "В эфире"
+
+msgid "Запланирован"
+msgstr "Запланирован"
+
+msgid "Прямых эфиров пока нет."
+msgstr "Прямых эфиров пока нет."
+
+msgid "Ссылка на эфир ещё не добавлена. Вернитесь позже."
+msgstr "Ссылка на эфир ещё не добавлена. Вернитесь позже."
+
+msgid "Требуется подписка"
+msgstr "Требуется подписка"
+
+msgid "Для просмотра эфира нужна активная подписка. Выберите тариф ниже."
+msgstr "Для просмотра эфира нужна активная подписка. Выберите тариф ниже."
+
+msgid "Тарифы пока недоступны. Свяжитесь с администратором."
+msgstr "Тарифы пока недоступны. Свяжитесь с администратором."
+
+msgid "Все эфиры"
+msgstr "Все эфиры"
+
+msgid "После регистрации фильм начнётся"
+msgstr "После регистрации фильм начнётся"
+
+msgid "Для просмотра онлайн зарегистрируйтесь или войдите в аккаунт."
+msgstr "Для просмотра онлайн зарегистрируйтесь или войдите в аккаунт."
+
+msgid "Obuna orqali barcha kinolar va jonli efirlarni tomosha qiling."
+msgstr "Obuna orqali barcha kinolar va jonli efirlarni tomosha qiling."
+
+msgid "Sizda faol obuna mavjud. Kinolardan bahramand bo'ling!"
+msgstr "Sizda faol obuna mavjud. Kinolardan bahramand bo'ling!"
+
+msgid "Оплатить"
+msgstr "Оплатить"
+
+msgid "To'lov tizimi sozlanmagan"
+msgstr "To'lov tizimi sozlanmagan"
+
+msgid "To'lov muvaffaqiyatli!"
+msgstr "To'lov muvaffaqiyatli!"
+
+msgid "Obuna faollashtirildi. Endi kinolarni tomosha qilishingiz mumkin."
+msgstr "Obuna faollashtirildi. Endi kinolarni tomosha qilishingiz mumkin."
+
+msgid "To'lov qayta ishlanmoqda. Bir necha daqiqadan so'ng qayta tekshiring."
+msgstr "To'lov qayta ishlanmoqda. Bir necha daqiqadan so'ng qayta tekshiring."
+
+msgid "To'lov amalga oshmadi"
+msgstr "To'lov amalga oshmadi"
+
+msgid "Qayta urinib ko'ring yoki boshqa to'lov usulini tanlang."
+msgstr "Qayta urinib ko'ring yoki boshqa to'lov usulini tanlang."
+
+msgid "Kinolarni ko'rish uchun obuna oling."
+msgstr "Kinolarni ko'rish uchun obuna oling."
+
+msgid "Click to'lov tizimi sozlanmagan. Admin bilan bog'laning."
+msgstr "Click to'lov tizimi sozlanmagan. Admin bilan bog'laning."
+
+msgid "Payme to'lov tizimi sozlanmagan. Admin bilan bog'laning."
+msgstr "Payme to'lov tizimi sozlanmagan. Admin bilan bog'laning."
+
+msgid "Asosiy bo'lim"
+msgstr "Asosiy bo'lim"
+
+msgid "— Asosiy bo'lim (yuqori daraja) —"
+msgstr "— Asosiy bo'lim (yuqori daraja) —"
+
+msgid "Ichki bo'lim faqat asosiy bo'lim ichida bo'lishi mumkin."
+msgstr "Ichki bo'lim faqat asosiy bo'lim ichida bo'lishi mumkin."
+
+msgid "Bo'lim o'zining ichki bo'limi bo'la olmaydi."
+msgstr "Bo'lim o'zining ichki bo'limi bo'la olmaydi."
+
+msgid "Ichki bo'limlari bor bo'limni boshqa bo'lim ichiga qo'yib bo'lmaydi."
+msgstr "Ichki bo'limlari bor bo'limni boshqa bo'lim ichiga qo'yib bo'lmaydi."
+
+msgid "Ichki bo'lim qo'shish"
+msgstr "Ichki bo'lim qo'shish"
+
+msgid "Ichki bo'limlar"
+msgstr "Ichki bo'limlar"
+
+msgid "Ichki bo'limlar hali yo'q."
+msgstr "Ichki bo'limlar hali yo'q."
+
+msgid "Ichki"
+msgstr "Ichki"
+
+msgid ""
+"Asosiy bo'limlar navbarida ko'rinadi. Ichki bo'limlarni bo'lim tahrirlash "
+"sahifasidan qo'shing."
+msgstr ""
+"Asosiy bo'limlar navbarida ko'rinadi. Ichki bo'limlarni bo'lim tahrirlash "
+"sahifasidan qo'shing."
+
+msgid "Нельзя удалить: ichki bo'limlar mavjud!"
+msgstr "Нельзя удалить: ichki bo'limlar mavjud!"
+
+msgid "Bu bo'limda ichki bo'limlar bor — o'chirib bo'lmaydi."
+msgstr "Bu bo'limda ichki bo'limlar bor — o'chirib bo'lmaydi."
+
+msgid "Obuna olish"
+msgstr "Obuna olish"
+
+msgid "Kinolarni ko'rish uchun obuna sotib oling."
+msgstr "Kinolarni ko'rish uchun obuna sotib oling."
+
+msgid "Jonli efirni ko'rish uchun obuna sotib oling."
+msgstr "Jonli efirni ko'rish uchun obuna sotib oling."
+
+msgid "Obuna sotib olgandan keyin barcha kinolar va jonli efirlar ochiladi."
+msgstr "Obuna sotib olgandan keyin barcha kinolar va jonli efirlar ochiladi."
+
+msgid "Obuna hozircha mavjud emas"
+msgstr "Obuna hozircha mavjud emas"
+
+msgid "Keyinroq qayting yoki admin bilan bog'laning."
+msgstr "Keyinroq qayting yoki admin bilan bog'laning."
+
+msgid "Muddat (kun)"
+msgstr "Muddat (kun)"
+
+msgid "Доступ к фильмам"
+msgstr "Доступ к фильмам"
+
+msgid "Доступ к прямому эфиру"
+msgstr "Доступ к прямому эфиру"
+
+msgid "Kamida bitta kirish huquqi tanlanishi kerak."
+msgstr "Kamida bitta kirish huquqi tanlanishi kerak."
+
+msgid "Har bir tarif uchun muddat, narx va kirish huquqlarini belgilang."
+msgstr "Har bir tarif uchun muddat, narx va kirish huquqlarini belgilang."
+
+msgid "Kirish huquqlari"
+msgstr "Kirish huquqlari"
+
+msgid "kun"
+msgstr "kun"
+
+msgid "Asosiy ma'lumotlar"
+msgstr "Asosiy ma'lumotlar"
+
+msgid "Foydalanuvchi nimalarni ko'ra olishini belgilang."
+msgstr "Foydalanuvchi nimalarni ko'ra olishini belgilang."
+
+msgid "Barcha kinolarni onlayn ko'rish"
+msgstr "Barcha kinolarni onlayn ko'rish"
+
+msgid "Jonli efirlarni tomosha qilish"
+msgstr "Jonli efirlarni tomosha qilish"
+
+msgid "Foydalanuvchilar sotib olishi mumkin"
+msgstr "Foydalanuvchilar sotib olishi mumkin"
+
+msgid "Редактировать тариф"
+msgstr "Редактировать тариф"
+
+msgid "Удаление тарифа"
+msgstr "Удаление тарифа"
+
+msgid "Вы уверены, что хотите удалить тариф"
+msgstr "Вы уверены, что хотите удалить тариф"
+
+msgid "Bu tarifda faol obunachilar bor — o'chirib bo'lmaydi."
+msgstr "Bu tarifda faol obunachilar bor — o'chirib bo'lmaydi."
+
+msgid "Тариф обновлён!"
+msgstr "Тариф обновлён!"
+
+msgid "Тариф удалён!"
+msgstr "Тариф удалён!"
+
+msgid "Kinolar"
+msgstr "Kinolar"

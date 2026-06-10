@@ -1,0 +1,9 @@
+Django>=3.2.6,<5.0
+social-auth-app-django>=5.0.0
+Pillow>=10.0.0
+transliterate>=1.10.2
+polib>=1.2.0
+gunicorn>=21.0.0
+whitenoise>=6.5.0
+dj-database-url>=2.1.0
+psycopg2-binary>=2.9.9

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:60px 20px;text-align:center">
+    <div style="font-size:56px;margin-bottom:16px">✕</div>
+    <h2 style="color:#fff">{% trans 'To\'lov amalga oshmadi' %}</h2>
+    <p style="color:#9ca3af;margin:16px 0 24px">{{ message|default:_('Qayta urinib ko\'ring yoki boshqa to\'lov usulini tanlang.') }}</p>
+    <a href="{% url 'movie:subscribe' %}" class="btn btn-primary" style="background:#e50914;border:none">{% trans 'Obuna olish' %}</a>
+</div>
+{% endblock %}

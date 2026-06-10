@@ -1,0 +1,64 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Тарифы' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>📋 {% trans 'Тарифные планы' %}</h1>
+    <a href="{% url 'movie:admin_plan_add' %}" class="btn-admin">+ {% trans 'Добавить тариф' %}</a>
+</div>
+
+<p style="color:#9ca3af;font-size:14px;margin-bottom:20px">{% trans 'Har bir tarif uchun muddat, narx va kirish huquqlarini belgilang.' %}</p>
+
+<div class="panel-card" style="padding:0;overflow:hidden">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{% trans 'Название тарифа' %}</th>
+                <th>{% trans 'Turi' %}</th>
+                <th>{% trans 'Цена (сум)' %}</th>
+                <th>{% trans 'Muddat (kun)' %}</th>
+                <th>{% trans 'Kirish huquqlari' %}</th>
+                <th>{% trans 'Описание' %}</th>
+                <th>{% trans 'подписчиков' %}</th>
+                <th>{% trans 'Статус' %}</th>
+                <th>{% trans 'Действия' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for plan in plans %}
+        <tr>
+            <td>{{ plan.order }}</td>
+            <td><strong>{{ plan.name }}</strong></td>
+            <td>
+                {% if plan.is_corporate %}
+                <span class="badge-staff">{% trans 'Korporativ' %}</span>
+                {% else %}
+                <span style="color:#9ca3af">{% trans 'Shaxsiy' %}</span>
+                {% endif %}
+            </td>
+            <td style="color:#e50914;font-weight:700">{{ plan.price }} {% trans 'сум' %}</td>
+            <td>{{ plan.duration_days }} {% trans 'kun' %}</td>
+            <td>
+                {% if plan.access_movies %}<span class="badge-active" style="margin-right:4px">{% trans 'Kinolar' %}</span>{% endif %}
+                {% if plan.access_live %}<span class="badge-staff">{% trans 'Jonli efir' %}</span>{% endif %}
+                {% if not plan.access_movies and not plan.access_live %}—{% endif %}
+            </td>
+            <td style="max-width:200px;color:#9ca3af;font-size:13px">{{ plan.description|default:"—"|truncatewords:12 }}</td>
+            <td>{{ plan.subscriber_count }}</td>
+            <td>
+                {% if plan.is_active %}<span class="badge-active">{% trans 'Активен' %}</span>
+                {% else %}<span class="badge-expired">{% trans 'Неактивен' %}</span>{% endif %}
+            </td>
+            <td>
+                <a href="{% url 'movie:admin_plan_edit' plan.pk %}" class="btn-outline btn-sm">{% trans 'Редактировать' %}</a>
+                <a href="{% url 'movie:admin_plan_delete' plan.pk %}" class="btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c">{% trans 'Удалить' %}</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="10" style="text-align:center;padding:32px">{% trans 'Нет тарифов.' %} <a href="{% url 'movie:admin_plan_add' %}">{% trans 'Добавьте первый тариф' %}</a></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

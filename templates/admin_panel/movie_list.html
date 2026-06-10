@@ -1,0 +1,60 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Фильмы' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🎥 {% trans 'Список фильмов' %}</h1>
+    <a href="{% url 'movie:admin_movie_add' %}" class="btn-admin">+ {% trans 'Добавить фильм' %}</a>
+</div>
+
+<form class="search-bar" method="get">
+    <input type="text" name="q" value="{{ q }}" placeholder="{% trans 'Поиск по названию фильма...' %}">
+    <button type="submit" class="btn-admin">{% trans 'Поиск' %}</button>
+</form>
+
+<div class="panel-card" style="padding:0; overflow:hidden">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Постер' %}</th>
+                <th>{% trans 'Название' %}</th>
+                <th>{% trans 'Категория' %}</th>
+                <th>{% trans 'Год' %}</th>
+                <th>{% trans 'Рейтинг' %}</th>
+                <th>Premium</th>
+                <th>{% trans 'Действия' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for movie in page_obj %}
+        <tr>
+            <td>
+                {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" class="poster-thumb" alt="">
+                {% else %}—{% endif %}
+            </td>
+            <td><strong>{{ movie.title }}</strong></td>
+            <td>{{ movie.category.name }}</td>
+            <td>{{ movie.year }}</td>
+            <td>{{ movie.rating }}</td>
+            <td>{% if movie.is_premium %}<span class="badge-premium">Premium</span>{% else %}—{% endif %}</td>
+            <td>
+                <a href="{% url 'movie:admin_movie_edit' movie.pk %}" class="btn-outline btn-sm">{% trans 'Редактировать' %}</a>
+                <a href="{% url 'movie:admin_movie_delete' movie.pk %}" class="btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c">{% trans 'Удалить' %}</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:32px">{% trans 'Фильм не найден' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pagination" style="margin-top:16px">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&q={{ q }}">←</a>{% endif %}
+    <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&q={{ q }}">→</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

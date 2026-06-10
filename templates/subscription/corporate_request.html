@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:32px 20px;max-width:520px">
+    <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:40px;margin-bottom:8px">🏢</div>
+        <h1 style="color:#fff;margin:0 0 8px">{% trans 'Korporativ so\'rov' %}</h1>
+        <p style="color:#9ca3af;font-size:14px">{{ plan.name }} · {% trans 'gacha' %} {{ plan.max_seats }} {% trans 'xodim' %}</p>
+    </div>
+
+    <form method="post" style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:24px">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div style="color:#e74c3c;margin-bottom:16px">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+
+        {% for field in form %}
+        <div class="form-group" style="margin-bottom:16px">
+            <label style="color:#e2e2e2;display:block;margin-bottom:6px">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+            {{ field }}
+            {% if field.errors %}<div style="color:#e74c3c;font-size:12px;margin-top:4px">{{ field.errors.0 }}</div>{% endif %}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary" style="width:100%;background:#e50914;border:none;padding:14px;font-weight:600;font-size:16px;margin-top:8px">
+            {% trans 'So\'rov yuborish' %}
+        </button>
+    </form>
+
+    <div style="text-align:center;margin-top:20px">
+        <a href="{% url 'movie:subscribe' %}" style="color:#9ca3af">← {% trans 'Назад' %}</a>
+    </div>
+</div>
+
+<style>
+    #main input.form-control, #main textarea.form-control {
+        width: 100%; background: #0d0f14; border: 1px solid #2a2d3a; color: #fff;
+        border-radius: 6px; padding: 10px 12px;
+    }
+</style>
+{% endblock %}

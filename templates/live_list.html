@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block content %}
+<div id="main" class="container">
+    <h1>{% trans 'Прямой эфир' %}</h1>
+    <p style="color:#666;margin-bottom:24px">{% trans 'Подписчики могут смотреть прямые эфиры.' %}</p>
+
+    {% if not has_live_access %}
+    <div class="alert alert-warning" style="border-radius:8px">
+        {% if request.user.is_authenticated %}
+            {% trans 'Для просмотра эфира нужна активная подписка.' %}
+            <a href="{% url 'movie:subscribe' %}">{% trans 'Obuna olish' %}</a>
+        {% else %}
+            {% trans 'Войдите и оформите подписку для просмотра эфира.' %}
+            <a href="{% url 'movie:login' %}">{% trans 'Вход' %}</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="items">
+        {% for stream in streams %}
+        <div class="item">
+            <a href="{% url 'movie:live_watch' stream.slug %}">
+                {% if stream.poster %}
+                <img src="{{ stream.poster.url }}" alt="{{ stream.title }}">
+                {% else %}
+                <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0a10,#3d1020);display:flex;align-items:center;justify-content:center;color:#fff;font-size:48px">📡</div>
+                {% endif %}
+                {% if stream.is_live %}
+                <span style="position:absolute;top:8px;left:8px;background:#e74c3c;color:#fff;padding:4px 10px;border-radius:4px;font-size:12px;font-weight:700;z-index:2">LIVE</span>
+                {% endif %}
+            </a>
+            <div class="info">
+                <div class="title">{{ stream.title }}</div>
+                <div class="desc">
+                    {% if stream.is_live %}{% trans 'В эфире' %}{% else %}{% trans 'Запланирован' %}{% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column:1/-1;padding:40px;text-align:center;color:#888">
+            {% trans 'Прямых эфиров пока нет.' %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

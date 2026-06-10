@@ -1,0 +1,64 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{{ org.company_name }} — {% trans 'A\'zolar' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ org.company_name }}</h1>
+    <a href="{% url 'movie:admin_corporate_orgs' %}" class="btn-outline">← {% trans 'Назад' %}</a>
+</div>
+
+<div style="color:#9ca3af;margin-bottom:20px">
+    {{ org.plan.name }} · {{ org.members.count }} / {{ org.max_seats }} {% trans 'xodim' %} ·
+    {% trans 'Tugash' %}: {{ org.end_date|date:"d.m.Y" }}
+</div>
+
+<div class="panel-card" style="max-width:400px;margin-bottom:24px">
+    <h4 style="color:#fff;margin:0 0 16px">{% trans 'A\'zo qo\'shish' %}</h4>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add">
+        <div class="form-group">
+            {{ form.username }}
+            {% if form.username.errors %}<div style="color:#e74c3c;font-size:12px">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+        <button type="submit" class="btn-admin" {% if org.seats_available <= 0 %}disabled{% endif %}>
+            {% trans 'Qo\'shish' %}
+        </button>
+        {% if org.seats_available <= 0 %}
+        <p style="color:#e74c3c;font-size:13px;margin-top:8px">{% trans 'Barcha o\'rinlar band.' %}</p>
+        {% endif %}
+    </form>
+</div>
+
+<div class="panel-card" style="padding:0;overflow:hidden">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Foydalanuvchi' %}</th>
+                <th>{% trans 'Email' %}</th>
+                <th>{% trans 'Qo\'shilgan' %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for m in members %}
+        <tr>
+            <td>{{ m.user.username }}</td>
+            <td>{{ m.user.email|default:"—" }}</td>
+            <td style="color:#9ca3af;font-size:13px">{{ m.added_at|date:"d.m.Y" }}</td>
+            <td>
+                <form method="post" style="display:inline" onsubmit="return confirm('{% trans 'O\'chirishni tasdiqlaysizmi?' %}')">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="remove">
+                    <input type="hidden" name="member_id" value="{{ m.pk }}">
+                    <button type="submit" class="btn-outline btn-sm" style="color:#e74c3c">{% trans 'Удалить' %}</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;padding:24px">{% trans 'A\'zolar yo\'q.' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

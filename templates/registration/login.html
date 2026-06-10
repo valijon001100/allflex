@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block content %}
+{% include 'registration/auth_glass_styles.html' %}
+
+<div class="glass-auth-wrap">
+    <div class="glass-card">
+        <img src="{% static 'static/images/alflix-logo.png' %}" alt="AL-FLIX" class="glass-auth-logo">
+        <h2>{% trans 'Вход' %}</h2>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+            <div class="glass-field">
+                <span class="glass-field-icon">👤</span>
+                <input type="text" class="form-control glass-input" name="username" id="email"
+                    maxlength="50" placeholder="{% trans 'Электронная почта' %}" required>
+            </div>
+
+            <div class="glass-field">
+                <span class="glass-field-icon">🔒</span>
+                <input type="password" class="form-control glass-input" name="password" id="password"
+                    maxlength="100" placeholder="{% trans 'Пароль' %}" required>
+                <button type="button" class="glass-toggle-pwd" onclick="togglePassword(this)" aria-label="toggle password">👁‍🗨</button>
+            </div>
+
+            <div class="glass-row">
+                <label class="glass-remember">
+                    <input type="checkbox" name="remember">
+                    {% trans 'Запомнить меня' %}
+                </label>
+                <a href="{% url 'movie:reset_password' %}" class="glass-forgot">{% trans 'Забыли пароль?' %}</a>
+            </div>
+
+            <button type="submit" class="glass-btn">{% trans 'Вход' %}</button>
+        </form>
+
+        <div class="glass-footer">
+            {% trans 'Нет аккаунта?' %} <a href="{% url 'movie:register' %}">{% trans 'Регистрация' %}</a>
+        </div>
+
+        <div class="glass-social">
+            <div class="glass-social-title">{% trans 'или через' %}</div>
+            <div class="glass-social-btns">
+                <a href="{% url 'social:begin' 'facebook' %}">Facebook</a>
+                <a href="{% url 'social:begin' 'google-oauth2' %}">Google</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:60px 20px;text-align:center">
+    <div style="font-size:56px;margin-bottom:16px">✓</div>
+    <h2 style="color:#fff">{% trans 'To\'lov muvaffaqiyatli!' %}</h2>
+    {% if has_subscription %}
+    <p style="color:#9ca3af;margin:16px 0 24px">{% trans 'Obuna faollashtirildi. Endi kinolarni tomosha qilishingiz mumkin.' %}</p>
+    <a href="{% url 'movie:home' %}" class="btn btn-primary" style="background:#e50914;border:none">{% trans 'Фильмы' %}</a>
+    {% else %}
+    <p style="color:#9ca3af;margin:16px 0 24px">{% trans 'To\'lov qayta ishlanmoqda. Bir necha daqiqadan so\'ng qayta tekshiring.' %}</p>
+    <a href="{% url 'movie:home' %}" class="btn btn-default">{% trans 'Назад' %}</a>
+    {% endif %}
+</div>
+{% endblock %}

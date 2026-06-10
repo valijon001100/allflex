@@ -1,0 +1,71 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Korporativ so\'rovlar' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🏢 {% trans 'Korporativ so\'rovlar' %}</h1>
+    <a href="{% url 'movie:admin_corporate_orgs' %}" class="btn-outline">{% trans 'Tashkilotlar' %}</a>
+</div>
+
+<div style="margin-bottom:20px;display:flex;gap:8px;flex-wrap:wrap">
+    <a href="?status=pending" class="btn-outline btn-sm {% if status == 'pending' %}active{% endif %}">
+        {% trans 'Kutilmoqda' %} ({{ pending_count }})
+    </a>
+    <a href="?status=approved" class="btn-outline btn-sm {% if status == 'approved' %}active{% endif %}">{% trans 'Tasdiqlangan' %}</a>
+    <a href="?status=rejected" class="btn-outline btn-sm {% if status == 'rejected' %}active{% endif %}">{% trans 'Rad etilgan' %}</a>
+</div>
+
+<div class="panel-card" style="padding:0;overflow:hidden">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Kompaniya' %}</th>
+                <th>{% trans 'Mas\'ul' %}</th>
+                <th>{% trans 'Email' %}</th>
+                <th>{% trans 'Telefon' %}</th>
+                <th>{% trans 'Tarif' %}</th>
+                <th>{% trans 'Xodimlar' %}</th>
+                <th>{% trans 'Sana' %}</th>
+                <th>{% trans 'Действия' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for req in page_obj %}
+        <tr>
+            <td><strong>{{ req.company_name }}</strong></td>
+            <td>{{ req.contact_name }}</td>
+            <td>{{ req.email }}</td>
+            <td>{{ req.phone }}</td>
+            <td>{{ req.plan.name }}</td>
+            <td>{{ req.seats_requested }}</td>
+            <td style="font-size:13px;color:#9ca3af">{{ req.created_at|date:"d.m.Y H:i" }}</td>
+            <td>
+                {% if req.status == 'pending' %}
+                <form method="post" action="{% url 'movie:admin_corporate_approve' req.pk %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-admin btn-sm">{% trans 'Tasdiqlash' %}</button>
+                </form>
+                <a href="{% url 'movie:admin_corporate_reject' req.pk %}" class="btn-outline btn-sm" style="color:#e74c3c">{% trans 'Rad etish' %}</a>
+                {% else %}
+                <span class="badge-{% if req.status == 'approved' %}active{% else %}expired{% endif %}">{{ req.get_status_display }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% if req.message %}
+        <tr><td colspan="8" style="color:#9ca3af;font-size:13px;padding-top:0">{{ req.message }}</td></tr>
+        {% endif %}
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;padding:32px">{% trans 'So\'rovlar yo\'q.' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div style="margin-top:16px;text-align:center">
+    {% if page_obj.has_previous %}<a href="?status={{ status }}&page={{ page_obj.previous_page_number }}" class="btn-outline btn-sm">←</a>{% endif %}
+    <span style="color:#9ca3af;margin:0 12px">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?status={{ status }}&page={{ page_obj.next_page_number }}" class="btn-outline btn-sm">→</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

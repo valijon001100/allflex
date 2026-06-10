@@ -1,0 +1,213 @@
+{% load static i18n %}
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="propeller" content="cb81f2da55af57ca98a7e8c4701f7de8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="application-name" content="AL-FLIX">
+<meta name="theme-color" content="#000000">
+<meta name="msapplication-navbutton-color" content="#000000">
+<title>AL-FLIX</title>
+<link rel="dns-prefetch" href="#">
+<link rel="icon" href="{% static 'static/images/alflix-logo.png' %}" type="image/png">
+
+<link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=5" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=10" type="text/css">
+<style>
+#main .items, .items {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 18px 14px !important;
+    width: 100% !important;
+    margin: 0 0 20px !important;
+    padding: 0 !important;
+}
+#main .items .item, .items .item {
+    float: none !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative;
+    box-sizing: border-box;
+}
+#main .items .item > a, .items .item > a {
+    display: block; width: 100%; height: 0; padding-bottom: 150%;
+    overflow: hidden; position: relative; background: #d5d8de;
+}
+#main .items .item > a img, .items .item > a img {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+}
+#main .items .item .title, .items .item .title { font-size: 15px !important; }
+#main .items .item .desc, .items .item .desc { font-size: 13px !important; }
+#main .items .item .info, .items .item .info { min-height: 58px !important; padding: 10px 8px !important; }
+@media (max-width: 1200px) { #main .items, .items { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; } }
+@media (max-width: 992px) { #main .items, .items { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+@media (max-width: 768px) { #main .items, .items { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+.navbar-right .dropdown-toggle { color: #e2e2e2 !important; padding: 15px 12px; }
+.navbar-right .dropdown-toggle:hover, .navbar-right .dropdown-toggle:focus { color: #fff !important; background: rgba(255,255,255,.08); }
+.navbar-right .dropdown-menu { min-width: 160px; border-radius: 4px; margin-top: 0; }
+.navbar-right .dropdown-menu > li > a { padding: 10px 16px; color: #555; }
+.navbar-right .dropdown-menu > li > a:hover { background: #8b1f35; color: #fff; }
+.navbar-right .dropdown-menu > li.active > a { background: #f5f5f5; font-weight: 600; }
+.lang-code { font-size: 13px; font-weight: 600; letter-spacing: .5px; text-transform: lowercase; }
+.navbar-right .dropdown-menu .lang-code { font-weight: 500; }
+.navbar-right .lang-dropdown > .dropdown-toggle {
+    border-radius: 10px 0 0 0 !important;
+    padding: 12px 14px !important;
+}
+.navbar-right .lang-dropdown.open > .dropdown-toggle,
+.navbar-right .lang-dropdown > .dropdown-toggle:hover,
+.navbar-right .lang-dropdown > .dropdown-toggle:focus {
+    border-radius: 10px 0 0 0 !important;
+    background: rgba(229, 9, 20, 0.35) !important;
+    color: #fff !important;
+}
+.navbar-right .lang-dropdown .dropdown-menu {
+    left: 0;
+    right: auto;
+    min-width: 100%;
+    margin-top: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0 0 0 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+.navbar-right .lang-dropdown .dropdown-menu > li > a {
+    border-radius: 0;
+}
+.navbar-right .lang-dropdown .dropdown-menu > li:last-child > a {
+    border-radius: 0 0 0 10px;
+}
+</style>
+</head>
+<body>
+<script src="/static/static/js/jquery.js"></script>
+<script src="/static/static/js/bootstrap.js"></script>
+<script src="/static/static/js/master.js"></script>
+
+<div id="ad110695"></div>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-fixed-top .navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+                <img src="{% static 'static/images/alflix-logo.png' %}" alt="AL-FLIX" class="site-logo">
+            </a>
+        </div>
+
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                {% for cat in categories %}
+                     <li><a href="{{ cat.obj.get_absolute_url }}">{{ cat.name }}</a></li>
+                {% endfor %}
+                <li><a href="{% url 'movie:live_list' %}" style="color:#ff6b6b">{% trans 'Прямой эфир' %}</a></li>
+            </ul>
+
+            <div class="navbar-left">
+                <form action="{% url 'movie:search' %}" method="get" class="navbar-form" id="autocomplete_search_form">
+                    <div class="form-group">
+                        <input type="text" name="query"
+                        class="form-control" id="autocomplete_search"
+                        placeholder="{% trans 'Поиск' %}" autocomplete="off">
+                        <button type="submit">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown lang-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="lang-code">{% if LANGUAGE_CODE == 'uz' %}uz{% elif LANGUAGE_CODE == 'en' %}eng{% else %}ru{% endif %}</span>
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% if LANGUAGE_CODE != 'uz' %}
+                        <li><a href="#" onclick="setLang('uz');return false;"><span class="lang-code">uz</span></a></li>
+                        {% endif %}
+                        {% if LANGUAGE_CODE != 'ru' %}
+                        <li><a href="#" onclick="setLang('ru');return false;"><span class="lang-code">ru</span></a></li>
+                        {% endif %}
+                        {% if LANGUAGE_CODE != 'en' %}
+                        <li><a href="#" onclick="setLang('en');return false;"><span class="lang-code">eng</span></a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+                {% if request.user.is_authenticated %}
+                    {% if not request.user.is_staff %}
+                    <li><a href="{% url 'movie:likedMovies' %}" class="modal login">{% trans 'Избранное' %}</a></li>
+                    {% endif %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                            {{ request.user.username }} <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            {% if not request.user.is_staff %}
+                            <li><a href="{% url 'movie:my_subscription' %}">{% trans 'Mening obunam' %}</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'movie:logout' %}">{% trans 'Выход' %}</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'movie:login' %}" class="modal login">{% trans 'Вход' %}</a></li>
+                    <li><a href="{% url 'movie:register' %}" class="register">{% trans 'Регистрация' %}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<form id="lang-form" action="{% url 'set_language' %}" method="post" style="display:none">
+    {% csrf_token %}
+    <input name="next" type="hidden" value="{{ request.get_full_path }}">
+    <input name="language" type="hidden" id="lang-input">
+</form>
+<script>
+function setLang(code) {
+    document.getElementById('lang-input').value = code;
+    document.getElementById('lang-form').submit();
+}
+</script>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="message{% if message.tags %} message-{{ message.tags }}{% endif %}">
+        <div class="close"><a href="#" onclick="closeMessages()">x</a></div>
+        <div class="text">{{ message }}</div>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<script>
+function addLikedMovie(movie_id) {
+    let data = JSON.stringify(movie_id)
+    const xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            let status = JSON.parse(this.responseText)
+            if(status['status'] == 200){ alert("OK") }
+            else { window.location.href = "/login/" }
+        }
+    };
+    xhttp.open("GET", "/like/?data=" + data, true);
+    xhttp.send();
+}
+</script>
+</body>
+</html>

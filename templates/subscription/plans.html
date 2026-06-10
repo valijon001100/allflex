@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding-top:24px;padding-bottom:40px">
+    <h1 style="color:#fff;margin-bottom:8px">{% trans 'Тарифные планы' %}</h1>
+    <p style="color:#9ca3af;margin-bottom:28px">{% trans 'Obuna orqali barcha kinolar va jonli efirlarni tomosha qiling.' %}</p>
+
+    {% if has_subscription %}
+    <div class="alert alert-success" style="border-radius:8px">
+        {% trans 'Sizda faol obuna mavjud. Kinolardan bahramand bo\'ling!' %}
+    </div>
+    {% endif %}
+
+    <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center">
+        {% for plan in plans %}
+        <div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:28px;min-width:260px;max-width:320px;text-align:center">
+            <h3 style="color:#fff;margin:0 0 8px">{{ plan.name }}</h3>
+            <div style="color:#e50914;font-size:32px;font-weight:700;margin:12px 0">{{ plan.price }} {% trans 'сум' %}</div>
+            <div style="color:#9ca3af;font-size:14px;margin-bottom:16px">{{ plan.duration_days }} {% trans 'дней' %}</div>
+            {% if plan.description %}
+            <p style="color:#9ca3af;font-size:13px;margin-bottom:20px">{{ plan.description }}</p>
+            {% endif %}
+
+            {% if not has_subscription %}
+            {% if click_ready %}
+            <form method="post" action="{% url 'movie:payment_checkout' %}" style="margin-bottom:10px">
+                {% csrf_token %}
+                <input type="hidden" name="plan_id" value="{{ plan.pk }}">
+                <input type="hidden" name="provider" value="click">
+                <button type="submit" class="btn btn-primary" style="width:100%;background:#2b7cff;border:none;font-weight:600">
+                    Click — {% trans 'Оплатить' %}
+                </button>
+            </form>
+            {% endif %}
+            {% if payme_ready %}
+            <form method="post" action="{% url 'movie:payment_checkout' %}">
+                {% csrf_token %}
+                <input type="hidden" name="plan_id" value="{{ plan.pk }}">
+                <input type="hidden" name="provider" value="payme">
+                <button type="submit" class="btn btn-default" style="width:100%;background:#00cbcb;color:#003;font-weight:600;border:none">
+                    Payme — {% trans 'Оплатить' %}
+                </button>
+            </form>
+            {% endif %}
+            {% if not click_ready and not payme_ready %}
+            <p style="color:#e74c3c;font-size:13px">{% trans 'To\'lov tizimi sozlanmagan' %}</p>
+            {% endif %}
+            {% else %}
+            <span class="label label-success">{% trans 'Активна' %}</span>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p style="color:#9ca3af">{% trans 'Тарифы пока недоступны. Свяжитесь с администратором.' %}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

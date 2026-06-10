@@ -1,0 +1,22 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'So\'rovni rad etish' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{% trans 'So\'rovni rad etish' %}</h1>
+    <a href="{% url 'movie:admin_corporate_requests' %}" class="btn-outline">← {% trans 'Назад' %}</a>
+</div>
+
+<div class="panel-card" style="max-width:520px">
+    <p style="color:#fff;margin-bottom:8px"><strong>{{ req.company_name }}</strong></p>
+    <p style="color:#9ca3af;font-size:14px;margin-bottom:20px">{{ req.contact_name }} · {{ req.email }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>{% trans 'Izoh (ixtiyoriy)' %}</label>
+            <textarea name="admin_note" class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn-admin" style="background:#e74c3c">{% trans 'Rad etish' %}</button>
+    </form>
+</div>
+{% endblock %}

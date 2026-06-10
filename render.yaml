@@ -1,0 +1,26 @@
+databases:
+  - name: alflix-db
+    plan: free
+    databaseName: alflix
+    user: alflix
+
+services:
+  - type: web
+    name: alflix
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn kinobase.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: alflix-db
+          property: connectionString
+      - key: WEB_CONCURRENCY
+        value: "2"

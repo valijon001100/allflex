@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:48px 20px;max-width:520px">
+    <h1 style="color:#fff;margin-bottom:24px;text-align:center">{% trans 'Mening obunam' %}</h1>
+
+    {% if corporate %}
+    <div class="panel-card" style="background:#1a1d27;border:2px solid #e50914;border-radius:12px;padding:28px;text-align:center;margin-bottom:20px">
+        <div style="font-size:40px;margin-bottom:12px">🏢</div>
+        <h3 style="color:#6ee7b7;margin:0 0 8px">{% trans 'Korporativ obuna' %}</h3>
+        <p style="color:#fff;font-size:18px;font-weight:600;margin:12px 0">{{ corporate.organization.company_name }}</p>
+        <p style="color:#9ca3af;font-size:14px;margin-bottom:8px">{{ corporate.organization.plan.name }}</p>
+        <p style="color:#9ca3af;font-size:14px;margin-bottom:16px">
+            {% trans 'Tugash sanasi' %}: <strong style="color:#fff">{{ corporate.organization.end_date|date:"d.m.Y H:i" }}</strong>
+        </p>
+        <div style="margin-bottom:12px">
+            {% if corporate.organization.plan.access_movies %}
+            <span class="label label-success" style="margin-right:6px">{% trans 'Kinolar' %}</span>
+            {% endif %}
+            {% if corporate.organization.plan.access_live %}
+            <span class="label label-danger">{% trans 'Jonli efir' %}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if subscription %}
+    <div class="panel-card" style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:28px;text-align:center">
+        <div style="font-size:40px;margin-bottom:12px">✓</div>
+        <h3 style="color:#6ee7b7;margin:0 0 8px">{% trans 'Faol obuna' %}</h3>
+        <p style="color:#fff;font-size:18px;font-weight:600;margin:12px 0">{{ subscription.plan.name }}</p>
+        <p style="color:#9ca3af;font-size:14px;margin-bottom:16px">
+            {% trans 'Tugash sanasi' %}: <strong style="color:#fff">{{ subscription.end_date|date:"d.m.Y H:i" }}</strong>
+        </p>
+        <div style="margin-bottom:20px">
+            {% if subscription.plan.access_movies %}
+            <span class="label label-success" style="margin-right:6px">{% trans 'Kinolar' %}</span>
+            {% endif %}
+            {% if subscription.plan.access_live %}
+            <span class="label label-danger">{% trans 'Jonli efir' %}</span>
+            {% endif %}
+        </div>
+        <form method="post" action="{% url 'movie:cancel_subscription' %}" onsubmit="return confirm('{% trans 'Obunani bekor qilmoqchimisiz?' %}')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-default" style="width:100%;border:1px solid #e74c3c;color:#e74c3c;background:transparent;padding:12px;font-weight:600">
+                {% trans 'Obunani bekor qilish' %}
+            </button>
+        </form>
+    </div>
+    {% elif not corporate %}
+    <div class="panel-card" style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:32px;text-align:center">
+        <div style="font-size:40px;margin-bottom:12px">🔒</div>
+        <p style="color:#9ca3af;margin-bottom:20px">{% trans 'Sizda faol obuna yo\'q.' %}</p>
+        <a href="{% url 'movie:subscribe' %}" class="btn btn-primary" style="background:#e50914;border:none">{% trans 'Obuna olish' %}</a>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center;margin-top:24px">
+        <a href="{% url 'movie:home' %}" style="color:#9ca3af">← {% trans 'Назад' %}</a>
+    </div>
+</div>
+{% endblock %}

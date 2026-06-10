@@ -1,0 +1,119 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Статистика' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>📊 {% trans 'Статистика' %}</h1>
+    <span style="color:#9ca3af">{% trans 'Привет' %}, <strong style="color:#fff">{{ request.user.username }}</strong></span>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card blue">
+        <div class="label">{% trans 'Пользователи' %}</div>
+        <div class="value">{{ total_users }}</div>
+    </div>
+    <div class="stat-card red">
+        <div class="label">{% trans 'Фильмы' %}</div>
+        <div class="value">{{ total_movies }}</div>
+    </div>
+    <div class="stat-card yellow">
+        <div class="label">{% trans 'Комментарии' %}</div>
+        <div class="value">{{ total_comments }}</div>
+    </div>
+    <div class="stat-card green">
+        <div class="label">{% trans 'Активные подписчики' %}</div>
+        <div class="value">{{ active_subscribers }}</div>
+    </div>
+    <div class="stat-card green">
+        <div class="label">{% trans 'Доход (сум)' %}</div>
+        <div class="value">{{ total_revenue }}</div>
+    </div>
+    <div class="stat-card blue">
+        <div class="label">{% trans 'Категории' %}</div>
+        <div class="value">{{ total_categories }}</div>
+    </div>
+    <div class="stat-card red">
+        <div class="label">{% trans 'Прямые эфиры' %}</div>
+        <div class="value">{{ total_live_streams }}</div>
+    </div>
+    <div class="stat-card green">
+        <div class="label">{% trans 'Сейчас в эфире' %}</div>
+        <div class="value">{{ live_now }}</div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="panel-card">
+        <h3>{% trans 'Последние пользователи' %}</h3>
+        <table class="admin-table">
+            <thead><tr><th>Login</th><th>Email</th><th>{% trans 'Дата' %}</th></tr></thead>
+            <tbody>
+            {% for u in recent_users %}
+            <tr>
+                <td>{{ u.username }}{% if u.is_staff %} <span class="badge-staff">Admin</span>{% endif %}</td>
+                <td>{{ u.email|default:"—" }}</td>
+                <td>{{ u.date_joined|date:"d.m.Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">{% trans 'Нет пользователей' %}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'movie:admin_user_list' %}" class="btn-outline btn-sm" style="margin-top:12px">{% trans 'Смотреть все' %} →</a>
+    </div>
+
+    <div class="panel-card">
+        <h3>{% trans 'Последние фильмы' %}</h3>
+        <table class="admin-table">
+            <thead><tr><th>{% trans 'Название' %}</th><th>{% trans 'Категория' %}</th><th>{% trans 'Рейтинг' %}</th></tr></thead>
+            <tbody>
+            {% for m in recent_movies %}
+            <tr>
+                <td>{{ m.title }}</td>
+                <td>{{ m.category.name }}</td>
+                <td>{{ m.rating }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">{% trans 'Нет фильмов' %}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'movie:admin_movie_list' %}" class="btn-outline btn-sm" style="margin-top:12px">{% trans 'Смотреть все' %} →</a>
+    </div>
+</div>
+
+<div class="grid-2" style="margin-top:0">
+    <div class="panel-card">
+        <h3>{% trans 'Самые популярные фильмы' %}</h3>
+        <table class="admin-table">
+            <thead><tr><th>{% trans 'Название' %}</th><th>❤️</th></tr></thead>
+            <tbody>
+            {% for m in top_movies %}
+            <tr><td>{{ m.title }}</td><td>{{ m.likes }}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-card">
+        <h3>{% trans 'Последние подписки' %}</h3>
+        <table class="admin-table">
+            <thead><tr><th>{% trans 'Пользователь' %}</th><th>{% trans 'Тариф' %}</th><th>{% trans 'Статус' %}</th></tr></thead>
+            <tbody>
+            {% for s in recent_subscriptions %}
+            <tr>
+                <td>{{ s.user.username }}</td>
+                <td>{{ s.plan.name }}</td>
+                <td>
+                    {% if s.is_valid %}<span class="badge-active">{% trans 'Активна' %}</span>
+                    {% else %}<span class="badge-expired">{% trans 'Истекла' %}</span>{% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">{% trans 'Нет подписок' %}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'movie:admin_subscription_list' %}" class="btn-outline btn-sm" style="margin-top:12px">{% trans 'Смотреть все' %} →</a>
+    </div>
+</div>
+{% endblock %}

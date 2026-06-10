@@ -1,0 +1,62 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Пользователи' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>👥 {% trans 'Список пользователей' %}</h1>
+</div>
+
+<form class="search-bar" method="get">
+    <input type="text" name="q" value="{{ q }}" placeholder="{% trans 'Поиск по логину...' %}">
+    <button type="submit" class="btn-admin">{% trans 'Поиск' %}</button>
+</form>
+
+<div class="panel-card" style="padding:0;overflow:hidden">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Login</th>
+                <th>Email</th>
+                <th>{% trans 'Имя' %}</th>
+                <th>{% trans 'Подписка' %}</th>
+                <th>{% trans 'Роль' %}</th>
+                <th>{% trans 'Зарегистрирован' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in page_obj %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td><strong>{{ user.username }}</strong></td>
+            <td>{{ user.email|default:"—" }}</td>
+            <td>{{ user.first_name|default:"—" }}</td>
+            <td>
+                {% if user.id in active_user_ids %}
+                <span class="badge-active">{% trans 'Подписчик' %}</span>
+                {% else %}
+                <span class="badge-expired">{% trans 'Без подписки' %}</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if user.is_superuser %}<span class="badge-staff">Superuser</span>
+                {% elif user.is_staff %}<span class="badge-staff">Staff</span>
+                {% else %}{% trans 'Обычный' %}{% endif %}
+            </td>
+            <td>{{ user.date_joined|date:"d.m.Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:32px">{% trans 'Пользователь не найден' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pagination" style="margin-top:16px">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&q={{ q }}">←</a>{% endif %}
+    <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&q={{ q }}">→</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

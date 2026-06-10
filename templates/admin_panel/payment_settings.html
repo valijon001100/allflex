@@ -1,0 +1,50 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'To\'lov sozlamalari' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>💳 {% trans 'To\'lov sozlamalari' %}</h1>
+</div>
+
+<div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+    <span class="badge-{% if click_ready %}active{% else %}expired{% endif %}" style="padding:8px 14px">
+        Click: {% if click_ready %}{% trans 'Ulangan' %}{% else %}{% trans 'Sozlanmagan' %}{% endif %}
+    </span>
+    <span class="badge-{% if payme_ready %}active{% else %}expired{% endif %}" style="padding:8px 14px">
+        Payme: {% if payme_ready %}{% trans 'Ulangan' %}{% else %}{% trans 'Sozlanmagan' %}{% endif %}
+    </span>
+</div>
+
+<p style="color:#9ca3af;font-size:14px;margin-bottom:20px">
+    {% trans 'Click va Payme kabinetidan olingan kalitlarni kiriting.' %}<br>
+    Callback: <code style="color:#6ee7b7">/payment/click/</code> · <code style="color:#6ee7b7">/payment/payme/</code>
+</p>
+
+<div class="panel-card" style="max-width:640px">
+    <form method="post">
+        {% csrf_token %}
+        <h4 style="color:#fff;margin:0 0 16px">Click</h4>
+        {% for field in form %}
+            {% if field.name == 'payme_merchant_id' %}
+            <h4 style="color:#fff;margin:24px 0 16px;padding-top:16px;border-top:1px solid #2a2d3a">Payme</h4>
+            {% endif %}
+            {% if field.name == 'test_mode_enabled' %}
+            <h4 style="color:#fff;margin:24px 0 16px;padding-top:16px;border-top:1px solid #2a2d3a">{% trans 'Sinov' %}</h4>
+            {% endif %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {% if field.field.widget.input_type == 'checkbox' %}
+            <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+                {{ field }}
+                <span style="color:#9ca3af;font-size:13px">{% trans 'DEBUG rejimida sinov obunasi tugmasi ko\'rinadi' %}</span>
+            </div>
+            {% else %}
+            {{ field }}
+            {% endif %}
+            {% if field.errors %}<div style="color:#e74c3c;font-size:12px;margin-top:4px">{{ field.errors.0 }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-admin">{% trans 'Сохранить' %}</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:48px 20px;text-align:center">
+    <h2 style="color:#fff">{% trans 'Obuna hozircha mavjud emas' %}</h2>
+    <p style="color:#9ca3af;margin-top:12px">{% trans 'Keyinroq qayting yoki admin bilan bog\'laning.' %}</p>
+    <a href="{% url 'movie:home' %}" class="btn btn-default" style="margin-top:20px">{% trans 'Назад' %}</a>
+</div>
+{% endblock %}

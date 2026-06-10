@@ -1,0 +1,75 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Подписки' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>💳 {% trans 'Подписки' %}</h1>
+    <a href="{% url 'movie:admin_subscription_add' %}" class="btn-admin">+ {% trans 'Добавить подписку' %}</a>
+</div>
+
+<div class="filter-tabs">
+    <a href="?status=all" class="{% if status == 'all' %}active{% endif %}">{% trans 'Все' %}</a>
+    <a href="?status=active" class="{% if status == 'active' %}active{% endif %}">{% trans 'Активные' %}</a>
+    <a href="?status=expired" class="{% if status == 'expired' %}active{% endif %}">{% trans 'Истекшие' %}</a>
+</div>
+
+<div class="panel-card" style="padding:0;overflow:hidden">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Пользователь' %}</th>
+                <th>{% trans 'Тариф' %}</th>
+                <th>{% trans 'Kirish huquqlari' %}</th>
+                <th>{% trans 'Начало' %}</th>
+                <th>{% trans 'Окончание' %}</th>
+                <th>{% trans 'Оплата' %}</th>
+                <th>{% trans 'Статус' %}</th>
+                <th>{% trans 'Действия' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for sub in page_obj %}
+        <tr>
+            <td><strong>{{ sub.user.username }}</strong></td>
+            <td>{{ sub.plan.name }} <span style="color:#9ca3af;font-size:12px">({{ sub.plan.duration_days }} {% trans 'kun' %})</span></td>
+            <td style="font-size:12px">
+                {% if sub.plan.access_movies %}<span class="badge-active">{% trans 'Kinolar' %}</span>{% endif %}
+                {% if sub.plan.access_live %}<span class="badge-staff">{% trans 'Jonli efir' %}</span>{% endif %}
+            </td>
+            <td>{{ sub.start_date|date:"d.m.Y" }}</td>
+            <td>{{ sub.end_date|date:"d.m.Y" }}</td>
+            <td>{{ sub.payment_amount }} {% trans 'сум' %}</td>
+            <td>
+                {% if sub.is_valid %}<span class="badge-active">{% trans 'Активна' %}</span>
+                {% elif not sub.is_active %}<span class="badge-expired">{% trans 'Bekor qilingan' %}</span>
+                {% else %}<span class="badge-expired">{% trans 'Истекла' %}</span>{% endif %}
+            </td>
+            <td>
+                {% if sub.is_valid %}
+                <form method="post" action="{% url 'movie:admin_subscription_cancel' sub.pk %}" style="display:inline"
+                      onsubmit="return confirm('{{ sub.user.username }} — {% trans 'Obunani bekor qilmoqchimisiz?' %}')">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="{{ status }}">
+                    <input type="hidden" name="page" value="{{ page_obj.number }}">
+                    <button type="submit" class="btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c">
+                        {% trans 'Bekor qilish' %}
+                    </button>
+                </form>
+                {% else %}—{% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;padding:32px">{% trans 'Подписка не найдена' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pagination" style="margin-top:16px">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&status={{ status }}">←</a>{% endif %}
+    <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&status={{ status }}">→</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

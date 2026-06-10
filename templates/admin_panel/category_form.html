@@ -1,0 +1,74 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ title }}</h1>
+    {% if category and category.parent %}
+    <a href="{% url 'movie:admin_category_edit' category.parent.pk %}" class="btn-outline">← {{ category.parent.name }}</a>
+    {% elif parent %}
+    <a href="{% url 'movie:admin_category_edit' parent.pk %}" class="btn-outline">← {{ parent.name }}</a>
+    {% else %}
+    <a href="{% url 'movie:admin_category_list' %}" class="btn-outline">← {% trans 'Назад' %}</a>
+    {% endif %}
+</div>
+
+{% if parent %}
+<p style="color:#6ee7b7;font-size:14px;margin-bottom:16px">
+    {% trans 'Asosiy bo\'lim' %}: <strong>{{ parent.name }}</strong>
+</p>
+{% endif %}
+
+<div class="panel-card" style="max-width:600px">
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label>{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+            {{ field }}
+            {% if field.errors %}<div style="color:#e74c3c;font-size:12px;margin-top:4px">{{ field.errors.0 }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        <p style="color:#9ca3af;font-size:13px;margin:12px 0">{% trans 'Slug — URL uchun (masalan: serialy, multfilmy)' %}</p>
+        <button type="submit" class="btn-admin">{% trans 'Сохранить' %}</button>
+    </form>
+</div>
+
+{% if category and category.is_parent %}
+<div class="panel-card" style="margin-top:24px;padding:0;overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid #2a2d3a;display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0;color:#fff;font-size:16px">{% trans 'Ichki bo\'limlar' %}</h3>
+        <a href="{% url 'movie:admin_category_add' %}?parent={{ category.pk }}" class="btn-admin btn-sm">+ {% trans 'Ichki bo\'lim qo\'shish' %}</a>
+    </div>
+    {% if children %}
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{% trans 'Название' %}</th>
+                <th>Slug</th>
+                <th>{% trans 'Фильмов' %}</th>
+                <th>{% trans 'Действия' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for child in children %}
+        <tr>
+            <td>{{ child.order }}</td>
+            <td>{{ child.name }}</td>
+            <td><code style="color:#9ca3af">{{ child.slug }}</code></td>
+            <td>{{ child.movie_count }}</td>
+            <td>
+                <a href="{% url 'movie:admin_category_edit' child.pk %}" class="btn-outline btn-sm">{% trans 'Редактировать' %}</a>
+                <a href="{% url 'movie:admin_category_delete' child.pk %}" class="btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c">{% trans 'Удалить' %}</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="padding:24px;color:#9ca3af;text-align:center;margin:0">{% trans 'Ichki bo\'limlar hali yo\'q.' %}</p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

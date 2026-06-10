@@ -1,0 +1,508 @@
+msgid ""
+msgstr ""
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Поиск"
+msgstr "Search"
+
+msgid "Избранное"
+msgstr "Favorites"
+
+msgid "Выход"
+msgstr "Logout"
+
+msgid "Вход"
+msgstr "Login"
+
+msgid "Регистрация"
+msgstr "Sign up"
+
+msgid "Фильмы"
+msgstr "Movies"
+
+msgid "Жанр"
+msgstr "Genre"
+
+msgid "Год"
+msgstr "Year"
+
+msgid "Качество"
+msgstr "Quality"
+
+msgid "Добавить в избранное"
+msgstr "Add to favorites"
+
+msgid "Предыдущая"
+msgstr "Previous"
+
+msgid "Следующая"
+msgstr "Next"
+
+msgid "Смотреть онлайн"
+msgstr "Watch online"
+
+msgid "Трейлер"
+msgstr "Trailer"
+
+msgid "В избранное"
+msgstr "Add to favorites"
+
+msgid "Добавить"
+msgstr "Add"
+
+msgid "комментариев"
+msgstr "comments"
+
+msgid "Забыли пароль?"
+msgstr "Forgot password?"
+
+msgid "Уже есть аккаунт? Войти"
+msgstr "Already have an account? Login"
+
+msgid "или через"
+msgstr "or via"
+
+msgid "Имя пользователя"
+msgstr "Username"
+
+msgid "Электронная почта"
+msgstr "Email"
+
+msgid "Пароль"
+msgstr "Password"
+
+msgid "Подтвердите пароль"
+msgstr "Confirm password"
+
+msgid "Зарегистрироваться"
+msgstr "Register"
+
+msgid "Электронная почта или логин"
+msgstr "Email or username"
+
+msgid "Вы успешно зарегистрировались! Теперь войдите."
+msgstr "Registration successful! Please log in."
+
+msgid "Вы вышли из аккаунта"
+msgstr "You have been logged out"
+
+msgid "Качество:"
+msgstr "Quality:"
+
+msgid "Запомнить меня"
+msgstr "Remember me"
+
+msgid "Нет аккаунта?"
+msgstr "Don't have an account?"
+
+msgid "Уже есть аккаунт?"
+msgstr "Already have an account?"
+
+msgid "Панель администратора"
+msgstr "Admin Panel"
+
+msgid "Статистика"
+msgstr "Statistics"
+
+msgid "Фильмы"
+msgstr "Movies"
+
+msgid "Прямой эфир"
+msgstr "Live Stream"
+
+msgid "Пользователи"
+msgstr "Users"
+
+msgid "Подписки"
+msgstr "Subscriptions"
+
+msgid "Тарифы"
+msgstr "Plans"
+
+msgid "Язык"
+msgstr "Language"
+
+msgid "Привет"
+msgstr "Hello"
+
+msgid "Комментарии"
+msgstr "Comments"
+
+msgid "Активные подписчики"
+msgstr "Active subscribers"
+
+msgid "Доход (сум)"
+msgstr "Revenue (UZS)"
+
+msgid "Категории"
+msgstr "Categories"
+
+msgid "Прямые эфиры"
+msgstr "Live streams"
+
+msgid "Сейчас в эфире"
+msgstr "Live now"
+
+msgid "Последние пользователи"
+msgstr "Recent users"
+
+msgid "Дата"
+msgstr "Date"
+
+msgid "Нет пользователей"
+msgstr "No users"
+
+msgid "Смотреть все"
+msgstr "View all"
+
+msgid "Последние фильмы"
+msgstr "Recent movies"
+
+msgid "Название"
+msgstr "Title"
+
+msgid "Категория"
+msgstr "Category"
+
+msgid "Рейтинг"
+msgstr "Rating"
+
+msgid "Нет фильмов"
+msgstr "No movies"
+
+msgid "Самые популярные фильмы"
+msgstr "Most liked movies"
+
+msgid "Последние подписки"
+msgstr "Recent subscriptions"
+
+msgid "Пользователь"
+msgstr "User"
+
+msgid "Тариф"
+msgstr "Plan"
+
+msgid "Статус"
+msgstr "Status"
+
+msgid "Активна"
+msgstr "Active"
+
+msgid "Истекла"
+msgstr "Expired"
+
+msgid "Нет подписок"
+msgstr "No subscriptions"
+
+msgid "Список фильмов"
+msgstr "Movie list"
+
+msgid "Добавить фильм"
+msgstr "Add movie"
+
+msgid "Поиск по названию фильма..."
+msgstr "Search by movie title..."
+
+msgid "Постер"
+msgstr "Poster"
+
+msgid "Действия"
+msgstr "Actions"
+
+msgid "Редактировать"
+msgstr "Edit"
+
+msgid "Удалить"
+msgstr "Delete"
+
+msgid "Фильм не найден"
+msgstr "Movie not found"
+
+msgid "Список пользователей"
+msgstr "User list"
+
+msgid "Поиск по логину..."
+msgstr "Search by login..."
+
+msgid "Имя"
+msgstr "Name"
+
+msgid "Подписка"
+msgstr "Subscription"
+
+msgid "Роль"
+msgstr "Role"
+
+msgid "Зарегистрирован"
+msgstr "Registered"
+
+msgid "Подписчик"
+msgstr "Subscriber"
+
+msgid "Без подписки"
+msgstr "No subscription"
+
+msgid "Обычный"
+msgstr "Regular"
+
+msgid "Пользователь не найден"
+msgstr "User not found"
+
+msgid "Добавить подписку"
+msgstr "Add subscription"
+
+msgid "Все"
+msgstr "All"
+
+msgid "Активные"
+msgstr "Active"
+
+msgid "Истекшие"
+msgstr "Expired"
+
+msgid "Начало"
+msgstr "Start"
+
+msgid "Окончание"
+msgstr "End"
+
+msgid "Оплата"
+msgstr "Payment"
+
+msgid "сум"
+msgstr "UZS"
+
+msgid "Подписка не найдена"
+msgstr "Subscription not found"
+
+msgid "Тарифные планы"
+msgstr "Subscription plans"
+
+msgid "Добавить тариф"
+msgstr "Add plan"
+
+msgid "дней"
+msgstr "days"
+
+msgid "подписчиков"
+msgstr "subscribers"
+
+msgid "Активен"
+msgstr "Active"
+
+msgid "Неактивен"
+msgstr "Inactive"
+
+msgid "Нет тарифов."
+msgstr "No plans yet."
+
+msgid "Добавьте первый тариф"
+msgstr "Add the first plan"
+
+msgid "Добавить эфир"
+msgstr "Add stream"
+
+msgid "Поиск по названию эфира..."
+msgstr "Search by stream title..."
+
+msgid "Смотреть"
+msgstr "Watch"
+
+msgid "Прямой эфир не найден"
+msgstr "Live stream not found"
+
+msgid "Назад"
+msgstr "Back"
+
+msgid "Качества видео"
+msgstr "Video qualities"
+
+msgid "Загрузите видеофайл для каждого качества (.mp4, .webm, .mkv)"
+msgstr "Upload a video file for each quality (.mp4, .webm, .mkv)"
+
+msgid "Сохранить"
+msgstr "Save"
+
+msgid "Удаление фильма"
+msgstr "Delete movie"
+
+msgid "Вы уверены, что хотите удалить фильм"
+msgstr "Are you sure you want to delete the movie"
+
+msgid "Вы уверены, что хотите удалить"
+msgstr "Are you sure you want to delete"
+
+msgid "Это действие нельзя отменить."
+msgstr "This action cannot be undone."
+
+msgid "Да, удалить"
+msgstr "Yes, delete"
+
+msgid "Отмена"
+msgstr "Cancel"
+
+msgid "Stream URL: может быть в формате .m3u8 (HLS) или .mp4"
+msgstr "Stream URL: can be .m3u8 (HLS) or .mp4 format"
+
+msgid "Удаление эфира"
+msgstr "Delete stream"
+
+msgid "Редактировать фильм"
+msgstr "Edit movie"
+
+msgid "Добавить прямой эфир"
+msgstr "Add live stream"
+
+msgid "Редактировать прямой эфир"
+msgstr "Edit live stream"
+
+msgid "Фильм успешно добавлен!"
+msgstr "Movie added successfully!"
+
+msgid "Фильм обновлён!"
+msgstr "Movie updated!"
+
+msgid "Фильм удалён!"
+msgstr "Movie deleted!"
+
+msgid "Подписка добавлена!"
+msgstr "Subscription added!"
+
+msgid "Прямой эфир добавлен!"
+msgstr "Live stream added!"
+
+msgid "Прямой эфир обновлён!"
+msgstr "Live stream updated!"
+
+msgid "Прямой эфир удалён!"
+msgstr "Live stream deleted!"
+
+msgid "Тариф добавлен!"
+msgstr "Plan added!"
+
+msgid "Разделы"
+msgstr "Sections"
+
+msgid "Разделы сайта"
+msgstr "Site sections"
+
+msgid "Добавить раздел"
+msgstr "Add section"
+
+msgid "Bu bo'limlar sayt navbarida ko'rinadi (Filmlar, Seriallar, Multfilmlar va h.k.)"
+msgstr "These sections appear in the site navbar (Movies, Series, Cartoons, etc.)"
+
+msgid "Название (RU)"
+msgstr "Name (RU)"
+
+msgid "Фильмов"
+msgstr "Movies"
+
+msgid "Скрыт"
+msgstr "Hidden"
+
+msgid "Разделы не найдены"
+msgstr "No sections found"
+
+msgid "Slug — URL uchun (masalan: serialy, multfilmy)"
+msgstr "Slug — for URL (e.g. serialy, multfilmy)"
+
+msgid "Удаление раздела"
+msgstr "Delete section"
+
+msgid "Вы уверены, что хотите удалить раздел"
+msgstr "Are you sure you want to delete the section"
+
+msgid "В этом разделе есть фильмы — удаление невозможно."
+msgstr "This section has movies — cannot delete."
+
+msgid "Редактировать раздел"
+msgstr "Edit section"
+
+msgid "Раздел добавлен!"
+msgstr "Section added!"
+
+msgid "Раздел обновлён!"
+msgstr "Section updated!"
+
+msgid "Раздел удалён!"
+msgstr "Section deleted!"
+
+msgid "Нельзя удалить: в разделе есть фильмы!"
+msgstr "Cannot delete: section has movies!"
+
+msgid "Подписчики могут смотреть прямые эфиры."
+msgstr "Subscribers can watch live streams."
+
+msgid "Для просмотра эфира нужна активная подписка."
+msgstr "An active subscription is required to watch live streams."
+
+msgid "Войдите и оформите подписку для просмотра эфира."
+msgstr "Log in and subscribe to watch live streams."
+
+msgid "В эфире"
+msgstr "Live"
+
+msgid "Запланирован"
+msgstr "Scheduled"
+
+msgid "Прямых эфиров пока нет."
+msgstr "No live streams yet."
+
+msgid "Ссылка на эфир ещё не добавлена. Вернитесь позже."
+msgstr "Stream link not added yet. Please check back later."
+
+msgid "Требуется подписка"
+msgstr "Subscription required"
+
+msgid "Для просмотра эфира нужна активная подписка. Выберите тариф ниже."
+msgstr "An active subscription is required. Choose a plan below."
+
+msgid "Тарифы пока недоступны. Свяжитесь с администратором."
+msgstr "Plans are not available yet. Contact the administrator."
+
+msgid "Все эфиры"
+msgstr "All streams"
+
+msgid "После регистрации фильм начнётся"
+msgstr "Register to start watching the movie"
+
+msgid "Для просмотра онлайн зарегистрируйтесь или войдите в аккаунт."
+msgstr "Register or log in to watch online."
+
+msgid "Obuna orqali barcha kinolar va jonli efirlarni tomosha qiling."
+msgstr "Subscribe to watch all movies and live streams."
+
+msgid "Sizda faol obuna mavjud. Kinolardan bahramand bo'ling!"
+msgstr "You have an active subscription. Enjoy the movies!"
+
+msgid "Оплатить"
+msgstr "Pay"
+
+msgid "To'lov tizimi sozlanmagan"
+msgstr "Payment system not configured"
+
+msgid "To'lov muvaffaqiyatli!"
+msgstr "Payment successful!"
+
+msgid "Obuna faollashtirildi. Endi kinolarni tomosha qilishingiz mumkin."
+msgstr "Subscription activated. You can now watch movies."
+
+msgid "To'lov qayta ishlanmoqda. Bir necha daqiqadan so'ng qayta tekshiring."
+msgstr "Payment is being processed. Check again in a few minutes."
+
+msgid "To'lov amalga oshmadi"
+msgstr "Payment failed"
+
+msgid "Qayta urinib ko'ring yoki boshqa to'lov usulini tanlang."
+msgstr "Try again or choose another payment method."
+
+msgid "Kinolarni ko'rish uchun obuna oling."
+msgstr "Subscribe to watch movies."
+
+msgid "Click to'lov tizimi sozlanmagan. Admin bilan bog'laning."
+msgstr "Click payment is not configured. Contact admin."
+
+msgid "Payme to'lov tizimi sozlanmagan. Admin bilan bog'laning."
+msgstr "Payme payment is not configured. Contact admin."

@@ -1,0 +1,71 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Разделы' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>📂 {% trans 'Разделы сайта' %}</h1>
+    <a href="{% url 'movie:admin_category_add' %}" class="btn-admin">+ {% trans 'Добавить раздел' %}</a>
+</div>
+
+<p style="color:#9ca3af;font-size:14px;margin-bottom:20px">{% trans 'Asosiy bo\'limlar navbarida ko\'rinadi. Ichki bo\'limlarni bo\'lim tahrirlash sahifasidan qo\'shing.' %}</p>
+
+<div class="panel-card" style="padding:0;overflow:hidden">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{% trans 'Название (RU)' %}</th>
+                <th>UZ</th>
+                <th>EN</th>
+                <th>Slug</th>
+                <th>{% trans 'Фильмов' %}</th>
+                <th>{% trans 'Статус' %}</th>
+                <th>{% trans 'Действия' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cat in parents %}
+        <tr>
+            <td>{{ cat.order }}</td>
+            <td><strong>{{ cat.name }}</strong></td>
+            <td>{{ cat.name_uz|default:"—" }}</td>
+            <td>{{ cat.name_en|default:"—" }}</td>
+            <td><code style="color:#9ca3af">{{ cat.slug }}</code></td>
+            <td>{{ cat.movie_count }}</td>
+            <td>
+                {% if cat.is_active %}<span class="badge-active">{% trans 'Активен' %}</span>
+                {% else %}<span class="badge-expired">{% trans 'Скрыт' %}</span>{% endif %}
+            </td>
+            <td>
+                <a href="{{ cat.get_absolute_url }}" class="btn-outline btn-sm" target="_blank">{% trans 'Смотреть' %}</a>
+                <a href="{% url 'movie:admin_category_edit' cat.pk %}" class="btn-outline btn-sm">{% trans 'Редактировать' %}</a>
+                <a href="{% url 'movie:admin_category_add' %}?parent={{ cat.pk }}" class="btn-outline btn-sm" style="color:#6ee7b7;border-color:#6ee7b7">+ {% trans 'Ichki' %}</a>
+                <a href="{% url 'movie:admin_category_delete' cat.pk %}" class="btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c">{% trans 'Удалить' %}</a>
+            </td>
+        </tr>
+        {% for child in cat.children.all %}
+        <tr style="background:#1e2130">
+            <td style="padding-left:24px">{{ child.order }}</td>
+            <td style="padding-left:24px"><span style="color:#9ca3af">└</span> {{ child.name }}</td>
+            <td>{{ child.name_uz|default:"—" }}</td>
+            <td>{{ child.name_en|default:"—" }}</td>
+            <td><code style="color:#9ca3af">{{ child.slug }}</code></td>
+            <td>{{ child.movie_category.count }}</td>
+            <td>
+                {% if child.is_active %}<span class="badge-active">{% trans 'Активен' %}</span>
+                {% else %}<span class="badge-expired">{% trans 'Скрыт' %}</span>{% endif %}
+            </td>
+            <td>
+                <a href="{{ child.get_absolute_url }}" class="btn-outline btn-sm" target="_blank">{% trans 'Смотреть' %}</a>
+                <a href="{% url 'movie:admin_category_edit' child.pk %}" class="btn-outline btn-sm">{% trans 'Редактировать' %}</a>
+                <a href="{% url 'movie:admin_category_delete' child.pk %}" class="btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c">{% trans 'Удалить' %}</a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;padding:32px">{% trans 'Разделы не найдены' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
