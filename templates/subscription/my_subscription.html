@@ -22,7 +22,29 @@
             <span class="label label-danger">{% trans 'Jonli efir' %}</span>
             {% endif %}
         </div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid #2a2d3a;text-align:left">
+            <h4 style="color:#fff;font-size:15px;margin:0 0 8px">🔗 {% trans 'Sizning referal havolangiz' %}</h4>
+            <p style="color:#9ca3af;font-size:13px;margin-bottom:12px">{% trans 'Hamkasblaringizni shu havola orqali korporativ obunaga taklif qiling.' %}</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <input type="text" id="corpReferralUrl" value="{{ referral_url }}" readonly class="form-control" style="flex:1;min-width:200px;background:#252836;border:1px solid #2a2d3a;color:#fff;font-size:12px">
+                <button type="button" onclick="copyCorpRef()" class="btn btn-default" style="white-space:nowrap">{% trans 'Nusxalash' %}</button>
+            </div>
+            <p style="color:#9ca3af;font-size:13px;margin-top:12px;margin-bottom:0">
+                {% trans 'Taklif qilganlar' %}: <strong style="color:#2ecc71">{{ referrals_count }}</strong>
+            </p>
+        </div>
     </div>
+    <script>
+    function copyCorpRef() {
+        var el = document.getElementById('corpReferralUrl');
+        el.select();
+        el.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(el.value).then(function() {
+            alert('{% trans "Havola nusxalandi!" %}');
+        });
+    }
+    </script>
     {% endif %}
 
     {% if subscription %}

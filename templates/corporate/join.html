@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:48px 20px;max-width:520px">
+    <div style="background:#1a1d27;border:2px solid #e50914;border-radius:12px;padding:32px;text-align:center">
+        <div style="font-size:48px;margin-bottom:12px">🏢</div>
+        <h1 style="color:#fff;margin:0 0 8px;font-size:22px">{{ org.company_name }}</h1>
+        <p style="color:#9ca3af;margin-bottom:8px">{% trans 'Korporativ obunaga taklif' %}</p>
+        <p style="color:#9ca3af;font-size:14px;margin-bottom:20px">
+            {% trans 'Taklif qilgan' %}: <strong style="color:#fff">{{ referrer.user.username }}</strong>
+        </p>
+
+        {% if not org_valid %}
+        <div class="alert alert-warning">{% trans 'Korporativ obuna muddati tugagan.' %}</div>
+        {% elif seats_available <= 0 %}
+        <div class="alert alert-warning">{% trans 'Barcha o\'rinlar band.' %}</div>
+        {% elif already_member %}
+        <div class="alert alert-info">{% trans 'Siz allaqachon korporativ obunadasiz.' %}</div>
+        <a href="{% url 'movie:my_subscription' %}" class="btn btn-primary" style="background:#e50914;border:none">{% trans 'Mening obunam' %}</a>
+        {% elif request.user.is_authenticated %}
+        <p style="color:#9ca3af;font-size:14px;margin-bottom:20px">
+            {{ org.plan.name }} · {{ seats_available }} {% trans 'bo\'sh o\'rin' %}
+        </p>
+        <form method="post" action="{% url 'movie:corporate_join_confirm' referrer.referral_code %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" style="width:100%;background:#e50914;border:none;padding:14px;font-weight:600;font-size:16px">
+                {% trans 'Qo\'shilish' %}
+            </button>
+        </form>
+        {% else %}
+        <p style="color:#9ca3af;font-size:14px;margin-bottom:20px">
+            {{ org.plan.name }} · {{ seats_available }} {% trans 'bo\'sh o\'rin' %}
+        </p>
+        <a href="{% url 'movie:register' %}?next={{ request.path }}" class="btn btn-primary" style="width:100%;background:#e50914;border:none;padding:14px;font-weight:600;margin-bottom:10px;display:block">
+            {% trans 'Ro\'yxatdan o\'tish' %}
+        </a>
+        <a href="{% url 'movie:login' %}?next={{ request.path }}" class="btn btn-default" style="width:100%;padding:12px">
+            {% trans 'Kirish' %}
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

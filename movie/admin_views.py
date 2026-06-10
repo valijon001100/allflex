@@ -470,7 +470,13 @@ def corporate_org_members(request, pk):
             return redirect('movie:admin_corporate_org_members', pk=pk)
     else:
         form = CorporateMemberForm(organization=org)
-    members = org.members.select_related('user').order_by('-added_at')
+    members = list(
+        org.members.select_related('user').annotate(
+            ref_count=Count('referrals'),
+        ).order_by('-added_at')
+    )
+    for m in members:
+        m.referral_full_url = request.build_absolute_uri(m.get_referral_path())
     return render(request, 'admin_panel/corporate_org_members.html', {
         'org': org,
         'members': members,

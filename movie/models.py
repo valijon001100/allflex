@@ -294,6 +294,14 @@ class CorporateMember(models.Model):
         related_name='members',
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='corporate_memberships')
+    referral_code = models.CharField(max_length=32, unique=True, blank=True)
+    referred_by = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='referrals',
+    )
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -303,6 +311,25 @@ class CorporateMember(models.Model):
 
     def __str__(self):
         return f'{self.user.username} — {self.organization.company_name}'
+
+    @property
+    def referrals_count(self):
+        return self.referrals.count()
+
+    def _generate_referral_code(self):
+        for _ in range(20):
+            code = uuid.uuid4().hex[:12]
+            if not CorporateMember.objects.filter(referral_code=code).exists():
+                return code
+        return uuid.uuid4().hex
+
+    def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = self._generate_referral_code()
+        super().save(*args, **kwargs)
+
+    def get_referral_path(self):
+        return reverse('movie:corporate_join', kwargs={'code': self.referral_code})
 
 
 class CorporateSubscriptionRequest(models.Model):

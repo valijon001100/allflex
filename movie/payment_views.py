@@ -41,9 +41,16 @@ def _payment_context():
 def my_subscription(request):
     sub = get_active_subscription(request.user)
     corp = get_corporate_membership(request.user)
+    referral_url = ''
+    referrals_count = 0
+    if corp:
+        referral_url = request.build_absolute_uri(corp.get_referral_path())
+        referrals_count = corp.referrals_count
     return render(request, 'subscription/my_subscription.html', {
         'subscription': sub,
         'corporate': corp,
+        'referral_url': referral_url,
+        'referrals_count': referrals_count,
     })
 
 

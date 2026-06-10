@@ -6,6 +6,7 @@ from . import admin_views
 from . import payment_views
 from . import stream_views
 from . import ticket_views
+from . import corporate_views
 
 app_name= 'movie'
 
@@ -29,6 +30,8 @@ urlpatterns = [
 
     path("subscribe/", payment_views.subscribe, name='subscribe'),
     path("subscribe/corporate/<int:plan_id>/", payment_views.corporate_request, name='corporate_request'),
+    path("corporate/join/<str:code>/", corporate_views.corporate_join, name='corporate_join'),
+    path("corporate/join/<str:code>/confirm/", corporate_views.corporate_join_confirm, name='corporate_join_confirm'),
     path("my-subscription/", payment_views.my_subscription, name='my_subscription'),
     path("subscription/cancel/", payment_views.cancel_subscription_view, name='cancel_subscription'),
     path("subscription/", payment_views.subscription_plans, name='subscription_plans'),

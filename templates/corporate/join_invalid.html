@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:48px 20px;max-width:520px;text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+    <h1 style="color:#fff;margin-bottom:12px">{% trans 'Referal havola noto\'g\'ri' %}</h1>
+    <p style="color:#9ca3af;margin-bottom:24px">{% trans 'Bu havola eskirgan yoki noto\'g\'ri.' %}</p>
+    <a href="{% url 'movie:home' %}" class="btn btn-primary" style="background:#e50914;border:none">{% trans 'Bosh sahifa' %}</a>
+</div>
+{% endblock %}

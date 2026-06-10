@@ -2,7 +2,11 @@ from datetime import timedelta
 
 from django.utils import timezone
 
+from django.utils.translation import gettext as _
+
 from .models import CorporateMember, CorporateOrganization, UserSubscription
+
+SESSION_REFERRAL_KEY = 'corporate_referral_code'
 
 
 def get_corporate_membership(user):
@@ -112,9 +116,64 @@ def approve_corporate_request(request_obj, admin_user=None):
     )
 
     if request_obj.user:
-        CorporateMember.objects.get_or_create(organization=org, user=request_obj.user)
+        CorporateMember.objects.get_or_create(
+            organization=org,
+            user=request_obj.user,
+        )
 
     request_obj.status = CorporateSubscriptionRequest.STATUS_APPROVED
     request_obj.processed_at = now
     request_obj.save(update_fields=['status', 'processed_at'])
     return org
+
+
+def store_pending_referral(request, code):
+    request.session[SESSION_REFERRAL_KEY] = code
+
+
+def get_referrer_member(code):
+    if not code:
+        return None
+    return CorporateMember.objects.filter(
+        referral_code=code,
+    ).select_related('organization', 'organization__plan', 'user').first()
+
+
+def join_corporate_via_referral(user, code):
+    referrer = get_referrer_member(code)
+    if not referrer:
+        return False, _('Referal havola noto\'g\'ri yoki muddati tugagan.')
+
+    org = referrer.organization
+    if not org.is_valid:
+        return False, _('Korporativ obuna muddati tugagan.')
+
+    if org.seats_available <= 0:
+        return False, _('Barcha korporativ o\'rinlar band.')
+
+    if CorporateMember.objects.filter(user=user, organization=org).exists():
+        return False, _('Siz allaqachon bu kompaniya a\'zosisiz.')
+
+    if get_corporate_membership(user):
+        return False, _('Siz boshqa korporativ obunadasiz.')
+
+    CorporateMember.objects.create(
+        organization=org,
+        user=user,
+        referred_by=referrer,
+    )
+    return True, _('Korporativ obunaga muvaffaqiyatli qo\'shildingiz!')
+
+
+def try_apply_pending_referral(request):
+    code = request.session.pop(SESSION_REFERRAL_KEY, None)
+    if not code or not request.user.is_authenticated:
+        return False
+    ok, msg = join_corporate_via_referral(request.user, code)
+    if ok:
+        from django.contrib import messages
+        messages.success(request, msg)
+        return True
+    from django.contrib import messages
+    messages.warning(request, msg)
+    return False

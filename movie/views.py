@@ -15,7 +15,12 @@ from django.utils.translation import get_language
 from .models import *
 from .forms import UserRegisterForm, CommentForm
 from .translations import translate_category
-from .utils import user_can_watch_live, user_can_watch_movies, user_has_subscription
+from .utils import (
+    try_apply_pending_referral,
+    user_can_watch_live,
+    user_can_watch_movies,
+    user_has_subscription,
+)
 
 
 def category_list(request, slug):
@@ -46,6 +51,8 @@ def my_login(request):
             login(request, user)
             if user.is_staff:
                 return HttpResponseRedirect("/panel/")
+            if try_apply_pending_referral(request):
+                return HttpResponseRedirect("/my-subscription/")
             if next_url.startswith('/'):
                 return HttpResponseRedirect(next_url)
             return HttpResponseRedirect("/")
@@ -65,6 +72,8 @@ def registration_view(request):
             user = form.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, _("Ro'yxatdan muvaffaqiyatli o'tdingiz!"))
+            if try_apply_pending_referral(request):
+                return HttpResponseRedirect("/my-subscription/")
             if next_url.startswith('/'):
                 return HttpResponseRedirect(next_url)
             return HttpResponseRedirect("/")

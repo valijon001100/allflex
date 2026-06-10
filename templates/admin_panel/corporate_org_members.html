@@ -37,6 +37,8 @@
             <tr>
                 <th>{% trans 'Foydalanuvchi' %}</th>
                 <th>{% trans 'Email' %}</th>
+                <th>{% trans 'Referal' %}</th>
+                <th>{% trans 'Takliflar' %}</th>
                 <th>{% trans 'Qo\'shilgan' %}</th>
                 <th></th>
             </tr>
@@ -46,6 +48,11 @@
         <tr>
             <td>{{ m.user.username }}</td>
             <td>{{ m.user.email|default:"—" }}</td>
+            <td>
+                <input type="text" value="{{ m.referral_full_url }}" readonly id="ref-{{ m.pk }}" style="width:180px;background:#252836;border:1px solid #2a2d3a;color:#9ca3af;font-size:11px;padding:4px 8px;border-radius:4px">
+                <button type="button" class="btn-outline btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('ref-{{ m.pk }}').value)">{% trans 'Copy' %}</button>
+            </td>
+            <td><span class="badge-active">{{ m.ref_count }}</span></td>
             <td style="color:#9ca3af;font-size:13px">{{ m.added_at|date:"d.m.Y" }}</td>
             <td>
                 <form method="post" style="display:inline" onsubmit="return confirm('{% trans 'O\'chirishni tasdiqlaysizmi?' %}')">
@@ -57,7 +64,7 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" style="text-align:center;padding:24px">{% trans 'A\'zolar yo\'q.' %}</td></tr>
+        <tr><td colspan="6" style="text-align:center;padding:24px">{% trans 'A\'zolar yo\'q.' %}</td></tr>
         {% endfor %}
         </tbody>
     </table>
