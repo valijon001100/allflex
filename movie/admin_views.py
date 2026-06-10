@@ -14,13 +14,14 @@ from django.views.decorators.http import require_POST
 from .decorators import admin_required
 from .forms import (
     CategoryForm, CorporateMemberForm, LiveStreamForm, MovieForm,
-    PaymentSettingsForm, SubscriptionForm, SubscriptionPlanForm,
+    PaymentSettingsForm, SubscriptionForm, SubscriptionPlanForm, TicketEventForm,
 )
 from .payment_config import click_configured, payme_configured
 from .models import (
     Category, Comment, CorporateMember, CorporateOrganization,
     CorporateSubscriptionRequest, Genre, LiveStream, Movie, MovieStream,
-    PaymentSettings, SubscriptionPlan, UserSubscription,
+    PaymentSettings, PurchasedTicket, SubscriptionPlan, TicketEvent,
+    UserSubscription,
 )
 from .utils import approve_corporate_request
 
@@ -475,3 +476,70 @@ def corporate_org_members(request, pk):
         'members': members,
         'form': form,
     })
+
+
+@admin_required
+def ticket_list(request):
+    events = TicketEvent.objects.select_related('category').order_by('-event_date')
+    q = request.GET.get('q', '')
+    cat = request.GET.get('category', '')
+    if q:
+        events = events.filter(title__icontains=q)
+    if cat:
+        events = events.filter(category__slug=cat)
+    paginator = Paginator(events, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_panel/ticket_list.html', {
+        'page_obj': page_obj, 'q': q, 'cat': cat,
+    })
+
+
+@admin_required
+def ticket_add(request):
+    if request.method == 'POST':
+        form = TicketEventForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('Tadbir qo\'shildi!'))
+            return redirect('movie:admin_ticket_list')
+    else:
+        form = TicketEventForm()
+    return render(request, 'admin_panel/ticket_form.html', {
+        'form': form, 'title': _('Tadbir qo\'shish'),
+    })
+
+
+@admin_required
+def ticket_edit(request, pk):
+    event = get_object_or_404(TicketEvent, pk=pk)
+    if request.method == 'POST':
+        form = TicketEventForm(request.POST, request.FILES, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('Tadbir yangilandi!'))
+            return redirect('movie:admin_ticket_list')
+    else:
+        form = TicketEventForm(instance=event)
+    return render(request, 'admin_panel/ticket_form.html', {
+        'form': form, 'title': _('Tadbirni tahrirlash'), 'event': event,
+    })
+
+
+@admin_required
+def ticket_delete(request, pk):
+    event = get_object_or_404(TicketEvent, pk=pk)
+    if request.method == 'POST':
+        event.delete()
+        messages.success(request, _('Tadbir o\'chirildi!'))
+        return redirect('movie:admin_ticket_list')
+    return render(request, 'admin_panel/ticket_delete.html', {'event': event})
+
+
+@admin_required
+def ticket_sales(request):
+    tickets = PurchasedTicket.objects.select_related(
+        'user', 'event', 'event__category',
+    ).order_by('-created_at')
+    paginator = Paginator(tickets, 20)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_panel/ticket_sales.html', {'page_obj': page_obj})

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:24px 20px 48px">
+    <p style="margin-bottom:8px"><a href="{% url 'movie:ticket_home' %}" style="color:#9ca3af">← {% trans 'Biletlar' %}</a></p>
+    <h1 style="color:#fff;margin-bottom:8px">{{ category.icon }} {{ category_name }}</h1>
+    <p style="color:#9ca3af;margin-bottom:24px">{% trans 'Qora bilet sotish' %} — {{ category_name }}</p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
+        {% for tcat in categories %}
+        <a href="{{ tcat.obj.get_absolute_url }}" class="btn btn-default btn-sm" style="{% if tcat.obj.pk == category.pk %}background:#e50914;border-color:#e50914;color:#fff{% endif %}">{{ tcat.obj.icon }} {{ tcat.name }}</a>
+        {% endfor %}
+    </div>
+
+    <div class="items">
+        {% for event in events %}
+        <div class="item">
+            <a href="{{ event.get_absolute_url }}">
+                {% if event.poster %}
+                <img src="{{ event.poster.url }}" alt="{{ event.title }}">
+                {% else %}
+                <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a1d27,#2a1040);display:flex;align-items:center;justify-content:center;color:#fff;font-size:48px">{{ category.icon }}</div>
+                {% endif %}
+                {% if event.is_sold_out %}
+                <span style="position:absolute;top:8px;left:8px;background:#666;color:#fff;padding:4px 10px;border-radius:4px;font-size:12px;z-index:2">{% trans 'Tugagan' %}</span>
+                {% else %}
+                <span style="position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 10px;border-radius:4px;font-size:12px;font-weight:700;z-index:2">{{ event.price|floatformat:0 }} {% trans 'so\'m' %}</span>
+                {% endif %}
+            </a>
+            <div class="info">
+                <div class="title">{{ event.title }}</div>
+                <div class="desc">{{ event.event_date|date:"d.m.Y H:i" }} · {{ event.venue }}, {{ event.city }}</div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column:1/-1;padding:40px;text-align:center;color:#888">{% trans 'Bu bo\'limda tadbirlar hali yo\'q.' %}</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

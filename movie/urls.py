@@ -5,6 +5,7 @@ from . import views
 from . import admin_views
 from . import payment_views
 from . import stream_views
+from . import ticket_views
 
 app_name= 'movie'
 
@@ -17,6 +18,14 @@ urlpatterns = [
     path("like/", views.likeMovie, name='likeMovie'),
     path("live/", views.live_list, name='live_list'),
     path("live/<slug:slug>/", views.live_watch, name='live_watch'),
+
+    path("tickets/", ticket_views.ticket_home, name='ticket_home'),
+    path("tickets/my/", ticket_views.my_tickets, name='my_tickets'),
+    path("tickets/success/", ticket_views.ticket_payment_success, name='ticket_payment_success'),
+    path("tickets/checkout/", ticket_views.ticket_checkout, name='ticket_checkout'),
+    path("tickets/test/", ticket_views.test_ticket_purchase, name='test_ticket_purchase'),
+    path("tickets/<slug:slug>/", ticket_views.ticket_category, name='ticket_category'),
+    path("tickets/event/<slug:slug>/", ticket_views.ticket_detail, name='ticket_detail'),
 
     path("subscribe/", payment_views.subscribe, name='subscribe'),
     path("subscribe/corporate/<int:plan_id>/", payment_views.corporate_request, name='corporate_request'),
@@ -79,4 +88,9 @@ urlpatterns = [
     path('panel/live/add/', admin_views.live_add, name='admin_live_add'),
     path('panel/live/<int:pk>/edit/', admin_views.live_edit, name='admin_live_edit'),
     path('panel/live/<int:pk>/delete/', admin_views.live_delete, name='admin_live_delete'),
+    path('panel/tickets/', admin_views.ticket_list, name='admin_ticket_list'),
+    path('panel/tickets/add/', admin_views.ticket_add, name='admin_ticket_add'),
+    path('panel/tickets/<int:pk>/edit/', admin_views.ticket_edit, name='admin_ticket_edit'),
+    path('panel/tickets/<int:pk>/delete/', admin_views.ticket_delete, name='admin_ticket_delete'),
+    path('panel/ticket-sales/', admin_views.ticket_sales, name='admin_ticket_sales'),
 ]

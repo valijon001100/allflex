@@ -214,6 +214,51 @@ class CategoryForm(forms.ModelForm):
         return parent
 
 
+class TicketEventForm(forms.ModelForm):
+    class Meta:
+        from .models import TicketEvent
+        model = TicketEvent
+        fields = [
+            'category', 'title', 'slug', 'description', 'venue', 'city',
+            'event_date', 'poster', 'price', 'quantity_total', 'is_active',
+        ]
+        widgets = {
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'slug': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'venue': forms.TextInput(attrs={'class': 'form-control'}),
+            'city': forms.TextInput(attrs={'class': 'form-control'}),
+            'event_date': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M',
+            ),
+            'poster': forms.FileInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'quantity_total': forms.NumberInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from .models import TicketCategory
+        self.fields['category'].queryset = TicketCategory.objects.filter(is_active=True)
+        self.fields['event_date'].input_formats = ['%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M']
+        _apply_labels(self, {
+            'category': _('Bo\'lim'),
+            'title': _('Nomi'),
+            'slug': _('Slug (URL)'),
+            'description': _('Tavsif'),
+            'venue': _('Joy'),
+            'city': _('Shahar'),
+            'event_date': _('Sana va vaqt'),
+            'poster': _('Poster'),
+            'price': _('Bilet narxi (so\'m)'),
+            'quantity_total': _('Biletlar soni'),
+            'is_active': _('Faol'),
+        })
+
+
 class LiveStreamForm(forms.ModelForm):
     class Meta:
         model = LiveStream

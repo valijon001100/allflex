@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from .models import PaymentOrder
 from .payment_config import click_configured, get_click_config, get_payme_config, payme_configured
+from .ticket_utils import fulfill_ticket_order
 from .utils import grant_subscription
 
 logger = logging.getLogger(__name__)
@@ -40,9 +41,9 @@ def verify_click_sign(params, action):
     return params.get('sign_string', '') == click_sign(*base)
 
 
-def get_click_payment_url(order, request):
+def get_click_payment_url(order, request, return_view='movie:payment_success'):
     cfg = get_click_config()
-    return_url = request.build_absolute_uri(reverse('movie:payment_success'))
+    return_url = request.build_absolute_uri(reverse(return_view))
     return (
         'https://my.click.uz/services/pay'
         f'?service_id={cfg["service_id"]}'
@@ -53,9 +54,9 @@ def get_click_payment_url(order, request):
     )
 
 
-def get_payme_checkout_url(order, request):
+def get_payme_checkout_url(order, request, return_view='movie:payment_success'):
     cfg = get_payme_config()
-    return_url = request.build_absolute_uri(reverse('movie:payment_success'))
+    return_url = request.build_absolute_uri(reverse(return_view))
     payload = {
         'm': cfg['merchant_id'],
         'ac': {'order_id': str(order.order_id)},
@@ -128,7 +129,10 @@ def _mark_order_paid(order, external_id=''):
     order.external_id = str(external_id)
     order.paid_at = timezone.now()
     order.save(update_fields=['status', 'external_id', 'paid_at'])
-    grant_subscription(order.user, order.plan, order.amount)
+    if order.order_type == PaymentOrder.ORDER_TICKET:
+        fulfill_ticket_order(order)
+    elif order.plan_id:
+        grant_subscription(order.user, order.plan, order.amount)
 
 
 def _payme_auth_ok(request):

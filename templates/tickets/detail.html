@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:24px 20px 48px;max-width:900px">
+    <p style="margin-bottom:8px"><a href="{{ event.category.get_absolute_url }}" style="color:#9ca3af">← {{ category_name }}</a></p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:24px">
+        <div style="flex:0 0 280px;max-width:100%">
+            {% if event.poster %}
+            <img src="{{ event.poster.url }}" alt="{{ event.title }}" style="width:100%;border-radius:12px">
+            {% else %}
+            <div style="width:100%;aspect-ratio:2/3;background:linear-gradient(135deg,#1a1d27,#2a1040);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:72px">{{ event.category.icon }}</div>
+            {% endif %}
+        </div>
+        <div style="flex:1;min-width:260px">
+            <h1 style="color:#fff;margin:0 0 12px">{{ event.title }}</h1>
+            <p style="color:#9ca3af;margin-bottom:8px">📅 {{ event.event_date|date:"d.m.Y H:i" }}</p>
+            <p style="color:#9ca3af;margin-bottom:8px">📍 {{ event.venue }}, {{ event.city }}</p>
+            <p style="color:#fff;font-size:28px;font-weight:700;margin:16px 0">{{ event.price|floatformat:0 }} <span style="font-size:16px;color:#9ca3af">{% trans 'so\'m' %}</span></p>
+            {% if event.is_sold_out %}
+            <div class="alert alert-warning">{% trans 'Biletlar tugagan.' %}</div>
+            {% else %}
+            <p style="color:#2ecc71;margin-bottom:20px">{% trans 'Qolgan biletlar' %}: {{ event.tickets_left }}</p>
+            {% endif %}
+            {% if event.description %}
+            <div style="color:#ccc;line-height:1.6;margin-bottom:24px">{{ event.description|linebreaks }}</div>
+            {% endif %}
+
+            {% if not event.is_sold_out %}
+            {% if request.user.is_authenticated %}
+            <div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:20px">
+                <h3 style="color:#fff;margin:0 0 16px;font-size:18px">{% trans 'Bilet sotib olish' %}</h3>
+                {% if click_ready %}
+                <form method="post" action="{% url 'movie:ticket_checkout' %}" style="margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+                    {% csrf_token %}
+                    <input type="hidden" name="event_id" value="{{ event.pk }}">
+                    <input type="hidden" name="provider" value="click">
+                    <label style="color:#9ca3af">{% trans 'Soni' %}:</label>
+                    <input type="number" name="quantity" value="1" min="1" max="10" class="form-control" style="width:70px;display:inline-block">
+                    <button type="submit" class="btn btn-primary" style="background:#2b7cff;border:none;padding:12px 24px;font-weight:600">Click</button>
+                </form>
+                {% endif %}
+                {% if payme_ready %}
+                <form method="post" action="{% url 'movie:ticket_checkout' %}" style="margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+                    {% csrf_token %}
+                    <input type="hidden" name="event_id" value="{{ event.pk }}">
+                    <input type="hidden" name="provider" value="payme">
+                    <label style="color:#9ca3af">{% trans 'Soni' %}:</label>
+                    <input type="number" name="quantity" value="1" min="1" max="10" class="form-control" style="width:70px;display:inline-block">
+                    <button type="submit" class="btn btn-default" style="background:#00cbcb;color:#003;padding:12px 24px;font-weight:600;border:none">Payme</button>
+                </form>
+                {% endif %}
+                {% if test_mode %}
+                <form method="post" action="{% url 'movie:test_ticket_purchase' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="event_id" value="{{ event.pk }}">
+                    <input type="number" name="quantity" value="1" min="1" max="10" class="form-control" style="width:70px;display:inline-block;margin-right:8px">
+                    <button type="submit" class="btn btn-default" style="border:1px dashed #6b7280;color:#9ca3af;background:transparent">{% trans 'Sinov (DEBUG)' %}</button>
+                </form>
+                {% endif %}
+                {% if not click_ready and not payme_ready and not test_mode %}
+                <p style="color:#9ca3af">{% trans 'To\'lov tizimi sozlanmagan. Admin bilan bog\'laning.' %}</p>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                {% trans 'Bilet sotib olish uchun' %} <a href="{% url 'movie:login' %}?next={{ request.path }}">{% trans 'kiring' %}</a>.
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

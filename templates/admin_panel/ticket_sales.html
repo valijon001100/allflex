@@ -1,0 +1,36 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Bilet sotuvlari' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🧾 {% trans 'Bilet sotuvlari' %}</h1>
+    <a href="{% url 'movie:admin_ticket_list' %}" class="btn-outline">{% trans 'Tadbirlar' %}</a>
+</div>
+
+<div class="panel-card panel-card--table">
+    <div class="table-responsive">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Kod' %}</th>
+                <th>{% trans 'Tadbir' %}</th>
+                <th>{% trans 'Foydalanuvchi' %}</th>
+                <th>{% trans 'Sana' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ticket in page_obj %}
+        <tr>
+            <td><code style="color:#2ecc71">{{ ticket.ticket_code }}</code></td>
+            <td>{{ ticket.event.title }}</td>
+            <td>{{ ticket.user.username }}</td>
+            <td>{{ ticket.created_at|date:"d.m.Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;padding:32px">{% trans 'Sotuvlar yo\'q.' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

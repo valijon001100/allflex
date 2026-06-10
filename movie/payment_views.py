@@ -134,6 +134,7 @@ def checkout(request):
 
     order = PaymentOrder.objects.create(
         user=request.user,
+        order_type=PaymentOrder.ORDER_SUBSCRIPTION,
         plan=plan,
         provider=provider,
         amount=plan.price,
@@ -196,6 +197,7 @@ def test_subscribe(request):
     )
     order = PaymentOrder.objects.create(
         user=request.user,
+        order_type=PaymentOrder.ORDER_SUBSCRIPTION,
         plan=plan,
         provider=PaymentOrder.PROVIDER_TEST,
         amount=plan.price,

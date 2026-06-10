@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="main" class="container" style="padding:24px 20px 48px;max-width:900px">
+    <h1 style="color:#fff;margin-bottom:24px">🎫 {% trans 'Mening biletlarim' %}</h1>
+
+    {% for ticket in tickets %}
+    <div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:20px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center">
+        <div>
+            <div style="color:#fff;font-size:18px;font-weight:600;margin-bottom:4px">{{ ticket.event.title }}</div>
+            <div style="color:#9ca3af;font-size:14px">{{ ticket.event.category.icon }} {{ ticket.event.event_date|date:"d.m.Y H:i" }}</div>
+            <div style="color:#9ca3af;font-size:14px">{{ ticket.event.venue }}, {{ ticket.event.city }}</div>
+        </div>
+        <div style="text-align:right">
+            <div style="color:#9ca3af;font-size:12px;margin-bottom:4px">{% trans 'Bilet kodi' %}</div>
+            <div style="color:#2ecc71;font-size:22px;font-weight:700;font-family:monospace;letter-spacing:2px">{{ ticket.ticket_code }}</div>
+        </div>
+    </div>
+    {% empty %}
+    <p style="color:#9ca3af;text-align:center;padding:40px">{% trans 'Sizda hali bilet yo\'q.' %} <a href="{% url 'movie:ticket_home' %}">{% trans 'Bilet sotib olish' %}</a></p>
+    {% endfor %}
+</div>
+{% endblock %}

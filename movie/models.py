@@ -393,7 +393,83 @@ class PaymentSettings(models.Model):
         return 'To\'lov sozlamalari'
 
 
+class TicketCategory(models.Model):
+  CATEGORY_KINO = 'kino'
+  CATEGORY_TEATR = 'teatr'
+  CATEGORY_SIRK = 'sirk'
+
+  name = models.CharField(max_length=100)
+  name_uz = models.CharField(max_length=100, blank=True, default='')
+  name_en = models.CharField(max_length=100, blank=True, default='')
+  slug = models.SlugField(max_length=50, unique=True)
+  icon = models.CharField(max_length=8, default='🎫')
+  order = models.PositiveIntegerField(default=0)
+  is_active = models.BooleanField(default=True)
+
+  class Meta:
+    verbose_name = 'Bilet bo\'limi'
+    verbose_name_plural = 'Bilet bo\'limlari'
+    ordering = ['order', 'name']
+
+  def get_translated_name(self, lang='ru'):
+    if lang == 'uz' and self.name_uz:
+      return self.name_uz
+    if lang == 'en' and self.name_en:
+      return self.name_en
+    return self.name
+
+  def get_absolute_url(self):
+    return reverse('movie:ticket_category', kwargs={'slug': self.slug})
+
+  def __str__(self):
+    return self.name
+
+
+class TicketEvent(models.Model):
+  category = models.ForeignKey(
+    TicketCategory, on_delete=models.CASCADE, related_name='events',
+  )
+  title = models.CharField(max_length=250)
+  slug = models.SlugField(max_length=120, unique=True)
+  description = models.TextField(blank=True)
+  venue = models.CharField(max_length=200)
+  city = models.CharField(max_length=100, default='Toshkent')
+  event_date = models.DateTimeField()
+  poster = models.ImageField(upload_to='ticket_posters/%Y/%m', blank=True, null=True)
+  price = models.DecimalField(max_digits=10, decimal_places=2)
+  quantity_total = models.PositiveIntegerField(default=100)
+  quantity_sold = models.PositiveIntegerField(default=0)
+  is_active = models.BooleanField(default=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    verbose_name = 'Tadbir'
+    verbose_name_plural = 'Tadbirlar'
+    ordering = ['event_date']
+
+  @property
+  def tickets_left(self):
+    return max(0, self.quantity_total - self.quantity_sold)
+
+  @property
+  def is_sold_out(self):
+    return self.tickets_left <= 0
+
+  def get_absolute_url(self):
+    return reverse('movie:ticket_detail', kwargs={'slug': self.slug})
+
+  def __str__(self):
+    return self.title
+
+
 class PaymentOrder(models.Model):
+    ORDER_SUBSCRIPTION = 'subscription'
+    ORDER_TICKET = 'ticket'
+    ORDER_TYPE_CHOICES = [
+        (ORDER_SUBSCRIPTION, 'Subscription'),
+        (ORDER_TICKET, 'Ticket'),
+    ]
+
     PROVIDER_CLICK = 'click'
     PROVIDER_PAYME = 'payme'
     PROVIDER_TEST = 'test'
@@ -415,8 +491,19 @@ class PaymentOrder(models.Model):
     ]
 
     order_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    order_type = models.CharField(
+        max_length=20, choices=ORDER_TYPE_CHOICES, default=ORDER_SUBSCRIPTION,
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payment_orders')
-    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.PROTECT, related_name='orders')
+    plan = models.ForeignKey(
+        SubscriptionPlan, on_delete=models.PROTECT,
+        related_name='orders', null=True, blank=True,
+    )
+    ticket_event = models.ForeignKey(
+        TicketEvent, on_delete=models.PROTECT,
+        related_name='orders', null=True, blank=True,
+    )
+    ticket_quantity = models.PositiveIntegerField(default=1)
     provider = models.CharField(max_length=10, choices=PROVIDER_CHOICES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
@@ -434,6 +521,24 @@ class PaymentOrder(models.Model):
     @property
     def amount_tiyin(self):
         return int(self.amount * 100)
+
+
+class PurchasedTicket(models.Model):
+  order = models.ForeignKey(
+    PaymentOrder, on_delete=models.CASCADE, related_name='purchased_tickets',
+  )
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='purchased_tickets')
+  event = models.ForeignKey(TicketEvent, on_delete=models.PROTECT, related_name='sold_tickets')
+  ticket_code = models.CharField(max_length=32, unique=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    verbose_name = 'Sotilgan bilet'
+    verbose_name_plural = 'Sotilgan biletlar'
+    ordering = ['-created_at']
+
+  def __str__(self):
+    return f'{self.ticket_code} — {self.event.title}'
 
 
 class LiveStream(models.Model):

@@ -1,0 +1,54 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Biletlar' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🎫 {% trans 'Tadbirlar' %}</h1>
+    <a href="{% url 'movie:admin_ticket_add' %}" class="btn-admin">+ {% trans 'Qo\'shish' %}</a>
+</div>
+
+<form class="search-bar" method="get">
+    <input type="text" name="q" value="{{ q }}" placeholder="{% trans 'Qidirish...' %}">
+    <select name="category" class="form-control" style="max-width:160px;background:#252836;border:1px solid #2a2d3a;color:#fff;border-radius:8px;padding:10px">
+        <option value="">{% trans 'Barchasi' %}</option>
+        <option value="kino" {% if cat == 'kino' %}selected{% endif %}>Kino</option>
+        <option value="teatr" {% if cat == 'teatr' %}selected{% endif %}>Teatr</option>
+        <option value="sirk" {% if cat == 'sirk' %}selected{% endif %}>Sirk</option>
+    </select>
+    <button type="submit" class="btn-admin">{% trans 'Qidirish' %}</button>
+</form>
+
+<div class="panel-card panel-card--table">
+    <div class="table-responsive">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Nomi' %}</th>
+                <th>{% trans 'Bo\'lim' %}</th>
+                <th>{% trans 'Sana' %}</th>
+                <th>{% trans 'Narx' %}</th>
+                <th>{% trans 'Qolgan' %}</th>
+                <th>{% trans 'Действия' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for event in page_obj %}
+        <tr>
+            <td><strong>{{ event.title }}</strong></td>
+            <td>{{ event.category.icon }} {{ event.category.name }}</td>
+            <td>{{ event.event_date|date:"d.m.Y H:i" }}</td>
+            <td>{{ event.price|floatformat:0 }}</td>
+            <td>{{ event.tickets_left }} / {{ event.quantity_total }}</td>
+            <td>
+                <a href="{% url 'movie:admin_ticket_edit' event.pk %}" class="btn-outline btn-sm">{% trans 'Редактировать' %}</a>
+                <a href="{% url 'movie:admin_ticket_delete' event.pk %}" class="btn-outline btn-sm" style="color:#e74c3c">{% trans 'Удалить' %}</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:32px">{% trans 'Tadbirlar yo\'q.' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}
