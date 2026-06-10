@@ -3,8 +3,7 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 
-# Django (collected static — qayta yaratiladi)
-static/
+# Django
 db.sqlite3
 *.log
 
