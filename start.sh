@@ -1,9 +1,20 @@
 #!/usr/bin/env bash
 set -o errexit
 
-python manage.py migrate --no-input
-python manage.py load_initial_data
-python manage.py load_ticket_data
-python manage.py ensure_protection_data
+echo "Running migrations..."
+if ! python manage.py migrate --no-input; then
+    echo "Migrate failed, retrying in 5s..."
+    sleep 5
+    python manage.py migrate --no-input
+fi
 
-exec gunicorn kinobase.wsgi:application --bind "0.0.0.0:${PORT:-8000}"
+python manage.py load_initial_data || true
+python manage.py load_ticket_data || true
+python manage.py ensure_protection_data || true
+
+echo "Starting gunicorn..."
+exec gunicorn kinobase.wsgi:application \
+    --bind "0.0.0.0:${PORT:-8000}" \
+    --workers "${WEB_CONCURRENCY:-1}" \
+    --timeout 120 \
+    --preload

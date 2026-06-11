@@ -27,4 +27,4 @@ services:
           name: alflix-db
           property: connectionString
       - key: WEB_CONCURRENCY
-        value: "2"
+        value: "1"
