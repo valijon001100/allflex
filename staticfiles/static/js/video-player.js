@@ -74,7 +74,7 @@
             '.player-capture-shield-global{display:none;position:fixed;inset:0;z-index:2147483646;background:#000}',
             '.player-capture-shield-global.is-active{display:block}',
             '.player-video-wrap video{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}',
-            '.movie-viewer-watermark{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:35;font-size:10px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.6);pointer-events:none;user-select:none;font-family:Arial,Helvetica,sans-serif;white-space:nowrap}',
+            '.movie-viewer-watermark{position:absolute;left:12px;top:12px;z-index:35;font-size:10px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.6);pointer-events:none;user-select:none;font-family:Arial,Helvetica,sans-serif;white-space:nowrap;transition:left 3.5s ease-in-out,top 3.5s ease-in-out}',
             '.player-seek-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#1a1d27;color:#fff}',
             '.player-seek-btn{background:#2a2d3a;border:1px solid #4067b7;color:#fff;border-radius:4px;padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;line-height:1.2}',
             '.player-seek-btn:hover{background:#4067b7}',
@@ -83,9 +83,66 @@
             '.player-fs-btn{min-width:36px;padding:4px 8px}',
             '.player-video-wrap:fullscreen,.player-video-wrap:-webkit-full-screen{width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center}',
             '.player-video-wrap:fullscreen video,.player-video-wrap:-webkit-full-screen video{width:100%;height:100%;max-height:100%;object-fit:contain}',
-            '.player-video-wrap:fullscreen .movie-viewer-watermark,.player-video-wrap:-webkit-full-screen .movie-viewer-watermark{bottom:24px;font-size:12px;z-index:2147483647}'
+            '.player-video-wrap:fullscreen .movie-viewer-watermark,.player-video-wrap:-webkit-full-screen .movie-viewer-watermark{font-size:12px;z-index:2147483647}'
         ].join('');
         document.head.appendChild(style);
+    }
+
+    function startWatermarkMotion(wrap, watermark, options) {
+        options = options || {};
+        var motionTimer = null;
+
+        function getBottomPad() {
+            if (typeof options.getBottomPad === 'function') {
+                return options.getBottomPad();
+            }
+            return 52;
+        }
+
+        function moveWatermark() {
+            var w = wrap.clientWidth;
+            var h = wrap.clientHeight;
+            if (!w || !h) return;
+            var wmW = watermark.offsetWidth || 90;
+            var wmH = watermark.offsetHeight || 14;
+            var margin = 12;
+            var pad = getBottomPad();
+            var maxX = Math.max(margin, w - wmW - margin);
+            var maxY = Math.max(margin, h - wmH - pad);
+            var x = margin + Math.random() * Math.max(0, maxX - margin);
+            var y = margin + Math.random() * Math.max(0, maxY - margin);
+            watermark.style.left = Math.round(x) + 'px';
+            watermark.style.top = Math.round(y) + 'px';
+            watermark.style.bottom = 'auto';
+            watermark.style.right = 'auto';
+            watermark.style.transform = 'none';
+        }
+
+        function scheduleNext(delay) {
+            clearTimeout(motionTimer);
+            motionTimer = setTimeout(function () {
+                moveWatermark();
+                scheduleNext(3500 + Math.random() * 2500);
+            }, delay);
+        }
+
+        function onResize() {
+            moveWatermark();
+        }
+
+        requestAnimationFrame(function () {
+            moveWatermark();
+            scheduleNext(4000);
+        });
+        window.addEventListener('resize', onResize);
+
+        return {
+            reposition: moveWatermark,
+            destroy: function () {
+                clearTimeout(motionTimer);
+                window.removeEventListener('resize', onResize);
+            },
+        };
     }
 
     function setupCaptureProtection(wrap, video, onSuspend, onResume) {
@@ -199,6 +256,7 @@
     }
 
     window.KinoPlayer = {
+        startWatermarkMotion: startWatermarkMotion,
         init: function (containerId, streams, options) {
             options = options || {};
             var container = document.getElementById(containerId);
@@ -226,13 +284,11 @@
             wrap.className = 'player-video-wrap';
             wrap.appendChild(video);
 
+            var watermarkMotion = null;
             if (options.watermark) {
                 var watermark = document.createElement('div');
                 watermark.className = 'movie-viewer-watermark';
                 watermark.textContent = options.watermark;
-                if (video.controls) {
-                    watermark.style.bottom = '52px';
-                }
                 wrap.appendChild(watermark);
             }
 
@@ -379,12 +435,9 @@
             function updateWatermarkLayout() {
                 var wm = wrap.querySelector('.movie-viewer-watermark');
                 if (!wm) return;
-                if (isWrapFullscreen()) {
-                    wm.style.bottom = '24px';
-                    wm.style.fontSize = '12px';
-                } else {
-                    wm.style.bottom = video.controls ? '52px' : '12px';
-                    wm.style.fontSize = '10px';
+                wm.style.fontSize = isWrapFullscreen() ? '12px' : '10px';
+                if (watermarkMotion) {
+                    watermarkMotion.reposition();
                 }
             }
 
@@ -523,6 +576,18 @@
             }
 
             setupCaptureProtection(wrap, video, clearVideoSource, reloadCurrent);
+
+            if (options.watermark) {
+                var wmEl = wrap.querySelector('.movie-viewer-watermark');
+                if (wmEl) {
+                    watermarkMotion = startWatermarkMotion(wrap, wmEl, {
+                        getBottomPad: function () {
+                            if (isWrapFullscreen()) return 24;
+                            return video.controls ? 52 : 12;
+                        },
+                    });
+                }
+            }
 
             function applyMode(mode, resumeAt) {
                 currentMode = mode;
