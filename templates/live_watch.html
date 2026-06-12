@@ -70,13 +70,13 @@ document.addEventListener('DOMContentLoaded', function () {
     KinoPlayer.init('liveplayer', {'720': '{{ stream.get_playback_url|escapejs }}'}, { watermark: viewerCode });
     if (viewerCode) {
         var wrap = document.querySelector('#liveplayer .player-video-wrap');
-        if (wrap && !wrap.querySelector('.movie-viewer-watermark')) {
-            var wm = document.createElement('div');
-            wm.className = 'movie-viewer-watermark';
-            wm.textContent = viewerCode;
-            wrap.appendChild(wm);
-            KinoPlayer.startWatermarkMotion(wrap, wm, {
-                getBottomPad: function () { return 52; }
+        var video = wrap && wrap.querySelector('video');
+        var canvas = wrap && wrap.querySelector('.player-video-canvas');
+        if (wrap && video && canvas && !wrap.classList.contains('player-video-wrap--burn')) {
+            wrap.classList.add('player-video-wrap--burn');
+            video.controls = false;
+            KinoPlayer.startCanvasBurn(wrap, video, canvas, viewerCode, {
+                getBottomPad: function () { return 12; }
             });
         }
     }

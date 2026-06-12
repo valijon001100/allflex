@@ -52,8 +52,11 @@ def _check_stream_referrer(request, movie):
     )
 
 
-def _apply_stream_security_headers(response):
-    response['Content-Disposition'] = 'inline'
+def _apply_stream_security_headers(response, subscriber_code=''):
+    if subscriber_code:
+        response['Content-Disposition'] = f'inline; filename="alfix-{subscriber_code}.mp4"'
+    else:
+        response['Content-Disposition'] = 'inline'
     response['Cache-Control'] = 'no-store, no-cache, must-revalidate, private'
     response['Pragma'] = 'no-cache'
     response['X-Content-Type-Options'] = 'nosniff'
@@ -88,7 +91,8 @@ def protected_stream(request, movie_id, quality):
                 response['X-Alflix-Viewer'] = profile.subscriber_code
             if movie.watermark_token:
                 response['X-Alflix-Watermark'] = movie.watermark_token
-            return _apply_stream_security_headers(response)
+            code = profile.subscriber_code if profile else ''
+            return _apply_stream_security_headers(response, code)
         if stream.url:
             return HttpResponseRedirect(stream.url)
 

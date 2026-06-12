@@ -74,6 +74,9 @@
             '.player-capture-shield-global{display:none;position:fixed;inset:0;z-index:2147483646;background:#000}',
             '.player-capture-shield-global.is-active{display:block}',
             '.player-video-wrap video{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none;user-drag:none}',
+            '.player-video-wrap--burn video{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;clip:rect(0,0,0,0)}',
+            '.player-video-canvas{display:block;width:100%;background:#000;cursor:pointer}',
+            '.player-video-wrap.is-protected .player-video-canvas{visibility:hidden!important;opacity:0!important}',
             '.movie-viewer-watermark{position:absolute;left:12px;top:12px;z-index:35;font-size:10px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.6);pointer-events:none;user-select:none;font-family:Arial,Helvetica,sans-serif;white-space:nowrap;transition:left 3.5s ease-in-out,top 3.5s ease-in-out}',
             '.player-seek-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#1a1d27;color:#fff}',
             '.player-seek-btn{background:#2a2d3a;border:1px solid #4067b7;color:#fff;border-radius:4px;padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;line-height:1.2}',
@@ -86,6 +89,143 @@
             '.player-video-wrap:fullscreen .movie-viewer-watermark,.player-video-wrap:-webkit-full-screen .movie-viewer-watermark{font-size:12px;z-index:2147483647}'
         ].join('');
         document.head.appendChild(style);
+    }
+
+    function startCanvasBurn(wrap, video, canvas, watermarkText, options) {
+        options = options || {};
+        var ctx = canvas.getContext('2d');
+        var rafId = null;
+        var motionTimer = null;
+        var wmX = 12;
+        var wmY = 12;
+        var wmTargetX = 12;
+        var wmTargetY = 12;
+        var fontSize = 10;
+
+        function getBottomPad() {
+            if (typeof options.getBottomPad === 'function') {
+                return options.getBottomPad();
+            }
+            return 12;
+        }
+
+        function measureText() {
+            ctx.font = '600 ' + fontSize + 'px Arial, Helvetica, sans-serif';
+            return ctx.measureText(watermarkText);
+        }
+
+        function getBounds() {
+            var margin = 12;
+            var pad = getBottomPad();
+            var metrics = measureText();
+            var textW = metrics.width || 90;
+            var textH = fontSize + 4;
+            var maxX = Math.max(margin, canvas.width - textW - margin);
+            var maxY = Math.max(margin, canvas.height - textH - pad);
+            return { margin: margin, maxX: maxX, maxY: maxY, textH: textH };
+        }
+
+        function pickTarget() {
+            var b = getBounds();
+            wmTargetX = b.margin + Math.random() * Math.max(0, b.maxX - b.margin);
+            wmTargetY = b.margin + Math.random() * Math.max(0, b.maxY - b.margin);
+        }
+
+        function syncSize() {
+            var vw = video.videoWidth;
+            var vh = video.videoHeight;
+            var wrapW = wrap.clientWidth || video.clientWidth;
+            if (!wrapW) return;
+            var displayH;
+            if (vw && vh) {
+                displayH = Math.round(wrapW * vh / vw);
+            } else {
+                displayH = Math.round(wrapW * 9 / 16);
+            }
+            canvas.style.width = wrapW + 'px';
+            canvas.style.height = displayH + 'px';
+            if (canvas.width !== wrapW || canvas.height !== displayH) {
+                canvas.width = wrapW;
+                canvas.height = displayH;
+                pickTarget();
+                wmX = wmTargetX;
+                wmY = wmTargetY;
+            }
+        }
+
+        function drawWatermark() {
+            if (!watermarkText) return;
+            var metrics = measureText();
+            ctx.font = '600 ' + fontSize + 'px Arial, Helvetica, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.92)';
+            ctx.shadowColor = 'rgba(0,0,0,0.9)';
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 1;
+            ctx.shadowBlur = 3;
+            ctx.fillText(watermarkText, wmX, wmY + fontSize);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255,255,255,0.18)';
+            ctx.font = '600 8px Arial, Helvetica, sans-serif';
+            ctx.fillText(watermarkText, 8, canvas.height - 10);
+        }
+
+        function renderFrame() {
+            if (!wrap.isConnected) return;
+            wmX += (wmTargetX - wmX) * 0.035;
+            wmY += (wmTargetY - wmY) * 0.035;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (video.readyState >= 2 && video.videoWidth) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            drawWatermark();
+            rafId = requestAnimationFrame(renderFrame);
+        }
+
+        function scheduleMotion() {
+            clearTimeout(motionTimer);
+            motionTimer = setTimeout(function () {
+                pickTarget();
+                scheduleMotion();
+            }, 3500 + Math.random() * 2500);
+        }
+
+        function onResize() {
+            syncSize();
+        }
+
+        canvas.addEventListener('click', function () {
+            if (video.paused) {
+                video.play().catch(function () {});
+            } else {
+                video.pause();
+            }
+        });
+
+        video.addEventListener('loadedmetadata', syncSize);
+        video.addEventListener('loadeddata', syncSize);
+        window.addEventListener('resize', onResize);
+        syncSize();
+        pickTarget();
+        wmX = wmTargetX;
+        wmY = wmTargetY;
+        scheduleMotion();
+        renderFrame();
+
+        return {
+            syncSize: syncSize,
+            setFontSize: function (size) {
+                fontSize = size;
+                pickTarget();
+            },
+            destroy: function () {
+                cancelAnimationFrame(rafId);
+                clearTimeout(motionTimer);
+                window.removeEventListener('resize', onResize);
+            },
+        };
     }
 
     function startWatermarkMotion(wrap, watermark, options) {
@@ -270,6 +410,7 @@
 
     window.KinoPlayer = {
         startWatermarkMotion: startWatermarkMotion,
+        startCanvasBurn: startCanvasBurn,
         init: function (containerId, streams, options) {
             options = options || {};
             var container = document.getElementById(containerId);
@@ -286,19 +427,25 @@
             var currentMode = localStorage.getItem('kino_quality_mode') || 'auto';
             var currentQuality = null;
             var hlsInstance = null;
+            var useCanvasBurn = !!options.watermark;
             var video = document.createElement('video');
-            video.controls = true;
+            video.controls = !useCanvasBurn;
             video.playsInline = true;
             video.preload = 'metadata';
             video.style.width = '100%';
             video.style.background = '#000';
-
             var wrap = document.createElement('div');
-            wrap.className = 'player-video-wrap';
+            wrap.className = 'player-video-wrap' + (useCanvasBurn ? ' player-video-wrap--burn' : '');
             wrap.appendChild(video);
 
+            var canvasBurn = null;
             var watermarkMotion = null;
-            if (options.watermark) {
+            if (useCanvasBurn) {
+                var canvas = document.createElement('canvas');
+                canvas.className = 'player-video-canvas';
+                canvas.setAttribute('aria-label', 'Video player');
+                wrap.appendChild(canvas);
+            } else if (options.watermark) {
                 var watermark = document.createElement('div');
                 watermark.className = 'movie-viewer-watermark';
                 watermark.textContent = options.watermark;
@@ -446,6 +593,11 @@
             }
 
             function updateWatermarkLayout() {
+                if (canvasBurn) {
+                    canvasBurn.setFontSize(isWrapFullscreen() ? 12 : 10);
+                    canvasBurn.syncSize();
+                    return;
+                }
                 var wm = wrap.querySelector('.movie-viewer-watermark');
                 if (!wm) return;
                 wm.style.fontSize = isWrapFullscreen() ? '12px' : '10px';
@@ -590,7 +742,16 @@
 
             setupCaptureProtection(wrap, video, clearVideoSource, reloadCurrent);
 
-            if (options.watermark) {
+            if (useCanvasBurn) {
+                var canvasEl = wrap.querySelector('.player-video-canvas');
+                if (canvasEl) {
+                    canvasBurn = startCanvasBurn(wrap, video, canvasEl, options.watermark, {
+                        getBottomPad: function () {
+                            return isWrapFullscreen() ? 24 : 12;
+                        },
+                    });
+                }
+            } else if (options.watermark) {
                 var wmEl = wrap.querySelector('.movie-viewer-watermark');
                 if (wmEl) {
                     watermarkMotion = startWatermarkMotion(wrap, wmEl, {
