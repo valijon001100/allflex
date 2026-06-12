@@ -73,7 +73,7 @@
             '.player-video-wrap.is-protected video{visibility:hidden!important;opacity:0!important;filter:brightness(0)!important}',
             '.player-capture-shield-global{display:none;position:fixed;inset:0;z-index:2147483646;background:#000}',
             '.player-capture-shield-global.is-active{display:block}',
-            '.player-video-wrap video{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}',
+            '.player-video-wrap video{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none;user-drag:none}',
             '.movie-viewer-watermark{position:absolute;left:12px;top:12px;z-index:35;font-size:10px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.6);pointer-events:none;user-select:none;font-family:Arial,Helvetica,sans-serif;white-space:nowrap;transition:left 3.5s ease-in-out,top 3.5s ease-in-out}',
             '.player-seek-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#1a1d27;color:#fff}',
             '.player-seek-btn{background:#2a2d3a;border:1px solid #4067b7;color:#fff;border-radius:4px;padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;line-height:1.2}',
@@ -244,10 +244,23 @@
         }, 2000);
 
         video.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+        wrap.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+        video.addEventListener('dragstart', function (e) { e.preventDefault(); });
         video.setAttribute('controlsList', 'nodownload noremoteplayback');
         video.setAttribute('disablePictureInPicture', '');
         video.setAttribute('draggable', 'false');
         video.disablePictureInPicture = true;
+
+        document.addEventListener('keydown', function (e) {
+            if (!wrap.isConnected) return;
+            var key = (e.key || '').toLowerCase();
+            if (e.ctrlKey && (key === 's' || key === 'u')) {
+                e.preventDefault();
+            }
+            if (e.ctrlKey && e.shiftKey && (key === 's' || key === 'i' || key === 'j')) {
+                e.preventDefault();
+            }
+        });
 
         return {
             activate: activate,

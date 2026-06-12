@@ -2,8 +2,6 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 
-from .utils import user_can_watch_movies
-
 
 STAFF_ALLOWED_PREFIXES = (
     '/panel/',
@@ -38,7 +36,7 @@ class StaffRedirectMiddleware:
 
 
 class ProtectedMediaMiddleware:
-    """Block direct access to uploaded movie videos without subscription."""
+    """Block all direct access to uploaded movie video files."""
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -46,6 +44,7 @@ class ProtectedMediaMiddleware:
 
     def __call__(self, request):
         if request.path.startswith(self.prefix):
-            if not user_can_watch_movies(request.user):
-                return HttpResponseForbidden()
+            return HttpResponseForbidden(
+                'Videoni yuklab olish yoki to\'g\'ridan-to\'g\'ri ochish taqiqlangan.',
+            )
         return self.get_response(request)
