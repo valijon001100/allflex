@@ -128,7 +128,9 @@
                     </ul>
                 </li>
                 {% else %}
-                <li><a href="{{ cat.obj.get_absolute_url }}">{{ cat.name }}</a></li>
+                <li class="{% if cat.obj.slug == 'teleperedachi' %}{% if request.resolver_match.url_name == 'channel_list' or request.resolver_match.url_name == 'channel_watch' %}active{% endif %}{% endif %}">
+                    <a href="{{ cat.obj.get_absolute_url }}">{{ cat.name }}</a>
+                </li>
                 {% endif %}
                 {% endfor %}
                 <li><a href="{% url 'movie:live_list' %}" style="color:#ff6b6b">{% trans 'Прямой эфир' %}</a></li>

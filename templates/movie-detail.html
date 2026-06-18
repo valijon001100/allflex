@@ -143,14 +143,42 @@
 
                         <div class="tab-content">
                             <div class="tab-pane active" id="online">
-                                {% if is_guest_movie_share %}
-                                <div style="background:#1e3a2f;border:1px solid #2ecc71;border-radius:6px;padding:10px 14px;margin-bottom:12px;color:#a7f3d0;font-size:13px">
-                                    {% trans 'Korporativ havola orqali kirdingiz — faqat shu kino ochiq (obuna shart emas).' %}
+                                {% if is_share_link_viewer and not is_authenticated and not share_requires_registration %}
+                                <div id="sharePreviewBanner" style="background:#1e3a2f;border:1px solid #2ecc71;border-radius:6px;padding:10px 14px;margin-bottom:12px;color:#a7f3d0;font-size:13px">
+                                    {% trans 'Korporativ havola — faqat shu kino. 9 daqiqadan keyin xavfsizlik uchun ro\'yxatdan o\'ting.' %}
+                                    <strong id="shareCountdown" style="margin-left:8px"></strong>
+                                </div>
+                                {% elif is_share_link_viewer and is_authenticated %}
+                                <div style="background:#1e2a3a;border:1px solid #3b82f6;border-radius:6px;padding:10px 14px;margin-bottom:12px;color:#bfdbfe;font-size:13px">
+                                    {% trans 'Korporativ havola orqali — faqat shu kino ochiq. Boshqa kinolar bloklangan.' %}
                                 </div>
                                 {% endif %}
                                 {% if can_watch %}
-                                <div id="videoplayer_content" class="videoplayer-wrap">
+                                <div id="videoplayer_content" class="videoplayer-wrap" style="position:relative">
                                     <div id="videoplayer"></div>
+                                    <div id="shareRegisterOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.88);z-index:20;align-items:center;justify-content:center;padding:24px;text-align:center">
+                                        <div style="max-width:420px">
+                                            <div style="font-size:42px;margin-bottom:12px">🛡️</div>
+                                            <h3 style="color:#fff;margin:0 0 10px">{% trans 'Kino xavfsizligi uchun ro\'yxatdan o\'ting' %}</h3>
+                                            <p style="color:#9ca3af;font-size:14px;margin-bottom:20px">
+                                                {% trans '9 daqiqalik bepul ko\'rish tugadi. Davom etish uchun ro\'yxatdan o\'ting — faqat shu kino ochiq qoladi.' %}
+                                            </p>
+                                            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+                                                <a href="{% url 'movie:register' %}?next={{ request.path }}" class="btn btn-primary watch-lock-btn">{% trans 'Регистрация' %}</a>
+                                                <a href="{% url 'movie:login' %}?next={{ request.path }}" class="btn btn-default watch-lock-btn-outline">{% trans 'Вход' %}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% elif share_requires_registration %}
+                                <div class="watch-lock">
+                                    <div class="watch-lock-icon">🛡️</div>
+                                    <h3>{% trans 'Kino xavfsizligi uchun ro\'yxatdan o\'ting' %}</h3>
+                                    <p>{% trans '9 daqiqalik bepul ko\'rish tugadi. Davom etish uchun ro\'yxatdan o\'ting — faqat shu kino ochiq qoladi.' %}</p>
+                                    <div class="watch-lock-actions">
+                                        <a href="{% url 'movie:register' %}?next={{ request.path }}" class="btn btn-primary watch-lock-btn">{% trans 'Регистрация' %}</a>
+                                        <a href="{% url 'movie:login' %}?next={{ request.path }}" class="btn btn-default watch-lock-btn-outline">{% trans 'Вход' %}</a>
+                                    </div>
                                 </div>
                                 {% elif is_authenticated %}
                                 <div class="watch-lock">
@@ -375,6 +403,33 @@
                         getBottomPad: function () { return 12; }
                     });
                 }
+            }
+
+            var previewSeconds = {{ share_preview_seconds|default:0 }};
+            var countdownEl = document.getElementById('shareCountdown');
+            var overlay = document.getElementById('shareRegisterOverlay');
+            if (previewSeconds > 0 && countdownEl) {
+                var remaining = previewSeconds;
+                function fmt(sec) {
+                    var m = Math.floor(sec / 60);
+                    var s = sec % 60;
+                    return m + ':' + (s < 10 ? '0' : '') + s;
+                }
+                countdownEl.textContent = '(' + fmt(remaining) + ')';
+                var timer = setInterval(function () {
+                    remaining -= 1;
+                    if (remaining <= 0) {
+                        clearInterval(timer);
+                        countdownEl.textContent = '';
+                        var video = document.querySelector('#videoplayer video');
+                        if (video) { try { video.pause(); } catch (e) {} }
+                        if (overlay) {
+                            overlay.style.display = 'flex';
+                        }
+                        return;
+                    }
+                    countdownEl.textContent = '(' + fmt(remaining) + ')';
+                }, 1000);
             }
         });
     </script>

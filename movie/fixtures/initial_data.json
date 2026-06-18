@@ -30,9 +30,9 @@
   "pk": 3,
   "fields": {
     "parent": null,
-    "name": "Телепередачи",
-    "name_uz": "Teleko'rsatuvlar",
-    "name_en": "TV Shows",
+    "name": "Телеканалы",
+    "name_uz": "Telekanallar",
+    "name_en": "TV Channels",
     "slug": "teleperedachi",
     "is_active": true,
     "order": 3

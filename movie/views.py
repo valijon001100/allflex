@@ -26,6 +26,10 @@ from .utils import (
     get_corporate_membership,
     get_movie_share_access,
     get_or_create_movie_share_link,
+    is_share_only_viewer,
+    mark_share_session_registered,
+    share_guest_preview_expired,
+    share_guest_preview_remaining,
 )
 
 
@@ -42,6 +46,8 @@ def _viewer_subscriber_code(user):
 
 
 def category_list(request, slug):
+    if slug == 'teleperedachi':
+        return channel_list(request)
     category = get_object_or_404(Category, slug=slug)
     subcategories = Category.objects.filter(parent=category, is_active=True).order_by('order', 'name')
     movies = Movie.objects.filter(category=category)
@@ -77,8 +83,11 @@ def my_login(request):
             if user is not None:
                 clear_login_attempts(request)
                 login(request, user)
+                mark_share_session_registered(request)
                 if user.is_staff:
                     return HttpResponseRedirect("/panel/")
+                if request.session.get('corporate_movie_share') and next_url.startswith('/'):
+                    return HttpResponseRedirect(next_url)
                 if try_apply_pending_referral(request):
                     return HttpResponseRedirect("/my-subscription/")
                 if next_url.startswith('/'):
@@ -115,7 +124,10 @@ def registration_view(request):
             profile.phone = form.cleaned_data.get('phone', '').strip()
             profile.save(update_fields=['phone'])
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            mark_share_session_registered(request)
             messages.success(request, _("Ro'yxatdan muvaffaqiyatli o'tdingiz!"))
+            if request.session.get('corporate_movie_share') and next_url.startswith('/'):
+                return HttpResponseRedirect(next_url)
             if try_apply_pending_referral(request):
                 return HttpResponseRedirect("/my-subscription/")
             if next_url.startswith('/'):
@@ -145,10 +157,15 @@ class MovieDetailView(FormMixin,DetailView):
         context['is_authenticated'] = user.is_authenticated
         context['has_trailer'] = self.object.has_trailer()
         context['trailer_stream_url'] = self.object.get_trailer_stream_path()
-        context['is_guest_movie_share'] = bool(
-            get_movie_share_access(self.request, self.object)
-            and not (user.is_authenticated and user_can_watch_movies(user))
+        context['is_share_link_viewer'] = is_share_only_viewer(self.request, self.object, user)
+        context['share_requires_registration'] = bool(
+            is_share_only_viewer(self.request, self.object, user)
+            and not user.is_authenticated
+            and share_guest_preview_expired(self.request, self.object)
         )
+        remaining = share_guest_preview_remaining(self.request, self.object)
+        context['share_preview_seconds'] = remaining if remaining is not None else 0
+        context['is_guest_movie_share'] = context['is_share_link_viewer']
         corp = get_corporate_membership(user) if user.is_authenticated else None
         context['corporate_movie_share_url'] = ''
         if corp and user_can_watch_movies(user):
@@ -255,3 +272,13 @@ def live_watch(request, slug):
         'has_access': has_access,
         'viewer_watermark': _viewer_subscriber_code(user) if has_access else '',
     })
+
+
+def channel_list(request):
+    channels = TvChannel.objects.filter(is_active=True).order_by('order', 'name')
+    return render(request, 'channel_list.html', {'channels': channels})
+
+
+def channel_watch(request, slug):
+    channel = get_object_or_404(TvChannel, slug=slug, is_active=True)
+    return render(request, 'channel_watch.html', {'channel': channel})

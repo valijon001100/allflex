@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block content %}
+<div id="main" class="container">
+    <h1>{{ channel.name }}</h1>
+    {% if channel.quality %}
+    <span class="label label-default" style="font-size:13px;margin-bottom:16px;display:inline-block">{{ channel.quality }}</span>
+    {% endif %}
+
+    <div id="watch_block" style="margin-top:16px">
+        <div id="channelplayer" style="background:#000;border-radius:8px;overflow:hidden;min-height:400px;position:relative"></div>
+    </div>
+
+    <a href="{% url 'movie:channel_list' %}" style="display:inline-block;margin-top:20px">← {% trans 'Barcha telekanallar' %}</a>
+</div>
+
+<script src="{% static 'static/player/378/hls.js' %}"></script>
+<script src="{% static 'static/js/video-player.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    KinoPlayer.init('channelplayer', {'720': '{{ channel.stream_url|escapejs }}'}, {});
+});
+</script>
+{% endblock %}

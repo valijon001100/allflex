@@ -21,6 +21,8 @@ urlpatterns = [
     path("like/", views.likeMovie, name='likeMovie'),
     path("live/", views.live_list, name='live_list'),
     path("live/<slug:slug>/", views.live_watch, name='live_watch'),
+    path("telekanallar/", views.channel_list, name='channel_list'),
+    path("telekanallar/<slug:slug>/", views.channel_watch, name='channel_watch'),
 
     path("tickets/", ticket_views.ticket_home, name='ticket_home'),
     path("tickets/my/", ticket_views.my_tickets, name='my_tickets'),

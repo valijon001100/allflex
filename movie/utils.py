@@ -1,6 +1,7 @@
 import uuid
-from datetime import timedelta
+from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.db.models import F
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -9,6 +10,10 @@ from .models import CorporateMember, CorporateMovieShareLink, CorporateOrganizat
 
 SESSION_REFERRAL_KEY = 'corporate_referral_code'
 SESSION_MOVIE_SHARE_KEY = 'corporate_movie_share'
+
+
+def share_guest_preview_seconds():
+    return int(getattr(settings, 'CORPORATE_SHARE_PREVIEW_SECONDS', 9 * 60))
 
 
 def get_corporate_membership(user):
@@ -73,12 +78,80 @@ def get_movie_share_access(request, movie):
     return None
 
 
+def _share_session_started_at(request):
+    data = request.session.get(SESSION_MOVIE_SHARE_KEY) or {}
+    raw = data.get('started_at')
+    if not raw:
+        return None
+    try:
+        started = datetime.fromisoformat(raw)
+    except (TypeError, ValueError):
+        return None
+    if timezone.is_naive(started):
+        started = timezone.make_aware(started, timezone.get_current_timezone())
+    return started
+
+
+def mark_share_session_registered(request):
+    data = request.session.get(SESSION_MOVIE_SHARE_KEY)
+    if not data:
+        return
+    data['registered'] = True
+    data['registered_at'] = timezone.now().isoformat()
+    request.session[SESSION_MOVIE_SHARE_KEY] = data
+    request.session.modified = True
+
+
+def share_guest_preview_remaining(request, movie):
+    if not movie or not request:
+        return None
+    if not get_movie_share_access(request, movie):
+        return None
+    if request.user.is_authenticated:
+        return None
+    data = request.session.get(SESSION_MOVIE_SHARE_KEY) or {}
+    if data.get('registered'):
+        return None
+    started = _share_session_started_at(request)
+    if not started:
+        return share_guest_preview_seconds()
+    if timezone.is_naive(started):
+        started = timezone.make_aware(started, timezone.get_current_timezone())
+    elapsed = (timezone.now() - started).total_seconds()
+    return max(0, int(share_guest_preview_seconds() - elapsed))
+
+
+def share_guest_preview_expired(request, movie):
+    remaining = share_guest_preview_remaining(request, movie)
+    if remaining is None:
+        return False
+    return remaining <= 0
+
+
+def share_movie_access_granted(request, movie):
+    if not get_movie_share_access(request, movie):
+        return False
+    if request.user.is_authenticated:
+        mark_share_session_registered(request)
+        return True
+    return not share_guest_preview_expired(request, movie)
+
+
+def is_share_only_viewer(request, movie, user=None):
+    if not get_movie_share_access(request, movie):
+        return False
+    user = user if user is not None else getattr(request, 'user', None)
+    if user and user.is_authenticated and user_can_watch_movies(user):
+        return False
+    return True
+
+
 def user_can_watch_movie(user, movie, request=None):
     if user.is_authenticated and user.is_staff:
         return True
     if user.is_authenticated and user_can_watch_movies(user):
         return True
-    if request and get_movie_share_access(request, movie):
+    if request and share_movie_access_granted(request, movie):
         return True
     return False
 
@@ -103,6 +176,8 @@ def activate_movie_share_session(request, link):
     request.session[SESSION_MOVIE_SHARE_KEY] = {
         'token': link.token,
         'movie_id': link.movie_id,
+        'started_at': timezone.now().isoformat(),
+        'registered': request.user.is_authenticated,
     }
     CorporateMovieShareLink.objects.filter(pk=link.pk).update(
         views_count=F('views_count') + 1,

@@ -29,6 +29,8 @@ class Category(models.Model):
         ordering = ['order', 'name']
 
     def get_absolute_url(self):
+        if self.slug == 'teleperedachi':
+            return reverse('movie:channel_list')
         return reverse('movie:category_list', kwargs={'slug': self.slug})
 
     def get_translated_name(self, lang='ru'):
@@ -204,6 +206,10 @@ class Movie(models.Model):
         can_full = bool(user and user.is_authenticated and user_can_watch_movies(user))
         if not can_full and not share:
             return {}
+        if share and not can_full:
+            from .utils import share_movie_access_granted
+            if not share_movie_access_granted(request, self):
+                return {}
 
         share_token = share.token if share and not can_full else ''
         user_id = user.pk if can_full and user.is_authenticated else 0
@@ -878,3 +884,31 @@ class LiveStream(models.Model):
 
     def get_playback_url(self):
         return self.stream_url or ''
+
+
+class TvChannel(models.Model):
+    name = models.CharField('Kanal nomi', max_length=200)
+    slug = models.SlugField(max_length=120, unique=True)
+    tvg_id = models.CharField('TVG ID', max_length=120, blank=True, default='')
+    stream_url = models.URLField('Stream URL')
+    quality = models.CharField(max_length=40, blank=True, default='')
+    is_active = models.BooleanField('Faol', default=True)
+    order = models.PositiveIntegerField('Tartib', default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Telekanal'
+        verbose_name_plural = 'Telekanallar'
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('movie:channel_watch', kwargs={'slug': self.slug})
+
+    def get_logo_url(self):
+        channel_id = (self.tvg_id or '').split('@', 1)[0].strip()
+        if channel_id:
+            return f'https://logo.iptv.org/{channel_id}.png'
+        return ''

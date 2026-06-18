@@ -58,7 +58,7 @@ def corporate_movie_share(request, token):
     activate_movie_share_session(request, link)
     messages.info(
         request,
-        _('Faqat «%(title)s» kinosini ko\'rishingiz mumkin. Boshqa kinolar uchun obuna kerak.')
+        _('«%(title)s» — 9 daqiqa bepul ko\'rish, keyin ro\'yxatdan o\'ting (faqat shu kino ochiq).')
         % {'title': link.movie.get_translated_title()},
     )
     return redirect('movie:detail', slug=link.movie.slug)

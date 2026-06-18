@@ -17,7 +17,7 @@ from .stream_utils import (
     verify_trailer_request,
 )
 from .telegram_storage import TelegramStorageError, iter_telegram_stream
-from .utils import get_movie_share_access, user_can_watch_movies
+from .utils import get_movie_share_access, share_movie_access_granted, user_can_watch_movies
 
 
 def _allowed_referer_hosts():
@@ -90,8 +90,9 @@ def protected_stream(request, movie_id, quality):
     user = request.user if request.user.is_authenticated else None
     movie_obj = Movie.objects.filter(pk=movie_id).first()
     has_full = bool(user and user_can_watch_movies(user))
-    share = get_movie_share_access(request, movie_obj) if not has_full else None
-    has_share = share is not None and share.movie_id == int(movie_id)
+    has_share = bool(
+        movie_obj and not has_full and share_movie_access_granted(request, movie_obj),
+    )
 
     if not has_full and not has_share:
         return HttpResponseForbidden()
@@ -107,11 +108,13 @@ def protected_stream(request, movie_id, quality):
         return HttpResponseForbidden('Videoni faqat sayt playeri orqali ko\'rish mumkin.')
 
     movie = get_object_or_404(Movie, pk=movie_id)
-    profile = UserProfile.objects.filter(user=user).first() if has_full else None
+    profile = None
+    if user:
+        profile = UserProfile.objects.filter(user=user).first()
     if has_full:
         log_watch_history(request, user, movie, profile)
-    stream = MovieStream.objects.filter(movie=movie, quality=quality).first()
     code = profile.subscriber_code if profile else ''
+    stream = MovieStream.objects.filter(movie=movie, quality=quality).first()
 
     if stream:
         if stream.telegram_file_id:

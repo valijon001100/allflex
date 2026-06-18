@@ -1,7 +1,7 @@
 CATEGORY_NAMES = {
     'filmy': {'uz': 'Filmlar', 'ru': 'Фильмы', 'en': 'Movies'},
     'serialy': {'uz': 'Seriallar', 'ru': 'Сериалы', 'en': 'TV Series'},
-    'teleperedachi': {'uz': 'Teleko\'rsatuvlar', 'ru': 'Телепередачи', 'en': 'TV Shows'},
+    'teleperedachi': {'uz': 'Telekanallar', 'ru': 'Телеканалы', 'en': 'TV Channels'},
     'multfilmy': {'uz': 'Multfilmlar', 'ru': 'Мультфильмы', 'en': 'Cartoons'},
     'skoro-na-sajte': {'uz': 'Tez kunda', 'ru': 'Скоро на сайте', 'en': 'Coming Soon'},
     'podborki': {'uz': 'To\'plamlar', 'ru': 'Подборки', 'en': 'Collections'},
