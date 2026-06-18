@@ -108,7 +108,7 @@ def build_country_nav(queryset, lang=None, include_empty=True):
     return items
 
 
-POPULAR_COUNTRY_CODES = ('uz', 'ru', 'us', 'tr', 'kz', 'de', 'fr', 'gb', 'ua', 'in', 'cn', 'jp', 'kr')
+POPULAR_COUNTRY_CODES = ('uz', 'ru', 'us', 'tr', 'kz', 'de', 'fr', 'uk', 'ua', 'in', 'cn', 'jp', 'kr')
 
 
 def popular_country_nav(lang=None, queryset=None):
