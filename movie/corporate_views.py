@@ -1,11 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
+from .models import CorporateMovieShareLink
 from .utils import (
     SESSION_REFERRAL_KEY,
+    activate_movie_share_session,
     get_corporate_membership,
     get_referrer_member,
     join_corporate_via_referral,
@@ -42,6 +45,23 @@ def corporate_join(request, code):
         'seats_available': org.seats_available,
         'org_valid': org.is_valid,
     })
+
+
+def corporate_movie_share(request, token):
+    link = CorporateMovieShareLink.objects.filter(
+        token=token,
+        is_active=True,
+    ).select_related('movie', 'member__organization').first()
+    if not link or not link.is_valid:
+        return render(request, 'corporate/share_invalid.html', status=404)
+
+    activate_movie_share_session(request, link)
+    messages.info(
+        request,
+        _('Faqat «%(title)s» kinosini ko\'rishingiz mumkin. Boshqa kinolar uchun obuna kerak.')
+        % {'title': link.movie.get_translated_title()},
+    )
+    return redirect('movie:detail', slug=link.movie.slug)
 
 
 @login_required

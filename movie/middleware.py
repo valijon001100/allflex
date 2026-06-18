@@ -41,9 +41,10 @@ class ProtectedMediaMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         self.prefix = settings.MEDIA_URL + 'movies/videos/'
+        self.trailer_prefix = settings.MEDIA_URL + 'movies/trailers/'
 
     def __call__(self, request):
-        if request.path.startswith(self.prefix):
+        if request.path.startswith(self.prefix) or request.path.startswith(self.trailer_prefix):
             return HttpResponseForbidden(
                 'Videoni yuklab olish yoki to\'g\'ridan-to\'g\'ri ochish taqiqlangan.',
             )

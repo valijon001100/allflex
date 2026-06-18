@@ -20,6 +20,10 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
+            {% if field.name == 'trailer' %}
+            <h4 style="color:#fff;margin:24px 0 12px;padding-top:16px;border-top:1px solid #2a2d3a">{% trans 'Treler' %}</h4>
+            <p style="color:#9ca3af;font-size:13px;margin-bottom:16px">{% trans 'Treler barchaga ochiq — obuna talab qilinmaydi. Telegram kanalga ham yuboriladi.' %}</p>
+            {% endif %}
             {% if field.name == 'stream_480' %}
             <h4 style="color:#fff;margin:24px 0 12px;padding-top:16px;border-top:1px solid #2a2d3a">{% trans 'Качества видео' %}</h4>
             <p style="color:#9ca3af;font-size:13px;margin-bottom:16px">

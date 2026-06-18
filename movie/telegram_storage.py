@@ -90,6 +90,79 @@ def _parse_upload_result(result: dict) -> Tuple[str, str]:
     return media['file_id'], media.get('file_unique_id', '')
 
 
+def format_file_size(size_bytes: int) -> str:
+    if size_bytes <= 0:
+        return '—'
+    if size_bytes >= 1024 ** 3:
+        return f'{size_bytes / (1024 ** 3):.2f} GB'
+    if size_bytes >= 1024 ** 2:
+        return f'{size_bytes / (1024 ** 2):.1f} MB'
+    if size_bytes >= 1024:
+        return f'{size_bytes / 1024:.0f} KB'
+    return f'{size_bytes} B'
+
+
+def build_movie_telegram_caption(
+    movie,
+    quality_label: str,
+    file_size: int = 0,
+    file_name: str = '',
+) -> str:
+    lines = [f'🎬 {movie.title}']
+
+    if movie.title_uz and movie.title_uz.strip() != movie.title.strip():
+        lines.append(f'🇺🇿 {movie.title_uz.strip()}')
+    if movie.title_en and movie.title_en.strip() != movie.title.strip():
+        lines.append(f'🇬🇧 {movie.title_en.strip()}')
+
+    lines.append('')
+    lines.append(f'📊 Sifat: {quality_label}')
+    lines.append(f'📦 Hajm: {format_file_size(file_size)}')
+
+    if file_name:
+        lines.append(f'📁 Fayl: {os.path.basename(file_name)}')
+
+    langs = []
+    if movie.title:
+        langs.append('RU')
+    if movie.title_uz:
+        langs.append('UZ')
+    if movie.title_en:
+        langs.append('EN')
+    lines.append(f'🌐 Tillar: {", ".join(langs) or "RU"}')
+
+    if movie.duration:
+        lines.append(f'⏱ Davomiylik: {movie.duration}')
+    if movie.year:
+        lines.append(f'📅 Yil: {movie.year}')
+    if movie.country:
+        lines.append(f'🌍 Mamlakat: {movie.country}')
+
+    category = getattr(movie, 'category', None)
+    if category:
+        cat_label = category.name
+        if category.name_uz:
+            cat_label = f'{category.name} / {category.name_uz}'
+        lines.append(f'📂 Bo\'lim: {cat_label}')
+
+    genre_names = []
+    try:
+        genre_names = list(movie.genres.values_list('name', flat=True)[:5])
+    except Exception:
+        pass
+    if genre_names:
+        lines.append(f'🎭 Janr: {", ".join(genre_names)}')
+
+    if movie.rating:
+        lines.append(f'⭐ Reyting: {movie.rating}')
+    if movie.movie_uid:
+        lines.append(f'🆔 ID: {movie.movie_uid}')
+    if movie.is_premium:
+        lines.append('💎 Premium')
+
+    return '\n'.join(lines)[:1024]
+
+
 def _local_api_path(abs_path: str) -> str:
     container_root = getattr(settings, 'TELEGRAM_LOCAL_MEDIA_ROOT', '').strip()
     if not container_root:

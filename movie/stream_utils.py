@@ -8,7 +8,9 @@ from django.core import signing
 from django.utils import timezone
 
 STREAM_SALT = 'alflix-stream-v1'
+TRAILER_SALT = 'alflix-trailer-v1'
 STREAM_MAX_AGE = 60 * 60 * 4
+TRAILER_MAX_AGE = 60 * 60 * 24
 
 DOWNLOAD_USER_AGENTS = (
     'wget', 'curl/', 'python-requests', 'aria2', 'idm', 'internet download manager',
@@ -17,8 +19,10 @@ DOWNLOAD_USER_AGENTS = (
 )
 
 
-def sign_stream_path(path, movie_id, quality, user_id):
+def sign_stream_path(path, movie_id, quality, user_id, share_token=''):
     payload = {'m': int(movie_id), 'q': str(quality), 'u': int(user_id)}
+    if share_token:
+        payload['s'] = str(share_token)
     sig = signing.dumps(payload, salt=STREAM_SALT)
     return f'{path}?sig={sig}'
 
@@ -31,11 +35,30 @@ def verify_stream_request(request, movie_id, quality, user_id):
         data = signing.loads(sig, salt=STREAM_SALT, max_age=STREAM_MAX_AGE)
     except signing.BadSignature:
         return False
-    return (
-        data.get('m') == int(movie_id)
-        and data.get('q') == str(quality)
-        and data.get('u') == int(user_id)
-    )
+    if data.get('m') != int(movie_id) or data.get('q') != str(quality):
+        return False
+    share_token = data.get('s')
+    if share_token:
+        from .utils import verify_movie_share_token
+        return verify_movie_share_token(share_token, movie_id)
+    return data.get('u') == int(user_id)
+
+
+def sign_trailer_path(path, movie_id):
+    payload = {'m': int(movie_id), 't': 'trailer'}
+    sig = signing.dumps(payload, salt=TRAILER_SALT)
+    return f'{path}?sig={sig}'
+
+
+def verify_trailer_request(request, movie_id):
+    sig = request.GET.get('sig', '')
+    if not sig:
+        return False
+    try:
+        data = signing.loads(sig, salt=TRAILER_SALT, max_age=TRAILER_MAX_AGE)
+    except signing.BadSignature:
+        return False
+    return data.get('m') == int(movie_id) and data.get('t') == 'trailer'
 
 
 def ffmpeg_available():

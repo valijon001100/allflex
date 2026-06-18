@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+<div class="container" style="padding:60px 20px;text-align:center">
+    <h1 style="color:#fff;margin-bottom:16px">{% trans 'Havola yaroqsiz' %}</h1>
+    <p style="color:#9ca3af;max-width:480px;margin:0 auto 24px">
+        {% trans 'Korporativ kino havolasi noto\'g\'ri, muddati tugagan yoki o\'chirilgan.' %}
+    </p>
+    <a href="{% url 'movie:home' %}" class="btn btn-primary">{% trans 'Bosh sahifa' %}</a>
+</div>
+{% endblock %}

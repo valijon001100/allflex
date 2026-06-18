@@ -13,7 +13,13 @@ from .models import (
     CorporateSubscriptionRequest, LiveStream, Movie, MovieStream,
     SubscriptionPlan, TelegramChannelVideo, UserSubscription,
 )
-from .telegram_storage import TelegramStorageError, telegram_configured, upload_video_file
+from .telegram_storage import (
+    TelegramStorageError,
+    _file_size,
+    build_movie_telegram_caption,
+    telegram_configured,
+    upload_video_file,
+)
 
 STREAM_QUALITIES = ['480', '720', '1080', '4k']
 STREAM_LABELS = {'480': '480p', '720': '720p', '1080': '1080p', '4k': '4K'}
@@ -93,6 +99,14 @@ class UserRegisterForm(UserCreationForm):
 
 
 class MovieForm(forms.ModelForm):
+    trailer = forms.FileField(
+        required=False,
+        label=_('Treler'),
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': 'video/*,.mp4,.webm,.mkv,.m3u8',
+        }),
+    )
     stream_480 = forms.FileField(required=False, label=_('Видео 480p'), widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'video/*,.mp4,.webm,.mkv,.m3u8'}))
     stream_720 = forms.FileField(required=False, label=_('Видео 720p'), widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'video/*,.mp4,.webm,.mkv,.m3u8'}))
     stream_1080 = forms.FileField(required=False, label=_('Видео 1080p'), widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'video/*,.mp4,.webm,.mkv,.m3u8'}))
@@ -168,6 +182,12 @@ class MovieForm(forms.ModelForm):
         self.fields['category'].label_from_instance = _category_label
 
         if self.instance.pk:
+            if self.instance.trailer_file:
+                self.fields['trailer'].help_text = _('Joriy treler: %(file)s') % {
+                    'file': self.instance.trailer_file.name,
+                }
+            elif self.instance.trailer_telegram_file_id:
+                self.fields['trailer'].help_text = _('Telegram kanalda saqlangan treler ✓')
             for q in STREAM_QUALITIES:
                 stream = self.instance.video_streams.filter(quality=q).first()
                 hints = []
@@ -182,6 +202,49 @@ class MovieForm(forms.ModelForm):
         movie = super().save(commit=commit)
         self.telegram_warnings = []
         if commit:
+            trailer_upload = self.cleaned_data.get('trailer')
+            if trailer_upload:
+                movie.trailer_file = trailer_upload
+                movie.trailer_url = ''
+                movie.save(update_fields=['trailer_file', 'trailer_url'])
+                if telegram_configured():
+                    try:
+                        protection_changed = movie.ensure_protection_ids()
+                        if protection_changed:
+                            movie.save(update_fields=protection_changed)
+                        disk_path = ''
+                        try:
+                            if movie.trailer_file:
+                                disk_path = movie.trailer_file.path
+                        except Exception:
+                            pass
+                        size_bytes = _file_size(trailer_upload, disk_path)
+                        caption = build_movie_telegram_caption(
+                            movie,
+                            'Treler',
+                            file_size=size_bytes,
+                            file_name=getattr(trailer_upload, 'name', ''),
+                        )
+                        file_id, unique_id = upload_video_file(
+                            trailer_upload,
+                            caption=caption,
+                            file_path=disk_path,
+                        )
+                        movie.trailer_telegram_file_id = file_id
+                        movie.trailer_telegram_file_unique_id = unique_id
+                        if getattr(settings, 'TELEGRAM_DELETE_LOCAL_AFTER_UPLOAD', True):
+                            if movie.trailer_file:
+                                movie.trailer_file.delete(save=False)
+                        movie.save(update_fields=[
+                            'trailer_telegram_file_id',
+                            'trailer_telegram_file_unique_id',
+                            'trailer_file',
+                        ])
+                    except TelegramStorageError as exc:
+                        self.telegram_warnings.append(
+                            _('Treler Telegramga yuklanmadi: %(error)s') % {'error': exc},
+                        )
+
             for q in STREAM_QUALITIES:
                 uploaded = self.cleaned_data.get(f'stream_{q}')
                 tg_video_id = self.data.get(f'tg_video_{q}', '').strip()
@@ -193,13 +256,22 @@ class MovieForm(forms.ModelForm):
                     stream.save()
                     if telegram_configured():
                         try:
-                            caption = f'{movie.title} — {STREAM_LABELS.get(q, q)}'
+                            protection_changed = movie.ensure_protection_ids()
+                            if protection_changed:
+                                movie.save(update_fields=protection_changed)
                             disk_path = ''
                             try:
                                 if stream.video_file:
                                     disk_path = stream.video_file.path
                             except Exception:
                                 pass
+                            size_bytes = _file_size(uploaded, disk_path)
+                            caption = build_movie_telegram_caption(
+                                movie,
+                                STREAM_LABELS.get(q, q),
+                                file_size=size_bytes,
+                                file_name=getattr(uploaded, 'name', ''),
+                            )
                             file_id, unique_id = upload_video_file(
                                 uploaded,
                                 caption=caption,

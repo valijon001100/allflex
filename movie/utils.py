@@ -1,12 +1,14 @@
+import uuid
 from datetime import timedelta
 
+from django.db.models import F
 from django.utils import timezone
-
 from django.utils.translation import gettext as _
 
-from .models import CorporateMember, CorporateOrganization, UserSubscription
+from .models import CorporateMember, CorporateMovieShareLink, CorporateOrganization, UserSubscription
 
 SESSION_REFERRAL_KEY = 'corporate_referral_code'
+SESSION_MOVIE_SHARE_KEY = 'corporate_movie_share'
 
 
 def get_corporate_membership(user):
@@ -52,6 +54,70 @@ def user_can_watch_movies(user):
         return True
     plan = _get_access_plan(user)
     return bool(plan and plan.access_movies)
+
+
+def get_movie_share_access(request, movie):
+    if not request or not movie:
+        return None
+    data = request.session.get(SESSION_MOVIE_SHARE_KEY)
+    if not data or data.get('movie_id') != movie.pk:
+        return None
+    link = CorporateMovieShareLink.objects.filter(
+        token=data.get('token'),
+        movie=movie,
+        is_active=True,
+    ).select_related('member__organization', 'member__organization__plan').first()
+    if link and link.is_valid:
+        return link
+    request.session.pop(SESSION_MOVIE_SHARE_KEY, None)
+    return None
+
+
+def user_can_watch_movie(user, movie, request=None):
+    if user.is_authenticated and user.is_staff:
+        return True
+    if user.is_authenticated and user_can_watch_movies(user):
+        return True
+    if request and get_movie_share_access(request, movie):
+        return True
+    return False
+
+
+def get_or_create_movie_share_link(member, movie):
+    expires_at = member.organization.end_date
+    link, created = CorporateMovieShareLink.objects.get_or_create(
+        member=member,
+        movie=movie,
+        defaults={
+            'token': uuid.uuid4().hex[:16],
+            'expires_at': expires_at,
+        },
+    )
+    if not created and link.expires_at < expires_at:
+        link.expires_at = expires_at
+        link.save(update_fields=['expires_at'])
+    return link
+
+
+def activate_movie_share_session(request, link):
+    request.session[SESSION_MOVIE_SHARE_KEY] = {
+        'token': link.token,
+        'movie_id': link.movie_id,
+    }
+    CorporateMovieShareLink.objects.filter(pk=link.pk).update(
+        views_count=F('views_count') + 1,
+    )
+
+
+def verify_movie_share_token(token, movie_id):
+    if not token:
+        return False
+    link = CorporateMovieShareLink.objects.filter(
+        token=token,
+        movie_id=movie_id,
+        is_active=True,
+    ).select_related('member__organization').first()
+    return bool(link and link.is_valid)
 
 
 def user_can_watch_live(user):

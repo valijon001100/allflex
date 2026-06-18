@@ -14,9 +14,10 @@ from .stream_utils import (
     log_watch_history,
     server_watermark_enabled,
     verify_stream_request,
+    verify_trailer_request,
 )
 from .telegram_storage import TelegramStorageError, iter_telegram_stream
-from .utils import user_can_watch_movies
+from .utils import get_movie_share_access, user_can_watch_movies
 
 
 def _allowed_referer_hosts():
@@ -85,12 +86,18 @@ def _apply_stream_security_headers(response, subscriber_code=''):
     return response
 
 
-@login_required
 def protected_stream(request, movie_id, quality):
-    if not user_can_watch_movies(request.user):
+    user = request.user if request.user.is_authenticated else None
+    movie_obj = Movie.objects.filter(pk=movie_id).first()
+    has_full = bool(user and user_can_watch_movies(user))
+    share = get_movie_share_access(request, movie_obj) if not has_full else None
+    has_share = share is not None and share.movie_id == int(movie_id)
+
+    if not has_full and not has_share:
         return HttpResponseForbidden()
 
-    if not verify_stream_request(request, movie_id, quality, request.user.pk):
+    verify_user_id = user.pk if has_full and user else 0
+    if not verify_stream_request(request, movie_id, quality, verify_user_id):
         return HttpResponseForbidden('Stream havolasi yaroqsiz yoki muddati tugagan.')
 
     if not _is_embedded_playback(request):
@@ -100,8 +107,9 @@ def protected_stream(request, movie_id, quality):
         return HttpResponseForbidden('Videoni faqat sayt playeri orqali ko\'rish mumkin.')
 
     movie = get_object_or_404(Movie, pk=movie_id)
-    profile = UserProfile.objects.filter(user=request.user).first()
-    log_watch_history(request, request.user, movie, profile)
+    profile = UserProfile.objects.filter(user=user).first() if has_full else None
+    if has_full:
+        log_watch_history(request, user, movie, profile)
     stream = MovieStream.objects.filter(movie=movie, quality=quality).first()
     code = profile.subscriber_code if profile else ''
 
@@ -169,6 +177,56 @@ def protected_stream(request, movie_id, quality):
     if quality == '720' and movie.video_url:
         return HttpResponseForbidden(
             'Tashqi video havolasidan yuklab olish taqiqlangan. Admin panelda fayl yuklang.',
+        )
+
+    raise Http404()
+
+
+def public_trailer_stream(request, movie_id):
+    if not verify_trailer_request(request, movie_id):
+        return HttpResponseForbidden('Treler havolasi yaroqsiz yoki muddati tugagan.')
+
+    if not _is_embedded_playback(request):
+        return HttpResponseForbidden('Treilerni faqat sayt playeri orqali ko\'rish mumkin.')
+
+    movie = get_object_or_404(Movie, pk=movie_id)
+    if not movie.has_trailer():
+        raise Http404()
+
+    if movie.trailer_telegram_file_id:
+        range_header = request.META.get('HTTP_RANGE', '')
+        try:
+            generator, tg_headers = iter_telegram_stream(
+                movie.trailer_telegram_file_id,
+                range_header=range_header,
+            )
+            status = 206 if range_header and tg_headers.get('Content-Range') else 200
+            response = StreamingHttpResponse(
+                generator,
+                status=status,
+                content_type=tg_headers.get('Content-Type', 'video/mp4'),
+            )
+            for header, value in tg_headers.items():
+                response[header] = value
+            return _apply_stream_security_headers(response)
+        except TelegramStorageError:
+            pass
+
+    if movie.trailer_file:
+        content_type, _ = mimetypes.guess_type(movie.trailer_file.name)
+        response = FileResponse(
+            movie.trailer_file.open('rb'),
+            content_type=content_type or 'video/mp4',
+            as_attachment=False,
+        )
+        response['Accept-Ranges'] = 'bytes'
+        if movie.trailer_file.size:
+            response['Content-Length'] = movie.trailer_file.size
+        return _apply_stream_security_headers(response)
+
+    if movie.trailer_url:
+        return HttpResponseForbidden(
+            'Tashqi treler havolasidan yuklab olish taqiqlangan. Admin panelda fayl yuklang.',
         )
 
     raise Http404()

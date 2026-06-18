@@ -115,6 +115,20 @@
 
                         <div class="body" itemprop="description">{{object.description}}</div>
 
+                        {% if corporate_movie_share_url %}
+                        <div class="corporate-share-box" style="margin-top:20px;padding:16px;background:#1a1d29;border:1px solid #2a2d3a;border-radius:8px">
+                            <h4 style="color:#fff;font-size:15px;margin:0 0 8px">🔗 {% trans 'Korporativ kino havolasi' %}</h4>
+                            <p style="color:#9ca3af;font-size:13px;margin:0 0 12px">
+                                {% trans 'Xodimlaringizga yuboring — obunasiz faqat shu kinoni ko\'radi.' %}
+                            </p>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <input type="text" id="corpMovieShareUrl" value="{{ corporate_movie_share_url }}" readonly
+                                    style="flex:1;min-width:200px;background:#252836;border:1px solid #2a2d3a;color:#fff;font-size:12px;padding:8px 12px;border-radius:4px">
+                                <button type="button" class="btn btn-default" onclick="copyCorpMovieShare()">{% trans 'Nusxalash' %}</button>
+                            </div>
+                        </div>
+                        {% endif %}
+
                     </div>
 
 
@@ -122,11 +136,18 @@
 
                         <ul class="nav nav-tabs" id="tab-options">
                             <li class="active"><a href="#online" data-toggle="tab">{% trans 'Смотреть онлайн' %}</a></li>
+                            {% if has_trailer %}
                             <li><a href="#trailer" data-toggle="tab">{% trans 'Трейлер' %}</a></li>
+                            {% endif %}
                         </ul>
 
                         <div class="tab-content">
                             <div class="tab-pane active" id="online">
+                                {% if is_guest_movie_share %}
+                                <div style="background:#1e3a2f;border:1px solid #2ecc71;border-radius:6px;padding:10px 14px;margin-bottom:12px;color:#a7f3d0;font-size:13px">
+                                    {% trans 'Korporativ havola orqali kirdingiz — faqat shu kino ochiq (obuna shart emas).' %}
+                                </div>
+                                {% endif %}
                                 {% if can_watch %}
                                 <div id="videoplayer_content" class="videoplayer-wrap">
                                     <div id="videoplayer"></div>
@@ -152,7 +173,14 @@
                                 </div>
                                 {% endif %}
                             </div>
-                            <div class="tab-pane" id="trailer"></div>
+                            {% if has_trailer %}
+                            <div class="tab-pane" id="trailer">
+                                <div id="trailerplayer_content" class="videoplayer-wrap">
+                                    <div id="trailerplayer"></div>
+                                </div>
+                                <p style="color:#9ca3af;font-size:13px;margin-top:10px">{% trans 'Treler barcha foydalanuvchilarga ochiq (obuna shart emas).' %}</p>
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="row" style="margin-top:12px">
@@ -312,13 +340,24 @@
     </style>
 
     <script>
+        function copyCorpMovieShare() {
+            var el = document.getElementById('corpMovieShareUrl');
+            if (!el) return;
+            el.select();
+            el.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(el.value).catch(function () {
+                document.execCommand('copy');
+            });
+        }
         document.addEventListener('DOMContentLoaded', function () {
             $('#tab-options a[href="#online"]').tab('show');
         });
     </script>
-    {% if can_watch %}
+    {% if has_trailer or can_watch %}
     <script src="{% static 'static/player/378/hls.js' %}"></script>
     <script src="{% static 'static/js/video-player.js' %}"></script>
+    {% endif %}
+    {% if can_watch %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var streams = {{ video_streams_json|safe }};
@@ -336,6 +375,16 @@
                         getBottomPad: function () { return 12; }
                     });
                 }
+            }
+        });
+    </script>
+    {% endif %}
+    {% if has_trailer %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var trailerUrl = '{{ trailer_stream_url|escapejs }}';
+            if (trailerUrl) {
+                KinoPlayer.init('trailerplayer', { '720': trailerUrl }, {});
             }
         });
     </script>

@@ -34,6 +34,7 @@ urlpatterns = [
     path("subscribe/corporate/<int:plan_id>/", payment_views.corporate_request, name='corporate_request'),
     path("corporate/join/<str:code>/", corporate_views.corporate_join, name='corporate_join'),
     path("corporate/join/<str:code>/confirm/", corporate_views.corporate_join_confirm, name='corporate_join_confirm'),
+    path("share/<str:token>/", corporate_views.corporate_movie_share, name='corporate_movie_share'),
     path("my-subscription/", payment_views.my_subscription, name='my_subscription'),
     path("subscription/cancel/", payment_views.cancel_subscription_view, name='cancel_subscription'),
     path("subscription/", payment_views.subscription_plans, name='subscription_plans'),
@@ -44,6 +45,7 @@ urlpatterns = [
     path("payment/click/", payment_views.click_callback, name='click_callback'),
     path("payment/payme/", payment_views.payme_callback, name='payme_callback'),
     path("stream/<int:movie_id>/<str:quality>/", stream_views.protected_stream, name='protected_stream'),
+    path("stream/<int:movie_id>/trailer/", stream_views.public_trailer_stream, name='public_trailer'),
     path("telegram/webhook/", telegram_webhook.telegram_webhook, name='telegram_webhook'),
 
     path("content-api/", api_views.content_api_info, name='content_api_info'),

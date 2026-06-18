@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect ,HttpResponse, JsonResponse
 from django.contrib import messages
@@ -20,8 +20,12 @@ from .translations import translate_category
 from .utils import (
     try_apply_pending_referral,
     user_can_watch_live,
+    user_can_watch_movie,
     user_can_watch_movies,
     user_has_subscription,
+    get_corporate_membership,
+    get_movie_share_access,
+    get_or_create_movie_share_link,
 )
 
 
@@ -135,14 +139,27 @@ class MovieDetailView(FormMixin,DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        has_access = user_can_watch_movies(user)
+        has_access = user_can_watch_movie(user, self.object, self.request)
         context['has_access'] = has_access
         context['can_watch'] = has_access
         context['is_authenticated'] = user.is_authenticated
+        context['has_trailer'] = self.object.has_trailer()
+        context['trailer_stream_url'] = self.object.get_trailer_stream_path()
+        context['is_guest_movie_share'] = bool(
+            get_movie_share_access(self.request, self.object)
+            and not (user.is_authenticated and user_can_watch_movies(user))
+        )
+        corp = get_corporate_membership(user) if user.is_authenticated else None
+        context['corporate_movie_share_url'] = ''
+        if corp and user_can_watch_movies(user):
+            link = get_or_create_movie_share_link(corp, self.object)
+            context['corporate_movie_share_url'] = self.request.build_absolute_uri(
+                reverse('movie:corporate_movie_share', kwargs={'token': link.token}),
+            )
         if has_access:
-            viewer_code = _viewer_subscriber_code(user)
+            viewer_code = _viewer_subscriber_code(user) if user.is_authenticated else ''
             context['video_streams_json'] = json.dumps(
-                self.object.get_protected_streams_dict(user=user),
+                self.object.get_protected_streams_dict(user=user, request=self.request),
             )
             context['viewer_watermark'] = viewer_code
             context['server_watermark_burn'] = server_watermark_enabled() and bool(viewer_code)

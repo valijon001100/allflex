@@ -101,6 +101,15 @@ class Movie(models.Model):
     year = models.CharField(max_length=5, default="2026")
     country = models.CharField(max_length=50, default="USA")
     video_url = models.URLField("Video URL", blank=True, default="")
+    trailer_file = models.FileField(
+        upload_to='movies/trailers/%Y/%m/',
+        blank=True,
+        null=True,
+        verbose_name='Treler',
+    )
+    trailer_url = models.URLField('Treler URL', blank=True, default='')
+    trailer_telegram_file_id = models.CharField(max_length=255, blank=True, default='')
+    trailer_telegram_file_unique_id = models.CharField(max_length=255, blank=True, default='')
     is_premium = models.BooleanField("Premium only", default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     movie_uid = models.CharField('Yagona ID', max_length=20, unique=True, blank=True, null=True)
@@ -126,6 +135,20 @@ class Movie(models.Model):
     def __str__(self):
         """Unicode representation of Movie."""
         return f"{self.title}"
+
+    def has_trailer(self):
+        return bool(
+            self.trailer_telegram_file_id
+            or self.trailer_file
+            or self.trailer_url
+        )
+
+    def get_trailer_stream_path(self):
+        from .stream_utils import sign_trailer_path
+        if not self.has_trailer():
+            return ''
+        path = reverse('movie:public_trailer', kwargs={'movie_id': self.pk})
+        return sign_trailer_path(path, self.pk)
 
     def ensure_protection_ids(self):
         from .protection_utils import (
@@ -173,8 +196,18 @@ class Movie(models.Model):
             streams['720'] = self.video_url
         return streams
 
-    def get_protected_streams_dict(self, user=None):
+    def get_protected_streams_dict(self, user=None, request=None):
         from .stream_utils import sign_stream_path
+        from .utils import get_movie_share_access, user_can_watch_movies
+
+        share = get_movie_share_access(request, self) if request else None
+        can_full = bool(user and user.is_authenticated and user_can_watch_movies(user))
+        if not can_full and not share:
+            return {}
+
+        share_token = share.token if share and not can_full else ''
+        user_id = user.pk if can_full and user.is_authenticated else 0
+
         streams = {}
         for s in self.video_streams.all():
             if s.has_playback():
@@ -182,16 +215,16 @@ class Movie(models.Model):
                     'movie:protected_stream',
                     kwargs={'movie_id': self.pk, 'quality': s.quality},
                 )
-                if user and user.is_authenticated:
-                    path = sign_stream_path(path, self.pk, s.quality, user.pk)
+                path = sign_stream_path(
+                    path, self.pk, s.quality, user_id, share_token=share_token,
+                )
                 streams[s.quality] = path
         if not streams and self.video_url:
             path = reverse(
                 'movie:protected_stream',
                 kwargs={'movie_id': self.pk, 'quality': '720'},
             )
-            if user and user.is_authenticated:
-                path = sign_stream_path(path, self.pk, '720', user.pk)
+            path = sign_stream_path(path, self.pk, '720', user_id, share_token=share_token)
             streams['720'] = path
         return streams
 
@@ -412,6 +445,43 @@ class CorporateMember(models.Model):
 
     def get_referral_path(self):
         return reverse('movie:corporate_join', kwargs={'code': self.referral_code})
+
+
+class CorporateMovieShareLink(models.Model):
+    member = models.ForeignKey(
+        CorporateMember,
+        on_delete=models.CASCADE,
+        related_name='movie_share_links',
+    )
+    movie = models.ForeignKey(
+        'Movie',
+        on_delete=models.CASCADE,
+        related_name='corporate_share_links',
+    )
+    token = models.CharField(max_length=32, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    views_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = [['member', 'movie']]
+        verbose_name = 'Korporativ kino havolasi'
+        verbose_name_plural = 'Korporativ kino havolalari'
+
+    def __str__(self):
+        return f'{self.movie.title} — {self.member.user.username}'
+
+    @property
+    def is_valid(self):
+        if not self.is_active:
+            return False
+        if self.expires_at <= timezone.now():
+            return False
+        return self.member.organization.is_valid
+
+    def get_share_path(self):
+        return reverse('movie:corporate_movie_share', kwargs={'token': self.token})
 
 
 class CorporateSubscriptionRequest(models.Model):
