@@ -107,43 +107,6 @@ def _quality_from_name(name):
     return ''
 
 
-from .stream_probe import is_cinerama_url as _is_cinerama_url_probe
-
-
-def _is_cinerama_url(url):
-    return _is_cinerama_url_probe(url)
-
-
-def _is_playable_entry(stream_url, name=''):
-    if _is_cinerama_url(stream_url):
-        return False
-    if not stream_url:
-        return False
-    return True
-
-
-def _dedupe_stream_entries(entries):
-    """Bir xil tvg-id uchun Cinerama o'rniga boshqa manbani tanlash."""
-    grouped = {}
-    order = []
-    for entry in entries:
-        key = entry.get('tvg_id') or entry['name']
-        if key not in grouped:
-            grouped[key] = []
-            order.append(key)
-        grouped[key].append(entry)
-
-    result = []
-    for key in order:
-        items = grouped[key]
-        if len(items) == 1:
-            result.append(items[0])
-            continue
-        non_cinerama = [item for item in items if not _is_cinerama_url(item.get('stream_url', ''))]
-        result.extend(non_cinerama or items)
-    return result
-
-
 def _slug_for_entry(entry, country_code, used_slugs):
     tvg_id = entry.get('tvg_id', '')
     if tvg_id:
@@ -161,27 +124,12 @@ def _slug_for_entry(entry, country_code, used_slugs):
     return slug
 
 
-def _dedupe_country_stream_urls(country_code):
-    seen_urls = set()
-    for channel in TvChannel.objects.filter(country_code=country_code).order_by('order', 'pk'):
-        if channel.stream_url in seen_urls:
-            if channel.is_active or channel.is_playable:
-                channel.is_active = False
-                channel.is_playable = False
-                channel.save(update_fields=['is_active', 'is_playable'])
-        else:
-            seen_urls.add(channel.stream_url)
-
-
 def _find_existing(country_code, tvg_id, name, stream_url):
-    qs = TvChannel.objects.filter(country_code=country_code)
+    qs = TvChannel.objects.filter(country_code=country_code, stream_url=stream_url)
     if tvg_id:
         match = qs.filter(tvg_id=tvg_id).first()
         if match:
             return match
-    match = qs.filter(stream_url=stream_url).first()
-    if match:
-        return match
     return qs.filter(name=name).first()
 
 
@@ -189,7 +137,6 @@ def sync_country_channels(country_code, entries=None, replace_country=False, use
     country_code = country_code.lower()
     if entries is None:
         entries = fetch_country_playlist(country_code)
-    entries = _dedupe_stream_entries(entries)
     if replace_country:
         TvChannel.objects.filter(country_code=country_code).delete()
 
@@ -205,7 +152,6 @@ def sync_country_channels(country_code, entries=None, replace_country=False, use
         stream_url = entry['stream_url']
         logo_url = resolve_logo_url(tvg_id)
         order = order_base + index
-        is_playable = _is_playable_entry(stream_url, name)
 
         existing = _find_existing(country_code, tvg_id, name, stream_url)
         if existing:
@@ -215,10 +161,8 @@ def sync_country_channels(country_code, entries=None, replace_country=False, use
                 ('quality', quality),
                 ('order', order),
                 ('is_active', True),
-                ('is_playable', is_playable),
                 ('logo_url', logo_url),
                 ('country_code', country_code),
-                ('stream_url', stream_url),
             ):
                 if getattr(existing, field) != value:
                     setattr(existing, field, value)
@@ -240,14 +184,11 @@ def sync_country_channels(country_code, entries=None, replace_country=False, use
             logo_url=logo_url,
             order=order,
             is_active=True,
-            is_playable=is_playable,
         ))
 
     if pending_create:
         TvChannel.objects.bulk_create(pending_create, batch_size=400)
         created += len(pending_create)
-
-    _dedupe_country_stream_urls(country_code)
 
     return {
         'country_code': country_code,

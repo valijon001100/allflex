@@ -895,7 +895,6 @@ class TvChannel(models.Model):
     logo_url = models.URLField('Logo URL', blank=True, default='')
     country_code = models.CharField('Mamlakat', max_length=2, default='uz', db_index=True)
     is_active = models.BooleanField('Faol', default=True)
-    is_playable = models.BooleanField('Ishlaydi', default=True, db_index=True)
     order = models.PositiveIntegerField('Tartib', default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -919,7 +918,3 @@ class TvChannel(models.Model):
     def get_player_stream_url(self):
         from django.urls import reverse
         return reverse('movie:channel_playlist', kwargs={'slug': self.slug})
-
-    @property
-    def is_cinerama_stream(self):
-        return 'cinerama.uz' in (self.stream_url or '')

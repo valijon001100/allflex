@@ -14,7 +14,6 @@ python manage.py ensure_protection_data || true
 python manage.py load_tv_channels --priority || true
 python manage.py load_tv_channels --all-countries --min-countries 50 || true
 python manage.py refresh_channel_logos || true
-python manage.py verify_tv_channels --country=uz --workers=8 || true
 
 echo "Starting gunicorn..."
 exec gunicorn kinobase.wsgi:application \

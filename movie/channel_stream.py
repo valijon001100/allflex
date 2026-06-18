@@ -12,26 +12,13 @@ IPTV_USER_AGENT = (
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
     '(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
 )
-CINERAMA_HOST = 'cinerama.uz'
-
-
-def _is_cinerama_url(url):
-    return CINERAMA_HOST in (url or '')
-
-
-def _upstream_headers(url):
-    headers = {
-        'User-Agent': IPTV_USER_AGENT,
-        'Accept': '*/*',
-    }
-    if _is_cinerama_url(url):
-        headers['Referer'] = 'https://cinerama.uz/'
-        headers['Origin'] = 'https://cinerama.uz'
-    return headers
 
 
 def _fetch_upstream(url, timeout=25):
-    request = Request(url, headers=_upstream_headers(url))
+    request = Request(url, headers={
+        'User-Agent': IPTV_USER_AGENT,
+        'Accept': '*/*',
+    })
     return urlopen(request, timeout=timeout)
 
 
