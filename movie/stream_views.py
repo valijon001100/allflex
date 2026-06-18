@@ -15,6 +15,7 @@ from .stream_utils import (
     server_watermark_enabled,
     verify_stream_request,
 )
+from .telegram_storage import TelegramStorageError, iter_telegram_stream
 from .utils import user_can_watch_movies
 
 
@@ -105,6 +106,29 @@ def protected_stream(request, movie_id, quality):
     code = profile.subscriber_code if profile else ''
 
     if stream:
+        if stream.telegram_file_id:
+            range_header = request.META.get('HTTP_RANGE', '')
+            try:
+                generator, tg_headers = iter_telegram_stream(
+                    stream.telegram_file_id,
+                    range_header=range_header,
+                )
+                status = 206 if range_header and tg_headers.get('Content-Range') else 200
+                response = StreamingHttpResponse(
+                    generator,
+                    status=status,
+                    content_type=tg_headers.get('Content-Type', 'video/mp4'),
+                )
+                for header, value in tg_headers.items():
+                    response[header] = value
+                if profile:
+                    response['X-Alflix-Viewer'] = profile.subscriber_code
+                if movie.watermark_token:
+                    response['X-Alflix-Watermark'] = movie.watermark_token
+                return _apply_stream_security_headers(response, code)
+            except TelegramStorageError:
+                pass
+
         if stream.video_file:
             content_type, _ = mimetypes.guess_type(stream.video_file.name)
             if server_watermark_enabled() and code:

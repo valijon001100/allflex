@@ -8,6 +8,7 @@ from . import stream_views
 from . import ticket_views
 from . import corporate_views
 from . import api_views
+from . import telegram_webhook
 
 app_name= 'movie'
 
@@ -43,6 +44,7 @@ urlpatterns = [
     path("payment/click/", payment_views.click_callback, name='click_callback'),
     path("payment/payme/", payment_views.payme_callback, name='payme_callback'),
     path("stream/<int:movie_id>/<str:quality>/", stream_views.protected_stream, name='protected_stream'),
+    path("telegram/webhook/", telegram_webhook.telegram_webhook, name='telegram_webhook'),
 
     path("content-api/", api_views.content_api_info, name='content_api_info'),
     path("api/v1/movies/", api_views.api_movies_list, name='api_movies_list'),
@@ -79,6 +81,7 @@ urlpatterns = [
     path('panel/movies/add/', admin_views.movie_add, name='admin_movie_add'),
     path('panel/movies/<int:pk>/edit/', admin_views.movie_edit, name='admin_movie_edit'),
     path('panel/movies/<int:pk>/delete/', admin_views.movie_delete, name='admin_movie_delete'),
+    path('panel/telegram-videos/', admin_views.telegram_video_list, name='admin_telegram_videos'),
     path('panel/users/', admin_views.user_list, name='admin_user_list'),
     path('panel/watch-history/', admin_views.watch_history_list, name='admin_watch_history'),
     path('panel/subscriptions/', admin_views.subscription_list, name='admin_subscription_list'),

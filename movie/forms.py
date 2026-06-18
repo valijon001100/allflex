@@ -5,13 +5,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from transliterate import translit
 from .models import (
     Category, Comment, CorporateMember, CorporateOrganization,
     CorporateSubscriptionRequest, LiveStream, Movie, MovieStream,
-    SubscriptionPlan, UserSubscription,
+    SubscriptionPlan, TelegramChannelVideo, UserSubscription,
 )
+from .telegram_storage import TelegramStorageError, telegram_configured, upload_video_file
 
 STREAM_QUALITIES = ['480', '720', '1080', '4k']
 STREAM_LABELS = {'480': '480p', '720': '720p', '1080': '1080p', '4k': '4K'}
@@ -65,7 +67,9 @@ class UserRegisterForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.setdefault('class', 'form-control auth-input')
-        self.fields['password1'].help_text = _('Kamida 6 ta belgi')
+        self.fields['password1'].help_text = _(
+            'Kamida 8 belgi: harf, raqam va maxsus belgi aralash (!@#$% va h.k.)'
+        )
         self.fields['password2'].label = _('Подтвердите пароль')
 
     def clean_email(self):
@@ -166,19 +170,63 @@ class MovieForm(forms.ModelForm):
         if self.instance.pk:
             for q in STREAM_QUALITIES:
                 stream = self.instance.video_streams.filter(quality=q).first()
+                hints = []
                 if stream and stream.video_file:
-                    self.fields[f'stream_{q}'].help_text = _('Joriy fayl: %(file)s') % {'file': stream.video_file.name}
+                    hints.append(_('Joriy fayl: %(file)s') % {'file': stream.video_file.name})
+                if stream and stream.telegram_file_id:
+                    hints.append(_('Telegram kanalda saqlangan ✓'))
+                if hints:
+                    self.fields[f'stream_{q}'].help_text = ' | '.join(hints)
 
     def save(self, commit=True):
         movie = super().save(commit=commit)
+        self.telegram_warnings = []
         if commit:
             for q in STREAM_QUALITIES:
                 uploaded = self.cleaned_data.get(f'stream_{q}')
+                tg_video_id = self.data.get(f'tg_video_{q}', '').strip()
+                stream, _ = MovieStream.objects.get_or_create(movie=movie, quality=q)
+
                 if uploaded:
-                    stream, _ = MovieStream.objects.get_or_create(movie=movie, quality=q)
                     stream.video_file = uploaded
                     stream.url = ''
                     stream.save()
+                    if telegram_configured():
+                        try:
+                            caption = f'{movie.title} — {STREAM_LABELS.get(q, q)}'
+                            disk_path = ''
+                            try:
+                                if stream.video_file:
+                                    disk_path = stream.video_file.path
+                            except Exception:
+                                pass
+                            file_id, unique_id = upload_video_file(
+                                uploaded,
+                                caption=caption,
+                                file_path=disk_path,
+                            )
+                            stream.telegram_file_id = file_id
+                            stream.telegram_file_unique_id = unique_id
+                            if getattr(settings, 'TELEGRAM_DELETE_LOCAL_AFTER_UPLOAD', True):
+                                if stream.video_file:
+                                    stream.video_file.delete(save=False)
+                            stream.save()
+                        except TelegramStorageError as exc:
+                            self.telegram_warnings.append(
+                                _('%(quality)s Telegramga yuklanmadi: %(error)s')
+                                % {'quality': STREAM_LABELS.get(q, q), 'error': exc},
+                            )
+                elif tg_video_id:
+                    tg_video = TelegramChannelVideo.objects.filter(
+                        pk=tg_video_id, linked_stream__isnull=True,
+                    ).first()
+                    if tg_video:
+                        stream.telegram_file_id = tg_video.file_id
+                        stream.telegram_file_unique_id = tg_video.file_unique_id
+                        stream.url = ''
+                        stream.save()
+                        tg_video.linked_stream = stream
+                        tg_video.save(update_fields=['linked_stream'])
         return movie
 
 

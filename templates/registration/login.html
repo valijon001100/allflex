@@ -9,7 +9,16 @@
         <img src="{% static 'static/images/alflix-logo.png' %}" alt="AL-FLIX" class="glass-auth-logo">
         <h2>{% trans 'Вход' %}</h2>
 
-        <form method="post" novalidate>
+        {% if login_locked %}
+        <div class="glass-errors" style="margin-bottom:20px">
+            {% trans 'Kirish vaqtincha bloklangan.' %}
+            {% if lock_remaining %}
+            <br><small>{% blocktrans with sec=lock_remaining %}Qolgan vaqt: {{ sec }} soniya{% endblocktrans %}</small>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <form method="post" novalidate{% if login_locked %} style="opacity:.55;pointer-events:none"{% endif %}>
             {% csrf_token %}
             {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
 

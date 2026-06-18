@@ -177,7 +177,7 @@ class Movie(models.Model):
         from .stream_utils import sign_stream_path
         streams = {}
         for s in self.video_streams.all():
-            if s.get_playback_url():
+            if s.has_playback():
                 path = reverse(
                     'movie:protected_stream',
                     kwargs={'movie_id': self.pk, 'quality': s.quality},
@@ -207,18 +207,53 @@ class MovieStream(models.Model):
     quality = models.CharField(max_length=10, choices=QUALITY_CHOICES)
     video_file = models.FileField(upload_to='movies/videos/%Y/%m/', blank=True, null=True)
     url = models.URLField(blank=True, default='')
+    telegram_file_id = models.CharField(max_length=255, blank=True, default='')
+    telegram_file_unique_id = models.CharField(max_length=255, blank=True, default='')
 
     class Meta:
         unique_together = [['movie', 'quality']]
         ordering = ['quality']
 
+    def has_playback(self):
+        return bool(self.telegram_file_id or self.video_file or self.url)
+
     def get_playback_url(self):
+        if self.telegram_file_id:
+            return f'telegram:{self.telegram_file_id}'
         if self.video_file:
             return self.video_file.url
         return self.url or ''
 
     def __str__(self):
         return f"{self.movie.title} — {self.get_quality_display()}"
+
+
+class TelegramChannelVideo(models.Model):
+    channel_id = models.BigIntegerField()
+    message_id = models.BigIntegerField()
+    file_id = models.CharField(max_length=255)
+    file_unique_id = models.CharField(max_length=255, unique=True)
+    file_name = models.CharField(max_length=255, blank=True, default='')
+    file_size = models.BigIntegerField(null=True, blank=True)
+    duration = models.PositiveIntegerField(null=True, blank=True)
+    caption = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    linked_stream = models.ForeignKey(
+        'MovieStream',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='telegram_source',
+    )
+
+    class Meta:
+        verbose_name = 'Telegram video'
+        verbose_name_plural = 'Telegram videolar'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        label = self.file_name or self.caption[:40] or self.file_unique_id
+        return label
 
 
 class Comment(models.Model):

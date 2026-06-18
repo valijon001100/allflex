@@ -1,0 +1,66 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Telegram videolar' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>📱 {% trans 'Telegram kanal videolari' %}</h1>
+    <a href="{% url 'movie:admin_movie_list' %}" class="btn-outline">← {% trans 'Filmlar' %}</a>
+</div>
+
+{% if not telegram_configured %}
+<div class="panel-card" style="max-width:800px;margin-bottom:16px;border-color:#f59e0b">
+    <p style="color:#fbbf24;margin:0">{% trans 'TELEGRAM_BOT_TOKEN va TELEGRAM_CHANNEL_ID sozlang.' %}</p>
+</div>
+{% endif %}
+
+<div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap">
+    <a href="?status=all" class="btn-outline btn-sm {% if status == 'all' %}active{% endif %}">{% trans 'Barchasi' %}</a>
+    <a href="?status=free" class="btn-outline btn-sm {% if status == 'free' %}active{% endif %}">{% trans 'Bog\'lanmagan' %}</a>
+    <a href="?status=linked" class="btn-outline btn-sm {% if status == 'linked' %}active{% endif %}">{% trans 'Bog\'langan' %}</a>
+</div>
+
+<form class="search-bar" method="get">
+    <input type="hidden" name="status" value="{{ status }}">
+    <input type="text" name="q" value="{{ q }}" placeholder="{% trans 'Fayl nomi, caption...' %}">
+    <button type="submit" class="btn-admin">{% trans 'Поиск' %}</button>
+</form>
+
+<div class="panel-card panel-card--table">
+    <div class="table-responsive">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Sana' %}</th>
+                <th>{% trans 'Fayl' %}</th>
+                <th>{% trans 'Caption' %}</th>
+                <th>{% trans 'Hajm' %}</th>
+                <th>{% trans 'Holat' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for v in page_obj %}
+        <tr>
+            <td>{{ v.created_at|date:"d.m.Y H:i" }}</td>
+            <td><code>{{ v.file_name|default:"video" }}</code></td>
+            <td style="max-width:240px;color:#9ca3af;font-size:13px">{{ v.caption|default:"—"|truncatechars:60 }}</td>
+            <td>{% if v.file_size %}{{ v.file_size|filesizeformat }}{% else %}—{% endif %}</td>
+            <td>
+                {% if v.linked_stream %}
+                <span class="badge-active">{{ v.linked_stream.movie.title }} ({{ v.linked_stream.get_quality_display }})</span>
+                {% else %}
+                <span class="badge-expired">{% trans 'Bog\'lanmagan' %}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:32px">{% trans 'Kanal videolari yo\'q. Botni kanalga admin qiling va video yuboring.' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<p style="color:#9ca3af;font-size:13px;margin-top:16px">
+    {% trans 'Video kanalga tushganda webhook orqali avtomatik ro\'yxatga olinadi. GB videolarni Telegram ilovasi orqali to\'g\'ridan-to\'g\'ri kanalga yuborish mumkin (4GB gacha).' %}
+</p>
+{% endblock %}

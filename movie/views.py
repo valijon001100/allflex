@@ -15,6 +15,7 @@ from django.utils.translation import get_language
 from .models import *
 from .stream_utils import server_watermark_enabled
 from .forms import UserRegisterForm, CommentForm
+from .login_throttle import clear_login_attempts, login_lock_status, record_failed_login
 from .translations import translate_category
 from .utils import (
     try_apply_pending_referral,
@@ -56,21 +57,44 @@ def category_list(request, slug):
 
 def my_login(request):
     next_url = request.POST.get('next') or request.GET.get('next', '')
+    locked, lock_remaining = login_lock_status(request)
     if request.method == 'POST':
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            if user.is_staff:
-                return HttpResponseRedirect("/panel/")
-            if try_apply_pending_referral(request):
-                return HttpResponseRedirect("/my-subscription/")
-            if next_url.startswith('/'):
-                return HttpResponseRedirect(next_url)
-            return HttpResponseRedirect("/")
-        messages.error(request, _("Неверный логин или пароль"))
-    return render(request, "registration/login.html", {'next': next_url})
+        if locked:
+            minutes = max(1, (lock_remaining + 59) // 60)
+            messages.error(
+                request,
+                _("Juda ko'p noto'g'ri urinish. %(minutes)s daqiqadan keyin qayta urinib ko'ring.")
+                % {'minutes': minutes},
+            )
+        else:
+            username = request.POST.get("username")
+            password = request.POST.get("password")
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                clear_login_attempts(request)
+                login(request, user)
+                if user.is_staff:
+                    return HttpResponseRedirect("/panel/")
+                if try_apply_pending_referral(request):
+                    return HttpResponseRedirect("/my-subscription/")
+                if next_url.startswith('/'):
+                    return HttpResponseRedirect(next_url)
+                return HttpResponseRedirect("/")
+            just_locked = record_failed_login(request)
+            if just_locked:
+                messages.error(
+                    request,
+                    _("5 marta noto'g'ri parol kiritildi. Hisobingiz 5 daqiqaga bloklandi."),
+                )
+                locked, lock_remaining = True, 300
+            else:
+                messages.error(request, _("Неверный логин или пароль"))
+    locked, lock_remaining = login_lock_status(request)
+    return render(request, "registration/login.html", {
+        'next': next_url,
+        'login_locked': locked,
+        'lock_remaining': lock_remaining,
+    })
 
 def logout_view(request):
     logout(request)

@@ -8,6 +8,7 @@ db.sqlite3
 *.log
 
 # Local secrets (faqat shular yuklanmaydi)
+.env
 kinobase/config.py
 pagekite.pem
 pagekite.cfg

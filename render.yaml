@@ -28,3 +28,13 @@ services:
           property: connectionString
       - key: WEB_CONCURRENCY
         value: "1"
+      - key: TELEGRAM_CHANNEL_ID
+        value: "-1003920859525"
+      - key: TELEGRAM_WEBHOOK_SECRET
+        value: "alflix-tg-webhook-secret"
+      - key: TELEGRAM_WEBHOOK_URL
+        value: "https://allflex.doccmed.uz/telegram/webhook/"
+      - key: TELEGRAM_DELETE_LOCAL_AFTER_UPLOAD
+        value: "True"
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false

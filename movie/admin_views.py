@@ -20,10 +20,23 @@ from .payment_config import click_configured, payme_configured
 from .models import (
     APIAccessLog, APIPartner, Category, Comment, CorporateMember, CorporateOrganization,
     CorporateSubscriptionRequest, Genre, LiveStream, Movie, MovieStream,
-    PaymentSettings, PiracyAlert, PurchasedTicket, SubscriptionPlan, TicketEvent,
+    PaymentSettings, PiracyAlert, PurchasedTicket, SubscriptionPlan, TelegramChannelVideo,
+    TicketEvent,
     UserProfile, UserSubscription, WatchHistory,
 )
+from .telegram_storage import telegram_configured
 from .utils import approve_corporate_request
+
+
+def _movie_form_context(form, title, movie=None):
+    return {
+        'form': form,
+        'title': title,
+        'movie': movie,
+        'telegram_configured': telegram_configured(),
+        'telegram_videos': TelegramChannelVideo.objects.filter(linked_stream__isnull=True)[:50],
+        'stream_qualities': ['480', '720', '1080', '4k'],
+    }
 
 
 def _live_stream_stats():
@@ -158,11 +171,13 @@ def movie_add(request):
         form = MovieForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            for warning in getattr(form, 'telegram_warnings', []):
+                messages.warning(request, warning)
             messages.success(request, _('Фильм успешно добавлен!'))
             return redirect('movie:admin_movie_list')
     else:
         form = MovieForm()
-    return render(request, 'admin_panel/movie_form.html', {'form': form, 'title': _('Добавить фильм')})
+    return render(request, 'admin_panel/movie_form.html', _movie_form_context(form, _('Добавить фильм')))
 
 
 @admin_required
@@ -172,6 +187,8 @@ def movie_edit(request, pk):
         form = MovieForm(request.POST, request.FILES, instance=movie)
         if form.is_valid():
             form.save()
+            for warning in getattr(form, 'telegram_warnings', []):
+                messages.warning(request, warning)
             messages.success(request, _('Фильм обновлён!'))
             return redirect('movie:admin_movie_list')
     else:
@@ -179,8 +196,29 @@ def movie_edit(request, pk):
     changed = movie.ensure_protection_ids()
     if changed:
         movie.save(update_fields=changed)
-    return render(request, 'admin_panel/movie_form.html', {
-        'form': form, 'title': _('Редактировать фильм'), 'movie': movie,
+    return render(request, 'admin_panel/movie_form.html', _movie_form_context(form, _('Редактировать фильм'), movie))
+
+
+@admin_required
+def telegram_video_list(request):
+    videos = TelegramChannelVideo.objects.select_related('linked_stream__movie').order_by('-created_at')
+    q = request.GET.get('q', '')
+    if q:
+        videos = videos.filter(
+            Q(file_name__icontains=q) | Q(caption__icontains=q) | Q(file_unique_id__icontains=q),
+        )
+    status = request.GET.get('status', 'all')
+    if status == 'free':
+        videos = videos.filter(linked_stream__isnull=True)
+    elif status == 'linked':
+        videos = videos.filter(linked_stream__isnull=False)
+    paginator = Paginator(videos, 25)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_panel/telegram_video_list.html', {
+        'page_obj': page_obj,
+        'q': q,
+        'status': status,
+        'telegram_configured': telegram_configured(),
     })
 
 

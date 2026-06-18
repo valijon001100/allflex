@@ -188,6 +188,7 @@
             <a href="{% url 'movie:admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">📊 {% trans 'Статистика' %}</a>
             <a href="{% url 'movie:admin_category_list' %}" class="{% if 'admin_category' in request.resolver_match.url_name %}active{% endif %}">📂 {% trans 'Разделы' %}</a>
             <a href="{% url 'movie:admin_movie_list' %}" class="{% if 'admin_movie' in request.resolver_match.url_name %}active{% endif %}">🎥 {% trans 'Фильмы' %}</a>
+            <a href="{% url 'movie:admin_telegram_videos' %}" class="{% if request.resolver_match.url_name == 'admin_telegram_videos' %}active{% endif %}">📱 Telegram</a>
             <a href="{% url 'movie:admin_live_list' %}" class="{% if 'admin_live' in request.resolver_match.url_name %}active{% endif %}">📡 {% trans 'Прямой эфир' %}</a>
             <a href="{% url 'movie:admin_ticket_list' %}" class="{% if 'admin_ticket' in request.resolver_match.url_name %}active{% endif %}">🎫 {% trans 'Biletlar' %}</a>
             <a href="{% url 'movie:admin_ticket_sales' %}" class="{% if request.resolver_match.url_name == 'admin_ticket_sales' %}active{% endif %}">🧾 {% trans 'Bilet sotuvlari' %}</a>

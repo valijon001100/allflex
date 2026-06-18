@@ -169,8 +169,7 @@ else:
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {'min_length': 6},
+        'NAME': 'movie.password_validators.MixedCharacterPasswordValidator',
     },
 ]
 
@@ -260,6 +259,30 @@ PAYME_SECRET_KEY = os.environ.get('PAYME_SECRET_KEY', '')
 
 # auto | on | off — server-side ffmpeg watermark on /stream/
 WATERMARK_BURN_STREAM = os.environ.get('WATERMARK_BURN_STREAM', 'auto')
+
+# Login brute-force protection
+LOGIN_MAX_ATTEMPTS = 5
+LOGIN_ATTEMPT_WINDOW = 300
+LOGIN_LOCKOUT_SECONDS = 300
+
+# Telegram video storage (kanal: https://t.me/+RuYY7cUR7gk4MWIy)
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+TELEGRAM_CHANNEL_ID = os.environ.get('TELEGRAM_CHANNEL_ID', '-1003920859525')
+TELEGRAM_WEBHOOK_SECRET = os.environ.get('TELEGRAM_WEBHOOK_SECRET', '')
+TELEGRAM_WEBHOOK_URL = os.environ.get('TELEGRAM_WEBHOOK_URL', '')
+TELEGRAM_DELETE_LOCAL_AFTER_UPLOAD = os.environ.get(
+    'TELEGRAM_DELETE_LOCAL_AFTER_UPLOAD', 'True',
+).lower() in ('1', 'true', 'yes')
+# GB videolar uchun Local Bot API (https://core.telegram.org/bots/api#using-a-local-bot-api-server)
+TELEGRAM_API_BASE = os.environ.get('TELEGRAM_API_BASE', 'https://api.telegram.org')
+TELEGRAM_MAX_UPLOAD_BYTES = int(os.environ.get('TELEGRAM_MAX_UPLOAD_BYTES', str(2 * 1024 ** 3)))
+TELEGRAM_CLOUD_MAX_BYTES = int(os.environ.get('TELEGRAM_CLOUD_MAX_BYTES', str(50 * 1024 ** 2)))
+TELEGRAM_UPLOAD_TIMEOUT = int(os.environ.get('TELEGRAM_UPLOAD_TIMEOUT', '0') or 0)
+TELEGRAM_LOCAL_MEDIA_ROOT = os.environ.get('TELEGRAM_LOCAL_MEDIA_ROOT', '/media')
+
+# Katta video yuklash (admin panel)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024
 
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
