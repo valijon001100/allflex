@@ -6,15 +6,29 @@
     <h1>{% trans 'Telekanallar' %}</h1>
     <p style="color:#666;margin-bottom:16px">{% trans "O'zbekiston va dunyo telekanallarini jonli tomosha qiling." %}</p>
 
-    {% if country_nav %}
-    <div class="channel-country-nav" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
-        {% for item in country_nav %}
+    {% if popular_countries %}
+    <div class="channel-popular-nav" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        {% for item in popular_countries %}
         <a href="{% url 'movie:channel_list' %}?country={{ item.code }}"
            class="btn btn-sm {% if item.code == active_country %}btn-primary{% else %}btn-default{% endif %}"
            style="border-radius:20px;{% if item.code == active_country %}background:#8b1f35;border-color:#8b1f35{% endif %}">
-            {{ item.label }} <span style="opacity:.8">({{ item.count }})</span>
+            {{ item.label }}
         </a>
         {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if country_nav %}
+    <div style="margin-bottom:20px;max-width:520px">
+        <label for="channelCountrySelect" style="display:block;margin-bottom:6px;color:#666;font-size:13px">{% trans 'Barcha mamlakatlar' %}</label>
+        <select id="channelCountrySelect" class="form-control" style="border-radius:8px"
+                onchange="if(this.value){window.location.href='{% url 'movie:channel_list' %}?country='+this.value;}">
+            {% for item in country_nav %}
+            <option value="{{ item.code }}" {% if item.code == active_country %}selected{% endif %}>
+                {{ item.label }}{% if item.loaded %} ({{ item.count }}){% else %} — {% trans 'yuklash' %}{% endif %}
+            </option>
+            {% endfor %}
+        </select>
     </div>
     {% endif %}
 
@@ -41,7 +55,7 @@
         </div>
         {% empty %}
         <div style="grid-column:1/-1;padding:40px;text-align:center;color:#888">
-            {% trans 'Bu mamlakat uchun kanallar topilmadi.' %}
+            {% trans 'Kanallar yuklanmoqda yoki topilmadi. Boshqa mamlakatni tanlab ko\'ring.' %}
         </div>
         {% endfor %}
     </div>
@@ -86,6 +100,7 @@
     font-size: 11px;
     z-index: 2;
 }
+.channel-popular-nav .btn-default,
 .channel-country-nav .btn-default {
     background: #f5f5f5;
 }

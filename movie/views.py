@@ -275,31 +275,49 @@ def live_watch(request, slug):
 
 
 def channel_list(request):
+    from django.contrib import messages
     from django.core.paginator import Paginator
     from django.utils.translation import get_language
 
-    from .iptv_countries import PRIMARY_COUNTRY, build_country_nav, country_label
+    from .iptv_channels import sync_country_channels
+    from .iptv_countries import (
+        PRIMARY_COUNTRY,
+        build_country_nav,
+        country_label,
+        get_country_codes,
+        popular_country_nav,
+    )
 
     lang = get_language() or 'uz'
+    all_codes = set(get_country_codes())
     active_country = (request.GET.get('country') or PRIMARY_COUNTRY).lower()
-    available_codes = set(
-        TvChannel.objects.filter(is_active=True)
-        .values_list('country_code', flat=True)
-        .distinct()
-    )
-    if active_country not in available_codes:
-        active_country = PRIMARY_COUNTRY if PRIMARY_COUNTRY in available_codes else (sorted(available_codes)[0] if available_codes else PRIMARY_COUNTRY)
+    if active_country not in all_codes:
+        active_country = PRIMARY_COUNTRY
+
+    if not TvChannel.objects.filter(is_active=True, country_code=active_country).exists():
+        if active_country in all_codes:
+            try:
+                result = sync_country_channels(active_country)
+                if result['total']:
+                    messages.success(
+                        request,
+                        f"{country_label(active_country, lang)}: {result['total']} ta kanal yuklandi.",
+                    )
+            except (FileNotFoundError, OSError) as exc:
+                messages.error(request, f"Kanallar yuklanmadi: {exc}")
 
     channels_qs = TvChannel.objects.filter(is_active=True, country_code=active_country).order_by('order', 'name')
     paginator = Paginator(channels_qs, 48)
     page_obj = paginator.get_page(request.GET.get('page'))
+    active_qs = TvChannel.objects.filter(is_active=True)
 
     return render(request, 'channel_list.html', {
         'page_obj': page_obj,
         'channels': page_obj.object_list,
         'active_country': active_country,
         'country_label': country_label(active_country, lang),
-        'country_nav': build_country_nav(TvChannel.objects.filter(is_active=True), lang),
+        'country_nav': build_country_nav(active_qs, lang, include_empty=True),
+        'popular_countries': popular_country_nav(lang),
     })
 
 

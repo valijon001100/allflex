@@ -31,10 +31,19 @@ class Command(BaseCommand):
             action='store_true',
             help='Avvalgi kanallarni o\'chirib, qayta yuklash',
         )
+        parser.add_argument(
+            '--min-countries',
+            type=int,
+            default=50,
+            help='Kamida shuncha mamlakat yuklangan bo\'lsa, to\'liq yuklashni o\'tkazib yuborish',
+        )
 
     def handle(self, *args, **options):
         if options['all_countries']:
-            result = sync_all_tv_channels(replace=options['replace'])
+            result = sync_all_tv_channels(
+                replace=options['replace'],
+                min_countries=options['min_countries'],
+            )
             self.stdout.write(self.style.SUCCESS(
                 f'{result["countries"]} mamlakat, {result["total"]} kanal, '
                 f'{result["created"]} yangi, {result["updated"]} yangilandi'

@@ -81,7 +81,7 @@ def country_order_base(code):
         return len(codes) * 10000
 
 
-def build_country_nav(queryset, lang=None):
+def build_country_nav(queryset, lang=None, include_empty=True):
     counts = {
         row['country_code']: row['total']
         for row in queryset.values('country_code').annotate(total=Count('id'))
@@ -89,17 +89,34 @@ def build_country_nav(queryset, lang=None):
     items = []
     for code in get_country_codes():
         total = counts.get(code, 0)
-        if total:
+        if total or include_empty:
             items.append({
                 'code': code,
                 'label': country_nav_label(code, lang),
                 'count': total,
+                'loaded': total > 0,
             })
     for code, total in sorted(counts.items()):
-        if code not in get_country_codes() and total:
+        known = get_country_codes()
+        if code not in known and total:
             items.append({
                 'code': code,
                 'label': country_nav_label(code, lang),
                 'count': total,
+                'loaded': True,
             })
     return items
+
+
+POPULAR_COUNTRY_CODES = ('uz', 'ru', 'us', 'tr', 'kz', 'de', 'fr', 'gb', 'ua', 'in', 'cn', 'jp', 'kr')
+
+
+def popular_country_nav(lang=None):
+    return [
+        {
+            'code': code,
+            'label': country_nav_label(code, lang),
+        }
+        for code in POPULAR_COUNTRY_CODES
+        if code in get_country_codes() or code == PRIMARY_COUNTRY
+    ]

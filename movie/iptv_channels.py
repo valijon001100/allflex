@@ -130,6 +130,7 @@ def sync_country_channels(country_code, entries=None, replace_country=False, use
     used_slugs = set(used_slugs or TvChannel.objects.values_list('slug', flat=True))
     order_base = country_order_base(country_code)
     created = updated = 0
+    pending_create = []
 
     for index, entry in enumerate(entries, start=1):
         name = entry['name']
@@ -160,7 +161,7 @@ def sync_country_channels(country_code, entries=None, replace_country=False, use
             continue
 
         slug = _slug_for_entry(entry, country_code, used_slugs)
-        TvChannel.objects.create(
+        pending_create.append(TvChannel(
             name=name,
             slug=slug,
             country_code=country_code,
@@ -170,8 +171,11 @@ def sync_country_channels(country_code, entries=None, replace_country=False, use
             logo_url=logo_url,
             order=order,
             is_active=True,
-        )
-        created += 1
+        ))
+
+    if pending_create:
+        TvChannel.objects.bulk_create(pending_create, batch_size=400)
+        created += len(pending_create)
 
     return {
         'country_code': country_code,
@@ -191,17 +195,17 @@ def sync_tv_channels_from_m3u(path=None, replace=False, country_code=PRIMARY_COU
     return sync_country_channels(country_code, entries=fetch_country_playlist(country_code))
 
 
-def sync_all_tv_channels(replace=False, country_codes=None):
+def sync_all_tv_channels(replace=False, country_codes=None, min_countries=50):
+    requested = list(country_codes or get_country_codes())
     if replace:
         TvChannel.objects.all().delete()
-        codes = list(country_codes or get_country_codes())
+        codes = requested
     else:
-        requested = list(country_codes or get_country_codes())
         loaded = set(
             TvChannel.objects.values_list('country_code', flat=True).distinct()
         )
-        codes = [code for code in requested if code not in loaded]
-        if not codes:
+        loaded_count = len(loaded)
+        if loaded_count >= min_countries and not [code for code in requested if code not in loaded]:
             return {
                 'countries': 0,
                 'total': 0,
@@ -210,6 +214,7 @@ def sync_all_tv_channels(replace=False, country_codes=None):
                 'failed': [],
                 'skipped': True,
             }
+        codes = [code for code in requested if code not in loaded]
 
     used_slugs = set() if replace else set(TvChannel.objects.values_list('slug', flat=True))
     summary = {
