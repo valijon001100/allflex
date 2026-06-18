@@ -383,9 +383,11 @@
             } catch (e) { /* ignore */ }
         }, 2000);
 
-        video.addEventListener('contextmenu', function (e) { e.preventDefault(); });
         wrap.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-        video.addEventListener('dragstart', function (e) { e.preventDefault(); });
+        wrap.addEventListener('dragstart', function (e) { e.preventDefault(); });
+        wrap.addEventListener('drop', function (e) { e.preventDefault(); });
+        wrap.addEventListener('selectstart', function (e) { e.preventDefault(); });
+        video.addEventListener('contextmenu', function (e) { e.preventDefault(); });
         video.setAttribute('controlsList', 'nodownload noremoteplayback');
         video.setAttribute('disablePictureInPicture', '');
         video.setAttribute('draggable', 'false');
@@ -394,10 +396,10 @@
         document.addEventListener('keydown', function (e) {
             if (!wrap.isConnected) return;
             var key = (e.key || '').toLowerCase();
-            if (e.ctrlKey && (key === 's' || key === 'u')) {
+            if (e.ctrlKey && (key === 's' || key === 'u' || key === 'p')) {
                 e.preventDefault();
             }
-            if (e.ctrlKey && e.shiftKey && (key === 's' || key === 'i' || key === 'j')) {
+            if (e.ctrlKey && e.shiftKey && (key === 's' || key === 'i' || key === 'j' || key === 'c')) {
                 e.preventDefault();
             }
         });
@@ -427,7 +429,7 @@
             var currentMode = localStorage.getItem('kino_quality_mode') || 'auto';
             var currentQuality = null;
             var hlsInstance = null;
-            var useCanvasBurn = !!options.watermark;
+            var useCanvasBurn = true;
             var video = document.createElement('video');
             video.controls = !useCanvasBurn;
             video.playsInline = true;
@@ -745,7 +747,7 @@
             if (useCanvasBurn) {
                 var canvasEl = wrap.querySelector('.player-video-canvas');
                 if (canvasEl) {
-                    canvasBurn = startCanvasBurn(wrap, video, canvasEl, options.watermark, {
+                    canvasBurn = startCanvasBurn(wrap, video, canvasEl, options.watermark || '', {
                         getBottomPad: function () {
                             return isWrapFullscreen() ? 24 : 12;
                         },

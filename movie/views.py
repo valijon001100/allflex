@@ -13,6 +13,7 @@ from django.utils.translation import gettext as _
 from django.utils.translation import get_language
 
 from .models import *
+from .stream_utils import server_watermark_enabled
 from .forms import UserRegisterForm, CommentForm
 from .translations import translate_category
 from .utils import (
@@ -82,6 +83,9 @@ def registration_view(request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.phone = form.cleaned_data.get('phone', '').strip()
+            profile.save(update_fields=['phone'])
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, _("Ro'yxatdan muvaffaqiyatli o'tdingiz!"))
             if try_apply_pending_referral(request):
@@ -112,12 +116,17 @@ class MovieDetailView(FormMixin,DetailView):
         context['can_watch'] = has_access
         context['is_authenticated'] = user.is_authenticated
         if has_access:
-            context['video_streams_json'] = json.dumps(self.object.get_protected_streams_dict())
-            context['viewer_watermark'] = _viewer_subscriber_code(user)
+            viewer_code = _viewer_subscriber_code(user)
+            context['video_streams_json'] = json.dumps(
+                self.object.get_protected_streams_dict(user=user),
+            )
+            context['viewer_watermark'] = viewer_code
+            context['server_watermark_burn'] = server_watermark_enabled() and bool(viewer_code)
             context['movie_uid'] = self.object.movie_uid
         else:
             context['video_streams_json'] = '{}'
             context['viewer_watermark'] = ''
+            context['server_watermark_burn'] = False
         return context
 
     def post(self, request, *args, **kwargs):

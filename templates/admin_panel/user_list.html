@@ -7,7 +7,7 @@
 </div>
 
 <form class="search-bar" method="get">
-    <input type="text" name="q" value="{{ q }}" placeholder="{% trans 'Поиск по логину или коду подписчика...' %}">
+    <input type="text" name="q" value="{{ q }}" placeholder="{% trans 'Login, email, telefon yoki obunachi kodi...' %}">
     <button type="submit" class="btn-admin">{% trans 'Поиск' %}</button>
 </form>
 
@@ -20,6 +20,7 @@
                 <th>{% trans 'Obunachi kodi' %}</th>
                 <th>Login</th>
                 <th>Email</th>
+                <th>{% trans 'Telefon' %}</th>
                 <th>{% trans 'Имя' %}</th>
                 <th>{% trans 'Подписка' %}</th>
                 <th>{% trans 'Роль' %}</th>
@@ -33,6 +34,7 @@
             <td><code style="color:#f5c518;font-weight:700">{{ user.profile.subscriber_code|default:"—" }}</code></td>
             <td><strong>{{ user.username }}</strong></td>
             <td>{{ user.email|default:"—" }}</td>
+            <td>{{ user.profile.phone|default:"—" }}</td>
             <td>{{ user.first_name|default:"—" }}</td>
             <td>
                 {% if user.id in active_user_ids %}
@@ -49,7 +51,7 @@
             <td>{{ user.date_joined|date:"d.m.Y H:i" }}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" style="text-align:center;padding:32px">{% trans 'Пользователь не найден' %}</td></tr>
+        <tr><td colspan="9" style="text-align:center;padding:32px">{% trans 'Пользователь не найден' %}</td></tr>
         {% endfor %}
         </tbody>
     </table>

@@ -45,6 +45,14 @@
             </div>
 
             <div class="glass-field">
+                <span class="glass-field-icon">📱</span>
+                <input type="tel" name="phone" id="id_phone" class="form-control glass-input"
+                    maxlength="20" placeholder="{% trans 'Telefon (+998...)' %}"
+                    value="{{ form.phone.value|default:'' }}" required>
+                {% if form.phone.errors %}<div class="glass-field-error">{{ form.phone.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="glass-field">
                 <span class="glass-field-icon">🔒</span>
                 <input type="password" name="password1" id="id_password1" class="form-control glass-input"
                     placeholder="{% trans 'Пароль' %}" required>

@@ -323,8 +323,9 @@
         document.addEventListener('DOMContentLoaded', function () {
             var streams = {{ video_streams_json|safe }};
             var viewerCode = '{{ viewer_watermark|escapejs }}';
-            KinoPlayer.init('videoplayer', streams, { watermark: viewerCode });
-            if (viewerCode) {
+            var serverBurn = {{ server_watermark_burn|yesno:"true,false" }};
+            KinoPlayer.init('videoplayer', streams, { watermark: viewerCode, serverBurn: serverBurn });
+            if (viewerCode && !serverBurn) {
                 var wrap = document.querySelector('#videoplayer .player-video-wrap');
                 var video = wrap && wrap.querySelector('video');
                 var canvas = wrap && wrap.querySelector('.player-video-canvas');

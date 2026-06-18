@@ -1,0 +1,52 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Tomosha tarixi' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>📺 {% trans 'Tomosha tarixi' %}</h1>
+</div>
+
+<form class="search-bar" method="get">
+    <input type="text" name="q" value="{{ q }}" placeholder="{% trans 'Foydalanuvchi, telefon, kino yoki obunachi kodi...' %}">
+    <button type="submit" class="btn-admin">{% trans 'Поиск' %}</button>
+</form>
+
+<div class="panel-card panel-card--table">
+    <div class="table-responsive">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>{% trans 'Sana' %}</th>
+                <th>{% trans 'Foydalanuvchi' %}</th>
+                <th>{% trans 'Telefon' %}</th>
+                <th>{% trans 'Obunachi kodi' %}</th>
+                <th>{% trans 'Kino' %}</th>
+                <th>IP</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in page_obj %}
+        <tr>
+            <td>{{ row.watched_at|date:"d.m.Y H:i" }}</td>
+            <td><strong>{{ row.user.username }}</strong></td>
+            <td>{{ row.user.profile.phone|default:"—" }}</td>
+            <td><code style="color:#f5c518;font-weight:700">{{ row.subscriber_code|default:row.user.profile.subscriber_code|default:"—" }}</code></td>
+            <td>{{ row.movie.title }}</td>
+            <td style="color:#9ca3af;font-size:13px">{{ row.ip_address|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:32px">{% trans 'Tomosha tarixi bo\'sh.' %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pagination" style="margin-top:16px">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&q={{ q }}">←</a>{% endif %}
+    <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&q={{ q }}">→</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

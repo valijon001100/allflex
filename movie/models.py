@@ -173,19 +173,26 @@ class Movie(models.Model):
             streams['720'] = self.video_url
         return streams
 
-    def get_protected_streams_dict(self):
+    def get_protected_streams_dict(self, user=None):
+        from .stream_utils import sign_stream_path
         streams = {}
         for s in self.video_streams.all():
             if s.get_playback_url():
-                streams[s.quality] = reverse(
+                path = reverse(
                     'movie:protected_stream',
                     kwargs={'movie_id': self.pk, 'quality': s.quality},
                 )
+                if user and user.is_authenticated:
+                    path = sign_stream_path(path, self.pk, s.quality, user.pk)
+                streams[s.quality] = path
         if not streams and self.video_url:
-            streams['720'] = reverse(
+            path = reverse(
                 'movie:protected_stream',
                 kwargs={'movie_id': self.pk, 'quality': '720'},
             )
+            if user and user.is_authenticated:
+                path = sign_stream_path(path, self.pk, '720', user.pk)
+            streams['720'] = path
         return streams
 
 
@@ -620,6 +627,7 @@ class PurchasedTicket(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone = models.CharField(max_length=20, blank=True, default='', verbose_name='Telefon')
     subscriber_code = models.CharField(max_length=10, unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -644,6 +652,26 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f'{self.user.username} — {self.subscriber_code}'
+
+
+class WatchHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watch_history')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='watch_history')
+    subscriber_code = models.CharField(max_length=10, blank=True, default='')
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    watched_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Tomosha tarixi'
+        verbose_name_plural = 'Tomosha tarixi'
+        ordering = ['-watched_at']
+        indexes = [
+            models.Index(fields=['-watched_at']),
+            models.Index(fields=['user', 'movie']),
+        ]
+
+    def __str__(self):
+        return f'{self.user.username} — {self.movie.title}'
 
 
 class APIPartner(models.Model):

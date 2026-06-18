@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
@@ -23,6 +25,17 @@ def _apply_labels(form, labels):
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True, label=_('Электронная почта'))
+    phone = forms.CharField(
+        required=True,
+        max_length=20,
+        label=_('Telefon'),
+        widget=forms.TextInput(attrs={
+            'class': 'form-control auth-input',
+            'placeholder': '+998901234567',
+            'maxlength': '20',
+            'inputmode': 'tel',
+        }),
+    )
 
     class Meta:
         model = User
@@ -66,6 +79,13 @@ class UserRegisterForm(UserCreationForm):
         if User.objects.filter(username__iexact=username).exists():
             raise ValidationError(_('Bu foydalanuvchi nomi band'))
         return username
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone', '').strip()
+        digits = re.sub(r'\D', '', phone)
+        if len(digits) < 9:
+            raise ValidationError(_('To\'g\'ri telefon raqam kiriting'))
+        return phone
 
 
 class MovieForm(forms.ModelForm):

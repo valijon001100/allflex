@@ -21,7 +21,7 @@ from .models import (
     APIAccessLog, APIPartner, Category, Comment, CorporateMember, CorporateOrganization,
     CorporateSubscriptionRequest, Genre, LiveStream, Movie, MovieStream,
     PaymentSettings, PiracyAlert, PurchasedTicket, SubscriptionPlan, TicketEvent,
-    UserProfile, UserSubscription,
+    UserProfile, UserSubscription, WatchHistory,
 )
 from .utils import approve_corporate_request
 
@@ -203,7 +203,10 @@ def user_list(request):
     q = request.GET.get('q', '')
     if q:
         users = users.filter(
-            Q(username__icontains=q) | Q(profile__subscriber_code__icontains=q)
+            Q(username__icontains=q)
+            | Q(email__icontains=q)
+            | Q(profile__subscriber_code__icontains=q)
+            | Q(profile__phone__icontains=q)
         )
     paginator = Paginator(users, 20)
     page_obj = paginator.get_page(request.GET.get('page'))
@@ -219,6 +222,30 @@ def user_list(request):
         'page_obj': page_obj,
         'q': q,
         'active_user_ids': active_user_ids,
+    })
+
+
+@admin_required
+def watch_history_list(request):
+    history = WatchHistory.objects.select_related(
+        'user', 'user__profile', 'movie',
+    ).order_by('-watched_at')
+    q = request.GET.get('q', '')
+    if q:
+        history = history.filter(
+            Q(user__username__icontains=q)
+            | Q(user__profile__phone__icontains=q)
+            | Q(user__profile__subscriber_code__icontains=q)
+            | Q(subscriber_code__icontains=q)
+            | Q(movie__title__icontains=q)
+            | Q(movie__title_uz__icontains=q)
+            | Q(ip_address__icontains=q)
+        )
+    paginator = Paginator(history, 30)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_panel/watch_history_list.html', {
+        'page_obj': page_obj,
+        'q': q,
     })
 
 

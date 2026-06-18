@@ -4,10 +4,17 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.http import FileResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.http import FileResponse, Http404, HttpResponseForbidden, StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 
 from .models import Movie, MovieStream, PiracyAlert, UserProfile
+from .stream_utils import (
+    DOWNLOAD_USER_AGENTS,
+    iter_watermarked_video,
+    log_watch_history,
+    server_watermark_enabled,
+    verify_stream_request,
+)
 from .utils import user_can_watch_movies
 
 
@@ -29,11 +36,23 @@ def _referer_host(request):
     return urlparse(referer).netloc.lower().split(':')[0]
 
 
-def _is_allowed_stream_request(request):
-    host = _referer_host(request)
-    if not host:
+def _is_download_tool(request):
+    ua = (request.META.get('HTTP_USER_AGENT') or '').lower()
+    return any(marker in ua for marker in DOWNLOAD_USER_AGENTS)
+
+
+def _is_embedded_playback(request):
+    if _is_download_tool(request):
+        return False
+    dest = (request.META.get('HTTP_SEC_FETCH_DEST') or '').lower()
+    if dest == 'document':
+        return False
+    if dest == 'video':
         return True
-    return host in _allowed_referer_hosts()
+    ref = _referer_host(request)
+    if ref and ref in _allowed_referer_hosts():
+        return True
+    return False
 
 
 def _check_stream_referrer(request, movie):
@@ -61,6 +80,7 @@ def _apply_stream_security_headers(response, subscriber_code=''):
     response['Pragma'] = 'no-cache'
     response['X-Content-Type-Options'] = 'nosniff'
     response['X-Robots-Tag'] = 'noindex, nofollow'
+    response['X-Download-Options'] = 'noopen'
     return response
 
 
@@ -69,16 +89,41 @@ def protected_stream(request, movie_id, quality):
     if not user_can_watch_movies(request.user):
         return HttpResponseForbidden()
 
+    if not verify_stream_request(request, movie_id, quality, request.user.pk):
+        return HttpResponseForbidden('Stream havolasi yaroqsiz yoki muddati tugagan.')
+
+    if not _is_embedded_playback(request):
+        movie = Movie.objects.filter(pk=movie_id).first()
+        if movie:
+            _check_stream_referrer(request, movie)
+        return HttpResponseForbidden('Videoni faqat sayt playeri orqali ko\'rish mumkin.')
+
     movie = get_object_or_404(Movie, pk=movie_id)
-    if not _is_allowed_stream_request(request):
-        _check_stream_referrer(request, movie)
-        return HttpResponseForbidden('Videoni faqat sayt ichida ko\'rish mumkin.')
     profile = UserProfile.objects.filter(user=request.user).first()
+    log_watch_history(request, request.user, movie, profile)
     stream = MovieStream.objects.filter(movie=movie, quality=quality).first()
+    code = profile.subscriber_code if profile else ''
 
     if stream:
         if stream.video_file:
             content_type, _ = mimetypes.guess_type(stream.video_file.name)
+            if server_watermark_enabled() and code:
+                try:
+                    file_path = stream.video_file.path
+                except Exception:
+                    file_path = None
+                if file_path and os.path.isfile(file_path):
+                    gen = iter_watermarked_video(file_path, code)
+                    if gen:
+                        response = StreamingHttpResponse(
+                            gen(),
+                            content_type=content_type or 'video/mp4',
+                        )
+                        if profile:
+                            response['X-Alflix-Viewer'] = profile.subscriber_code
+                        if movie.watermark_token:
+                            response['X-Alflix-Watermark'] = movie.watermark_token
+                        return _apply_stream_security_headers(response, code)
             response = FileResponse(
                 stream.video_file.open('rb'),
                 content_type=content_type or 'video/mp4',
@@ -91,12 +136,15 @@ def protected_stream(request, movie_id, quality):
                 response['X-Alflix-Viewer'] = profile.subscriber_code
             if movie.watermark_token:
                 response['X-Alflix-Watermark'] = movie.watermark_token
-            code = profile.subscriber_code if profile else ''
             return _apply_stream_security_headers(response, code)
         if stream.url:
-            return HttpResponseRedirect(stream.url)
+            return HttpResponseForbidden(
+                'Tashqi video havolasidan yuklab olish taqiqlangan. Admin panelda fayl yuklang.',
+            )
 
     if quality == '720' and movie.video_url:
-        return HttpResponseRedirect(movie.video_url)
+        return HttpResponseForbidden(
+            'Tashqi video havolasidan yuklab olish taqiqlangan. Admin panelda fayl yuklang.',
+        )
 
     raise Http404()

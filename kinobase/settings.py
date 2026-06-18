@@ -258,6 +258,9 @@ CLICK_SECRET_KEY = os.environ.get('CLICK_SECRET_KEY', '')
 PAYME_MERCHANT_ID = os.environ.get('PAYME_MERCHANT_ID', '')
 PAYME_SECRET_KEY = os.environ.get('PAYME_SECRET_KEY', '')
 
+# auto | on | off — server-side ffmpeg watermark on /stream/
+WATERMARK_BURN_STREAM = os.environ.get('WATERMARK_BURN_STREAM', 'auto')
+
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True

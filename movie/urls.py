@@ -80,6 +80,7 @@ urlpatterns = [
     path('panel/movies/<int:pk>/edit/', admin_views.movie_edit, name='admin_movie_edit'),
     path('panel/movies/<int:pk>/delete/', admin_views.movie_delete, name='admin_movie_delete'),
     path('panel/users/', admin_views.user_list, name='admin_user_list'),
+    path('panel/watch-history/', admin_views.watch_history_list, name='admin_watch_history'),
     path('panel/subscriptions/', admin_views.subscription_list, name='admin_subscription_list'),
     path('panel/subscriptions/add/', admin_views.subscription_add, name='admin_subscription_add'),
     path('panel/subscriptions/<int:pk>/cancel/', admin_views.subscription_cancel, name='admin_subscription_cancel'),
