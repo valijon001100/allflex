@@ -4,7 +4,21 @@
 {% block content %}
 <div id="main" class="container">
     <h1>{% trans 'Telekanallar' %}</h1>
-    <p style="color:#666;margin-bottom:24px">{% trans "O'zbekiston telekanallarini jonli tomosha qiling." %}</p>
+    <p style="color:#666;margin-bottom:16px">{% trans "O'zbekiston va dunyo telekanallarini jonli tomosha qiling." %}</p>
+
+    {% if country_nav %}
+    <div class="channel-country-nav" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
+        {% for item in country_nav %}
+        <a href="{% url 'movie:channel_list' %}?country={{ item.code }}"
+           class="btn btn-sm {% if item.code == active_country %}btn-primary{% else %}btn-default{% endif %}"
+           style="border-radius:20px;{% if item.code == active_country %}background:#8b1f35;border-color:#8b1f35{% endif %}">
+            {{ item.label }} <span style="opacity:.8">({{ item.count }})</span>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h2 style="font-size:22px;margin-bottom:16px">{{ country_label }}</h2>
 
     <div class="items">
         {% for channel in channels %}
@@ -27,10 +41,22 @@
         </div>
         {% empty %}
         <div style="grid-column:1/-1;padding:40px;text-align:center;color:#888">
-            {% trans 'Telekanallar hali yuklanmagan.' %}
+            {% trans 'Bu mamlakat uchun kanallar topilmadi.' %}
         </div>
         {% endfor %}
     </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav style="margin-top:24px;text-align:center">
+        {% if page_obj.has_previous %}
+        <a href="?country={{ active_country }}&page={{ page_obj.previous_page_number }}" class="btn btn-default btn-sm">←</a>
+        {% endif %}
+        <span style="margin:0 12px;color:#666">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?country={{ active_country }}&page={{ page_obj.next_page_number }}" class="btn btn-default btn-sm">→</a>
+        {% endif %}
+    </nav>
+    {% endif %}
 </div>
 
 <style>
@@ -59,6 +85,9 @@
     border-radius: 4px;
     font-size: 11px;
     z-index: 2;
+}
+.channel-country-nav .btn-default {
+    background: #f5f5f5;
 }
 </style>
 {% endblock %}

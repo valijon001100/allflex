@@ -275,8 +275,32 @@ def live_watch(request, slug):
 
 
 def channel_list(request):
-    channels = TvChannel.objects.filter(is_active=True).order_by('order', 'name')
-    return render(request, 'channel_list.html', {'channels': channels})
+    from django.core.paginator import Paginator
+    from django.utils.translation import get_language
+
+    from .iptv_countries import PRIMARY_COUNTRY, build_country_nav, country_label
+
+    lang = get_language() or 'uz'
+    active_country = (request.GET.get('country') or PRIMARY_COUNTRY).lower()
+    available_codes = set(
+        TvChannel.objects.filter(is_active=True)
+        .values_list('country_code', flat=True)
+        .distinct()
+    )
+    if active_country not in available_codes:
+        active_country = PRIMARY_COUNTRY if PRIMARY_COUNTRY in available_codes else (sorted(available_codes)[0] if available_codes else PRIMARY_COUNTRY)
+
+    channels_qs = TvChannel.objects.filter(is_active=True, country_code=active_country).order_by('order', 'name')
+    paginator = Paginator(channels_qs, 48)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'channel_list.html', {
+        'page_obj': page_obj,
+        'channels': page_obj.object_list,
+        'active_country': active_country,
+        'country_label': country_label(active_country, lang),
+        'country_nav': build_country_nav(TvChannel.objects.filter(is_active=True), lang),
+    })
 
 
 def channel_watch(request, slug):

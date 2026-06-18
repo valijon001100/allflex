@@ -893,6 +893,7 @@ class TvChannel(models.Model):
     stream_url = models.URLField('Stream URL')
     quality = models.CharField(max_length=40, blank=True, default='')
     logo_url = models.URLField('Logo URL', blank=True, default='')
+    country_code = models.CharField('Mamlakat', max_length=2, default='uz', db_index=True)
     is_active = models.BooleanField('Faol', default=True)
     order = models.PositiveIntegerField('Tartib', default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -900,7 +901,7 @@ class TvChannel(models.Model):
     class Meta:
         verbose_name = 'Telekanal'
         verbose_name_plural = 'Telekanallar'
-        ordering = ['order', 'name']
+        ordering = ['order', 'country_code', 'name']
 
     def __str__(self):
         return self.name
