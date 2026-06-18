@@ -11,6 +11,7 @@
     <div id="watch_block" class="channel-player-wrap">
         <div id="channelplayer"></div>
         <p id="channelPlayerError" class="channel-player-error" style="display:none"></p>
+        <span id="channelPlayerErrorMsg" class="visually-hidden">{% trans "Efir vaqtincha ishlamayapti. Boshqa kanalni sinab ko'ring." %}</span>
     </div>
 
     <a href="{% url 'movie:channel_list' %}?country={{ channel.country_code }}" class="channel-back-link">← {% trans 'Barcha telekanallar' %}</a>
@@ -26,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
         var video = document.querySelector('#channelplayer video');
         if (video && video.readyState < 2 && !video.currentTime) {
-            errEl.textContent = "{% trans 'Efir vaqtincha ishlamayapti. Boshqa kanalni sinab ko\\'ring.' %}";
+            errEl.textContent = document.getElementById('channelPlayerErrorMsg').textContent;
             errEl.style.display = 'block';
         }
     }, 12000);
@@ -69,6 +70,17 @@ document.addEventListener('DOMContentLoaded', function () {
     background: #fff3cd;
     color: #7a5b00 !important;
     font-size: 14px;
+}
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 #channelplayer .player-quality-label,
 #channelplayer .player-quality-status,
