@@ -9,5 +9,6 @@ fi
 pip install -r requirements.txt
 python manage.py collectstatic --no-input
 python manage.py migrate --no-input
+python manage.py load_tv_channels --priority || true
 python manage.py load_tv_channels --all-countries --min-countries 50 || true
 python manage.py refresh_channel_logos || true

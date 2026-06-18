@@ -111,11 +111,19 @@ def build_country_nav(queryset, lang=None, include_empty=True):
 POPULAR_COUNTRY_CODES = ('uz', 'ru', 'us', 'tr', 'kz', 'de', 'fr', 'gb', 'ua', 'in', 'cn', 'jp', 'kr')
 
 
-def popular_country_nav(lang=None):
+def popular_country_nav(lang=None, queryset=None):
+    counts = {}
+    if queryset is not None:
+        counts = {
+            row['country_code']: row['total']
+            for row in queryset.values('country_code').annotate(total=Count('id'))
+        }
     return [
         {
             'code': code,
             'label': country_nav_label(code, lang),
+            'count': counts.get(code, 0),
+            'loaded': counts.get(code, 0) > 0,
         }
         for code in POPULAR_COUNTRY_CODES
         if code in get_country_codes() or code == PRIMARY_COUNTRY

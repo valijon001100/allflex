@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from movie.iptv_channels import (
     PRIMARY_COUNTRY,
     sync_all_tv_channels,
+    sync_priority_countries,
     sync_tv_channels_from_m3u,
 )
 
@@ -27,6 +28,11 @@ class Command(BaseCommand):
             help='Barcha mamlakat kanallarini yuklash',
         )
         parser.add_argument(
+            '--priority',
+            action='store_true',
+            help='Mashhur mamlakatlarni yuklash (ru, us, tr, kz...)',
+        )
+        parser.add_argument(
             '--replace',
             action='store_true',
             help='Avvalgi kanallarni o\'chirib, qayta yuklash',
@@ -39,6 +45,18 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if options['priority']:
+            result = sync_priority_countries()
+            self.stdout.write(self.style.SUCCESS(
+                f'Priority: {result["countries"]} mamlakat, {result["total"]} kanal, '
+                f'{result["created"]} yangi, {result["updated"]} yangilandi'
+            ))
+            if result['failed']:
+                self.stderr.write(self.style.WARNING(
+                    f'{len(result["failed"])} mamlakat yuklanmadi'
+                ))
+            return
+
         if options['all_countries']:
             result = sync_all_tv_channels(
                 replace=options['replace'],

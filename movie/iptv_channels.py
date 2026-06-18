@@ -9,6 +9,7 @@ from django.utils.text import slugify
 from .iptv_countries import (
     PRIMARY_COUNTRY,
     PLAYLIST_URLS,
+    POPULAR_COUNTRY_CODES,
     country_order_base,
     get_country_codes,
 )
@@ -19,6 +20,14 @@ EXTINF_RE = re.compile(
     r'#EXTINF:-1\s+(?:tvg-id="(?P<tvg_id>[^"]*)")?\s*,(?P<name>.+)',
     re.IGNORECASE,
 )
+
+
+def _data_dir():
+    return Path(settings.BASE_DIR) / 'movie' / 'data'
+
+
+def _playlists_dir():
+    return _data_dir() / 'playlists'
 
 
 def _streams_dir():
@@ -64,11 +73,15 @@ def parse_m3u_file(path):
 
 def fetch_country_playlist(country_code):
     country_code = country_code.lower()
+    bundled_playlist = _playlists_dir() / f'{country_code}.m3u'
+    if bundled_playlist.is_file():
+        return parse_m3u_file(bundled_playlist)
+
     local_path = _streams_dir() / f'{country_code}.m3u'
     if local_path.is_file():
         return parse_m3u_file(local_path)
 
-    bundled = Path(settings.BASE_DIR) / 'movie' / 'data' / f'{country_code}.m3u'
+    bundled = _data_dir() / f'{country_code}.m3u'
     if bundled.is_file():
         return parse_m3u_file(bundled)
 
@@ -241,4 +254,32 @@ def sync_all_tv_channels(replace=False, country_codes=None, min_countries=50):
         summary['created'] += result['created']
         summary['updated'] += result['updated']
 
+    return summary
+
+
+def sync_priority_countries():
+    summary = {
+        'countries': 0,
+        'total': 0,
+        'created': 0,
+        'updated': 0,
+        'failed': [],
+    }
+    used_slugs = set(TvChannel.objects.values_list('slug', flat=True))
+    for country_code in POPULAR_COUNTRY_CODES:
+        if TvChannel.objects.filter(country_code=country_code).exists():
+            continue
+        try:
+            result = sync_country_channels(
+                country_code,
+                replace_country=False,
+                used_slugs=used_slugs,
+            )
+        except (FileNotFoundError, OSError) as exc:
+            summary['failed'].append({'country': country_code, 'error': str(exc)})
+            continue
+        summary['countries'] += 1
+        summary['total'] += result['total']
+        summary['created'] += result['created']
+        summary['updated'] += result['updated']
     return summary

@@ -11,6 +11,7 @@ fi
 python manage.py load_initial_data || true
 python manage.py load_ticket_data || true
 python manage.py ensure_protection_data || true
+python manage.py load_tv_channels --priority || true
 python manage.py load_tv_channels --all-countries --min-countries 50 || true
 python manage.py refresh_channel_logos || true
 

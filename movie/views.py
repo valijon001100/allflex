@@ -317,7 +317,7 @@ def channel_list(request):
         'active_country': active_country,
         'country_label': country_label(active_country, lang),
         'country_nav': build_country_nav(active_qs, lang, include_empty=True),
-        'popular_countries': popular_country_nav(lang),
+        'popular_countries': popular_country_nav(lang, active_qs),
     })
 
 
