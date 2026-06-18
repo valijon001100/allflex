@@ -9,3 +9,4 @@ fi
 pip install -r requirements.txt
 python manage.py collectstatic --no-input
 python manage.py migrate --no-input
+python manage.py load_tv_channels || true
