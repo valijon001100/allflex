@@ -426,16 +426,20 @@
                 return;
             }
 
-            var currentMode = localStorage.getItem('kino_quality_mode') || 'auto';
+            var currentMode = options.iptv ? '720' : (localStorage.getItem('kino_quality_mode') || 'auto');
             var currentQuality = null;
             var hlsInstance = null;
-            var useCanvasBurn = !options.serverBurn;
+            var useCanvasBurn = !options.serverBurn && !options.iptv;
             var video = document.createElement('video');
             video.controls = !useCanvasBurn;
             video.playsInline = true;
             video.preload = 'metadata';
             video.style.width = '100%';
             video.style.background = '#000';
+            if (options.iptv) {
+                video.autoplay = true;
+                video.muted = true;
+            }
             var wrap = document.createElement('div');
             wrap.className = 'player-video-wrap' + (useCanvasBurn ? ' player-video-wrap--burn' : '');
             wrap.appendChild(video);
@@ -712,11 +716,17 @@
                         startLevel: -1,
                         capLevelToPlayerSize: true,
                         maxBufferHole: 0.5,
+                        enableWorker: true,
                     });
                     hlsInstance.loadSource(url);
                     hlsInstance.attachMedia(video);
                     hlsInstance.on(Hls.Events.MANIFEST_PARSED, function () {
                         tryResume();
+                        tryPlay();
+                    });
+                    hlsInstance.on(Hls.Events.ERROR, function (event, data) {
+                        if (!data.fatal) return;
+                        statusEl.textContent = 'Stream xatosi';
                         tryPlay();
                     });
                     video.addEventListener('loadedmetadata', tryResume, { once: true });
@@ -743,6 +753,14 @@
             }
 
             setupCaptureProtection(wrap, video, clearVideoSource, reloadCurrent);
+
+            if (options.iptv) {
+                video.addEventListener('playing', function () {
+                    if (video.muted) {
+                        video.muted = false;
+                    }
+                }, { once: true });
+            }
 
             if (useCanvasBurn) {
                 var canvasEl = wrap.querySelector('.player-video-canvas');
@@ -788,6 +806,9 @@
             if (currentMode !== 'auto' && streams[currentMode]) {
                 select.value = currentMode;
                 loadQuality(currentMode, false);
+            } else if (options.iptv && streams['720']) {
+                select.value = '720';
+                loadQuality('720', false);
             } else {
                 applyMode('auto');
             }

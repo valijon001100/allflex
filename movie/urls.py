@@ -8,6 +8,7 @@ from . import stream_views
 from . import ticket_views
 from . import corporate_views
 from . import api_views
+from . import channel_stream
 from . import telegram_webhook
 
 app_name= 'movie'
@@ -22,6 +23,8 @@ urlpatterns = [
     path("live/", views.live_list, name='live_list'),
     path("live/<slug:slug>/", views.live_watch, name='live_watch'),
     path("telekanallar/", views.channel_list, name='channel_list'),
+    path("telekanallar/<slug:slug>/playlist.m3u8", channel_stream.channel_playlist, name='channel_playlist'),
+    path("telekanallar/<slug:slug>/segment/", channel_stream.channel_segment, name='channel_segment'),
     path("telekanallar/<slug:slug>/", views.channel_watch, name='channel_watch'),
 
     path("tickets/", ticket_views.ticket_home, name='ticket_home'),

@@ -914,3 +914,7 @@ class TvChannel(models.Model):
             return self.logo_url
         from .iptv_logos import resolve_logo_url
         return resolve_logo_url(self.tvg_id)
+
+    def get_player_stream_url(self):
+        from django.urls import reverse
+        return reverse('movie:channel_playlist', kwargs={'slug': self.slug})

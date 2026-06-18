@@ -2,9 +2,9 @@
 {% load static i18n %}
 
 {% block content %}
-<div id="main" class="container">
-    <h1>{% trans 'Telekanallar' %}</h1>
-    <p style="color:#666;margin-bottom:12px">{% trans "O'zbekiston va dunyo telekanallarini jonli tomosha qiling." %}</p>
+<div id="main" class="container channel-page">
+    <h1 class="channel-page-title">{% trans 'Telekanallar' %}</h1>
+    <p class="channel-page-subtitle">{% trans "O'zbekiston va dunyo telekanallarini jonli tomosha qiling." %}</p>
 
     <div class="channel-country-panel">
         <p class="channel-country-hint">{% trans "Boshqa davlat kanallarini ko'rish uchun mamlakatni tanlang" %}</p>
@@ -45,7 +45,7 @@
         {% endif %}
     </div>
 
-    <h2 style="font-size:22px;margin:20px 0 16px">{{ country_label }}</h2>
+    <h2 class="channel-section-title">{{ country_label }}</h2>
 
     <div class="items">
         {% for channel in channels %}
@@ -87,16 +87,29 @@
 </div>
 
 <style>
+.channel-page .channel-page-title,
+.channel-page .channel-section-title {
+    color: #2b2f3a !important;
+    font-weight: 700;
+}
+.channel-page .channel-page-subtitle {
+    color: #5a6472 !important;
+    margin-bottom: 12px;
+}
+.channel-page .channel-section-title {
+    font-size: 22px;
+    margin: 20px 0 16px;
+}
 .channel-country-panel {
-    background: #f8f8f8;
-    border: 1px solid #e5e5e5;
+    background: #f3f4f6;
+    border: 1px solid #d8dee9;
     border-radius: 12px;
     padding: 16px;
     margin-bottom: 8px;
 }
 .channel-country-hint {
     margin: 0 0 12px;
-    color: #8b1f35;
+    color: #8b1f35 !important;
     font-weight: 600;
     font-size: 14px;
 }
@@ -112,33 +125,40 @@
     overflow-y: auto;
     padding-right: 4px;
 }
-.channel-country-chip {
+.channel-page .channel-country-panel a.channel-country-chip {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 8px 14px;
     border-radius: 999px;
-    background: #fff;
-    border: 1px solid #ddd;
-    color: #333;
-    text-decoration: none;
+    background: #ffffff !important;
+    border: 2px solid #8b1f35 !important;
+    color: #2b2f3a !important;
+    text-decoration: none !important;
     font-size: 13px;
+    font-weight: 600;
     white-space: nowrap;
 }
-.channel-country-chip:hover {
-    border-color: #8b1f35;
-    color: #8b1f35;
-    text-decoration: none;
+.channel-page .channel-country-panel a.channel-country-chip span,
+.channel-page .channel-country-panel a.channel-country-chip em {
+    color: inherit !important;
 }
-.channel-country-chip.is-active {
-    background: #8b1f35;
-    border-color: #8b1f35;
-    color: #fff;
+.channel-page .channel-country-panel a.channel-country-chip:hover {
+    background: #fde8ec !important;
+    color: #8b1f35 !important;
+    text-decoration: none !important;
 }
-.channel-country-chip em {
-    font-style: normal;
-    font-size: 11px;
-    opacity: .85;
+.channel-page .channel-country-panel a.channel-country-chip.is-active {
+    background: #8b1f35 !important;
+    border-color: #8b1f35 !important;
+    color: #ffffff !important;
+}
+.channel-page .channel-country-panel label {
+    color: #4a5568 !important;
+}
+.channel-page .channel-country-panel select.form-control {
+    color: #2b2f3a !important;
+    background: #fff !important;
 }
 .channel-logo-img {
     object-fit: contain !important;
