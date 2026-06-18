@@ -4,48 +4,33 @@
 {% block content %}
 <div id="main" class="container channel-page">
     <h1 class="channel-page-title">{% trans 'Telekanallar' %}</h1>
-    <p class="channel-page-subtitle">{% trans "O'zbekiston va dunyo telekanallarini jonli tomosha qiling." %}</p>
+    <p class="channel-page-subtitle">{% trans "Jonli telekanallarni qidiring va tomosha qiling." %}</p>
 
-    <div class="channel-country-panel">
-        <p class="channel-country-hint">{% trans "Boshqa davlat kanallarini ko'rish uchun mamlakatni tanlang" %}</p>
-
-        {% if popular_countries %}
-        <div class="channel-popular-nav">
-            {% for item in popular_countries %}
-            <a href="{% url 'movie:channel_list' %}?country={{ item.code }}"
-               class="channel-country-chip {% if item.code == active_country %}is-active{% endif %}">
-                {{ item.label }}
-            </a>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {% if country_nav %}
-        <div class="channel-country-scroll">
-            {% for item in country_nav %}
-            <a href="{% url 'movie:channel_list' %}?country={{ item.code }}"
-               class="channel-country-chip {% if item.code == active_country %}is-active{% endif %}">
-                <span>{{ item.label }}</span>
-                {% if item.loaded %}<em>{{ item.count }}</em>{% endif %}
-            </a>
-            {% endfor %}
-        </div>
-
-        <div style="margin-top:12px;max-width:520px">
-            <label for="channelCountrySelect" style="display:block;margin-bottom:6px;color:#666;font-size:13px">{% trans 'Yoki ro\'yxatdan tanlang' %}</label>
-            <select id="channelCountrySelect" class="form-control" style="border-radius:8px"
-                    onchange="if(this.value){window.location.href='{% url 'movie:channel_list' %}?country='+this.value;}">
-                {% for item in country_nav %}
-                <option value="{{ item.code }}" {% if item.code == active_country %}selected{% endif %}>
-                    {{ item.label }}{% if item.loaded %} ({{ item.count }}){% else %} — {% trans 'yuklash' %}{% endif %}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
+    <div class="channel-search-panel">
+        <form method="get" action="{% url 'movie:channel_list' %}" class="channel-search-form" role="search">
+            <label class="visually-hidden" for="channelSearchInput">{% trans 'Kanal qidirish' %}</label>
+            <input
+                id="channelSearchInput"
+                type="search"
+                name="q"
+                value="{{ query }}"
+                class="channel-search-input"
+                placeholder="{% trans 'Kanal nomini kiriting...' %}"
+                autocomplete="off"
+            >
+            <button type="submit" class="channel-search-btn">{% trans 'Qidirish' %}</button>
+            {% if query %}
+            <a href="{% url 'movie:channel_list' %}" class="channel-search-clear">{% trans 'Tozalash' %}</a>
+            {% endif %}
+        </form>
+        {% if query %}
+        <p class="channel-search-meta">
+            {% blocktrans count counter=results_count %}{{ counter }} ta natija topildi{% plural %}{{ counter }} ta natija topildi{% endblocktrans %}
+        </p>
+        {% else %}
+        <p class="channel-search-meta">{% trans "O'zbekiston telekanallari. Boshqa davlat kanallarini qidiruv orqali toping." %}</p>
         {% endif %}
     </div>
-
-    <h2 class="channel-section-title">{{ country_label }}</h2>
 
     <div class="items">
         {% for channel in channels %}
@@ -63,102 +48,116 @@
             </a>
             <div class="info">
                 <div class="title">{{ channel.name }}</div>
-                <div class="desc">{% trans 'Jonli efir' %}</div>
+                <div class="desc">{% trans 'Jonli efir' %}{% if channel.country_code and channel.country_code != 'uz' %} · {{ channel.country_code|upper }}{% endif %}</div>
             </div>
         </div>
         {% empty %}
-        <div style="grid-column:1/-1;padding:40px;text-align:center;color:#888">
-            {% trans 'Kanallar yuklanmoqda. Bir oz kuting va sahifani yangilang.' %}
+        <div class="channel-empty">
+            {% if query %}
+            {% trans 'Hech qanday kanal topilmadi. Boshqa nom bilan qidiring.' %}
+            {% else %}
+            {% trans "Ishlaydigan kanallar topilmadi. Keyinroq qayta urinib ko'ring." %}
+            {% endif %}
         </div>
         {% endfor %}
     </div>
 
     {% if page_obj.paginator.num_pages > 1 %}
-    <nav style="margin-top:24px;text-align:center">
+    <nav class="channel-pagination">
         {% if page_obj.has_previous %}
-        <a href="?country={{ active_country }}&page={{ page_obj.previous_page_number }}" class="btn btn-default btn-sm">←</a>
+        <a href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}" class="btn btn-default btn-sm">←</a>
         {% endif %}
-        <span style="margin:0 12px;color:#666">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-        <a href="?country={{ active_country }}&page={{ page_obj.next_page_number }}" class="btn btn-default btn-sm">→</a>
+        <a href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}" class="btn btn-default btn-sm">→</a>
         {% endif %}
     </nav>
     {% endif %}
 </div>
 
 <style>
-.channel-page .channel-page-title,
-.channel-page .channel-section-title {
+.channel-page .channel-page-title {
     color: #2b2f3a !important;
     font-weight: 700;
 }
 .channel-page .channel-page-subtitle {
     color: #5a6472 !important;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
-.channel-page .channel-section-title {
-    font-size: 22px;
-    margin: 20px 0 16px;
-}
-.channel-country-panel {
+.channel-search-panel {
     background: #f3f4f6;
     border: 1px solid #d8dee9;
     border-radius: 12px;
     padding: 16px;
-    margin-bottom: 8px;
+    margin-bottom: 20px;
 }
-.channel-country-hint {
-    margin: 0 0 12px;
-    color: #8b1f35 !important;
-    font-weight: 600;
-    font-size: 14px;
-}
-.channel-popular-nav,
-.channel-country-scroll {
+.channel-search-form {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 10px;
-}
-.channel-country-scroll {
-    max-height: 180px;
-    overflow-y: auto;
-    padding-right: 4px;
-}
-.channel-page .channel-country-panel a.channel-country-chip {
-    display: inline-flex;
+    gap: 10px;
     align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: #ffffff !important;
-    border: 2px solid #8b1f35 !important;
-    color: #2b2f3a !important;
-    text-decoration: none !important;
-    font-size: 13px;
+}
+.channel-search-input {
+    flex: 1 1 240px;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid #c5cdd8;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #2b2f3a;
+    background: #fff;
+}
+.channel-search-input:focus {
+    outline: none;
+    border-color: #8b1f35;
+    box-shadow: 0 0 0 3px rgba(139, 31, 53, .12);
+}
+.channel-search-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #8b1f35;
+    color: #fff !important;
     font-weight: 600;
-    white-space: nowrap;
+    cursor: pointer;
 }
-.channel-page .channel-country-panel a.channel-country-chip span,
-.channel-page .channel-country-panel a.channel-country-chip em {
-    color: inherit !important;
+.channel-search-btn:hover {
+    background: #6f1829;
 }
-.channel-page .channel-country-panel a.channel-country-chip:hover {
-    background: #fde8ec !important;
+.channel-search-clear {
     color: #8b1f35 !important;
+    font-weight: 600;
     text-decoration: none !important;
 }
-.channel-page .channel-country-panel a.channel-country-chip.is-active {
-    background: #8b1f35 !important;
-    border-color: #8b1f35 !important;
-    color: #ffffff !important;
+.channel-search-meta {
+    margin: 12px 0 0;
+    color: #5a6472 !important;
+    font-size: 14px;
 }
-.channel-page .channel-country-panel label {
-    color: #4a5568 !important;
+.channel-empty {
+    grid-column: 1 / -1;
+    padding: 40px;
+    text-align: center;
+    color: #888;
 }
-.channel-page .channel-country-panel select.form-control {
-    color: #2b2f3a !important;
-    background: #fff !important;
+.channel-pagination {
+    margin-top: 24px;
+    text-align: center;
+}
+.channel-pagination span {
+    margin: 0 12px;
+    color: #666;
+}
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 .channel-logo-img {
     object-fit: contain !important;

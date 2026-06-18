@@ -275,52 +275,40 @@ def live_watch(request, slug):
 
 
 def channel_list(request):
-    from django.contrib import messages
     from django.core.paginator import Paginator
-    from django.utils.translation import get_language
+    from django.db.models import Case, IntegerField, Q, Value, When
 
-    from .iptv_channels import sync_country_channels
-    from .iptv_countries import (
-        PRIMARY_COUNTRY,
-        build_country_nav,
-        country_label,
-        get_country_codes,
-        popular_country_nav,
-    )
+    from .iptv_countries import PRIMARY_COUNTRY
 
-    lang = get_language() or 'uz'
-    all_codes = set(get_country_codes())
-    active_country = (request.GET.get('country') or PRIMARY_COUNTRY).lower()
-    if active_country not in all_codes:
-        active_country = PRIMARY_COUNTRY
+    query = (request.GET.get('q') or '').strip()
+    channels_qs = TvChannel.objects.filter(is_active=True, is_playable=True)
 
-    if not TvChannel.objects.filter(is_active=True, country_code=active_country).exists():
-        if active_country in all_codes:
-            try:
-                result = sync_country_channels(active_country)
-                if result['total']:
-                    messages.success(
-                        request,
-                        f"{country_label(active_country, lang)}: {result['total']} ta kanal yuklandi.",
-                    )
-            except (FileNotFoundError, OSError) as exc:
-                messages.error(request, f"Kanallar yuklanmadi: {exc}")
+    if query:
+        channels_qs = channels_qs.filter(
+            Q(name__icontains=query) | Q(tvg_id__icontains=query)
+        )
+    else:
+        channels_qs = channels_qs.filter(country_code=PRIMARY_COUNTRY)
 
-    channels_qs = TvChannel.objects.filter(is_active=True, country_code=active_country).order_by('order', 'name')
+    channels_qs = channels_qs.annotate(
+        country_rank=Case(
+            When(country_code=PRIMARY_COUNTRY, then=Value(0)),
+            default=Value(1),
+            output_field=IntegerField(),
+        )
+    ).order_by('country_rank', 'order', 'name')
+
     paginator = Paginator(channels_qs, 48)
     page_obj = paginator.get_page(request.GET.get('page'))
-    active_qs = TvChannel.objects.filter(is_active=True)
 
     return render(request, 'channel_list.html', {
         'page_obj': page_obj,
         'channels': page_obj.object_list,
-        'active_country': active_country,
-        'country_label': country_label(active_country, lang),
-        'country_nav': build_country_nav(active_qs, lang, include_empty=True),
-        'popular_countries': popular_country_nav(lang, active_qs),
+        'query': query,
+        'results_count': paginator.count,
     })
 
 
 def channel_watch(request, slug):
-    channel = get_object_or_404(TvChannel, slug=slug, is_active=True)
+    channel = get_object_or_404(TvChannel, slug=slug, is_active=True, is_playable=True)
     return render(request, 'channel_watch.html', {'channel': channel})
