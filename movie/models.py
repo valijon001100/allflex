@@ -892,6 +892,7 @@ class TvChannel(models.Model):
     tvg_id = models.CharField('TVG ID', max_length=120, blank=True, default='')
     stream_url = models.URLField('Stream URL')
     quality = models.CharField(max_length=40, blank=True, default='')
+    logo_url = models.URLField('Logo URL', blank=True, default='')
     is_active = models.BooleanField('Faol', default=True)
     order = models.PositiveIntegerField('Tartib', default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -908,7 +909,7 @@ class TvChannel(models.Model):
         return reverse('movie:channel_watch', kwargs={'slug': self.slug})
 
     def get_logo_url(self):
-        channel_id = (self.tvg_id or '').split('@', 1)[0].strip()
-        if channel_id:
-            return f'https://logo.iptv.org/{channel_id}.png'
-        return ''
+        if self.logo_url:
+            return self.logo_url
+        from .iptv_logos import resolve_logo_url
+        return resolve_logo_url(self.tvg_id)

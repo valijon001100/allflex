@@ -5,6 +5,7 @@ from django.conf import settings
 from django.utils.text import slugify
 
 from .models import TvChannel
+from .iptv_logos import resolve_logo_url
 
 EXTINF_RE = re.compile(
     r'#EXTINF:-1\s+(?:tvg-id="(?P<tvg_id>[^"]*)")?\s*,(?P<name>.+)',
@@ -88,6 +89,7 @@ def sync_tv_channels_from_m3u(path=None, replace=False):
         quality = _quality_from_name(name)
         tvg_id = entry.get('tvg_id', '')
         stream_url = entry['stream_url']
+        logo_url = resolve_logo_url(tvg_id)
 
         existing = None
         if tvg_id:
@@ -102,6 +104,7 @@ def sync_tv_channels_from_m3u(path=None, replace=False):
                 ('quality', quality),
                 ('order', order),
                 ('is_active', True),
+                ('logo_url', logo_url),
             ):
                 if getattr(existing, field) != value:
                     setattr(existing, field, value)
@@ -118,6 +121,7 @@ def sync_tv_channels_from_m3u(path=None, replace=False):
             tvg_id=tvg_id,
             stream_url=stream_url,
             quality=quality,
+            logo_url=logo_url,
             order=order,
             is_active=True,
         )

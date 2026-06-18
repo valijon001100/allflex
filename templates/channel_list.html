@@ -11,12 +11,13 @@
         <div class="item">
             <a href="{% url 'movie:channel_watch' channel.slug %}">
                 {% if channel.get_logo_url %}
-                <img src="{{ channel.get_logo_url }}" alt="{{ channel.name }}" style="object-fit:contain;background:#111;padding:12px">
+                <img src="{{ channel.get_logo_url }}" alt="{{ channel.name }}" class="channel-logo-img" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                <div class="channel-logo-fallback" style="display:none">📺</div>
                 {% else %}
-                <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0a10,#3d1020);display:flex;align-items:center;justify-content:center;color:#fff;font-size:42px">📺</div>
+                <div class="channel-logo-fallback">📺</div>
                 {% endif %}
                 {% if channel.quality %}
-                <span style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;z-index:2">{{ channel.quality }}</span>
+                <span class="channel-quality-badge">{{ channel.quality }}</span>
                 {% endif %}
             </a>
             <div class="info">
@@ -31,4 +32,33 @@
         {% endfor %}
     </div>
 </div>
+
+<style>
+.channel-logo-img {
+    object-fit: contain !important;
+    background: #fff !important;
+    padding: 10px !important;
+}
+.channel-logo-fallback {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #1a0a10, #3d1020);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 42px;
+}
+.channel-quality-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,.75);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    z-index: 2;
+}
+</style>
 {% endblock %}
