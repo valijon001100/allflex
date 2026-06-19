@@ -181,7 +181,6 @@ class HomeView(ListView):
                     'url': cat_obj.get_absolute_url(),
                 })
 
-        context['home_tabs'] = home_tabs
         context['home_sections'] = sections
         return context
 

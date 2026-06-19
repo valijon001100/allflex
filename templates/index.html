@@ -3,15 +3,6 @@
 {% block content %}
 
 <div id="main" class="container home-page">
-    <nav class="home-tabs">
-        <a href="{% url 'movie:home' %}" class="home-tab is-active">{% trans 'Barchasi' %}</a>
-        {% for cat in home_tabs %}
-        <a href="{{ cat.obj.get_absolute_url }}" class="home-tab">{{ cat.name }}</a>
-        {% endfor %}
-        <a href="{% url 'movie:channel_list' %}" class="home-tab">{% trans 'Telekanallar' %}</a>
-        <a href="{% url 'movie:live_list' %}" class="home-tab">{% trans 'Jonli efir' %}</a>
-    </nav>
-
     {% for section in home_sections %}
     <section class="home-row">
         <div class="home-row-header">
@@ -41,30 +32,6 @@
 .home-page {
     max-width: 1320px;
     background: transparent !important;
-}
-.home-tabs {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 4px;
-    overflow-x: auto;
-    margin: 0 0 28px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-.home-tab {
-    display: inline-block;
-    padding: 12px 16px;
-    color: #9aa3b2;
-    font-size: 15px;
-    font-weight: 600;
-    text-decoration: none !important;
-    white-space: nowrap;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-}
-.home-tab.is-active {
-    color: #fff;
-    border-bottom-color: #ff6b00;
 }
 .home-row-header {
     display: flex;
