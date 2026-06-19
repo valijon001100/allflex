@@ -3,446 +3,839 @@
 
 {% block content %}
 
+<div id="main" class="container-modern movie-detail-page">
+    <div class="movie-detail-container">
+        <!-- Movie Poster -->
+        <div class="movie-poster">
+            <img src="{{ object.poster.url }}" alt="{{ object|movie_title }}">
+        </div>
 
-
-
-<div id="main" class="container">
-
-
-    <div id="movie">
-        <div itemscope itemtype="https://schema.org/Movie">
-
-
-            <meta itemprop="name" content="Робот по имени Чаппи">
-            <meta itemprop="url" content="https://kinobase.org/film/3301-robot-po-imeni-chappi">
-            <meta itemprop="dateCreated" content="2022-05-02T14:04:11+03:00">
-            <meta itemprop="copyrightYear" content="2015">
-
+        <!-- Movie Info -->
+        <div class="movie-info">
             <h1>{{ object|movie_title }}</h1>
+            
+            <div class="movie-meta">
+                <span class="movie-meta-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    {{ object.rating }} ({{ object.movie_comments.all.count }} {% trans 'rating' %})
+                </span>
+                <span class="movie-meta-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                        <path d="M16 2v4"></path>
+                        <path d="M8 2v4"></path>
+                        <path d="M3 10h18"></path>
+                    </svg>
+                    {{ object.year }}
+                </span>
+                <span class="movie-meta-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {{ object.country }}
+                </span>
+                <span class="movie-meta-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 2h20v20H2z"></path>
+                        <path d="M12 2v20"></path>
+                        <path d="M2 12h20"></path>
+                    </svg>
+                    {{ object.duration }}
+                </span>
+            </div>
 
-            <h4 class="alternative_title" itemprop="alternativeHeadline">Film</h4>
+            <div class="movie-genres">
+                {% for genre in object.genres.all %}
+                <span class="genre-tag">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
 
+            <div class="movie-description">
+                <h3>{% trans 'Ma\'lumot' %}</h3>
+                <p>{{ object.description }}</p>
+            </div>
 
-            <div class="row">
-                <div class="col-md-12">
-
-                    <div class="data clearfix">
-                        <div class="poster-data">
-                            <div class="poster">
-                                <img src="{{object.poster.url}}" itemprop="image" class="img-responsive">
-
-                                <button class="favorite" data-movie-id="3301" title="Добавить в избранное"></button>
-
-                                <span class="label label-danger">Лицензия</span>
-                            </div>
-
-                            <div id="rating-block">
-                                <span itemprop="aggregateRating" itemscope
-                                    itemtype="https://schema.org/AggregateRating">
-                                    <meta itemprop="ratingValue" content="8.6">
-                                    <meta itemprop="worstRating" content="0">
-                                    <meta itemprop="bestRating" content="10">
-                                    <meta itemprop="ratingCount" content="414">
-                                </span>
-                                <input type="hidden" id="rating" value="8.6">
-                                <div id="rating-votes">
-                                    Оценка: 8.6 (414 голосов)
-                                </div>
-                                <div id="rating-success">
-                                    <span id="rating-text">Ваша оценка: 0</span>
-                                    <span id="remove-rating" class="glyphicon glyphicon-remove"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <ul class="list-unstyled details">
-                            <li><b>Год:</b> <a href="/films/2015">2015</a></li>
-
-                            <li><b>Страна:</b> <a href="/films/usa" rel="nofollow">США</a>, <a href="/films/zaf"
-                                    rel="nofollow">ЮАР</a></li>
-
-                            <li>
-                                <b>Жанр:</b> 
-                                   
-                                   {% for genre in object.genres.all %}
-                                    <a href="#" rel="nofollow">
-                                            <span itemprop="genre">{{genre.name}}<span>
-                                        </a>
-                                   {% endfor %}
-                                       , 
-                                 </li>
-
-                            <li><b>Слоган:</b>{{object.short_title}}</li>
-
-                            {% comment %} <li><b>Режиссер:</b> <span itemprop="director" itemscope
-                                    itemtype="https://schema.org/Person"><a itemprop="url" href="/name/1774"
-                                        rel="nofollow"><span itemprop="name">Нил Бломкамп</span></a></span></li>
-
-                            <li><b>Сценарий:</b> <a href="/name/1774" rel="nofollow">Нил Бломкамп</a>, <a
-                                    href="/name/1776" rel="nofollow">Тэрри Татчелл</a></li>
-
-                            <li><b>Продюсер:</b> <span itemprop="producer" itemscope
-                                    itemtype="https://schema.org/Person"><a itemprop="url" href="/name/1774"
-                                        rel="nofollow"><span itemprop="name">Нил Бломкамп</span></a></span>, <span
-                                    itemprop="producer" itemscope itemtype="https://schema.org/Person"><a itemprop="url"
-                                        href="/name/844" rel="nofollow"><span itemprop="name">Саймон
-                                            Кинберг</span></a></span>, <span itemprop="producer" itemscope
-                                    itemtype="https://schema.org/Person"><a itemprop="url" href="/name/1770"
-                                        rel="nofollow"><span itemprop="name">Джеймс Битонти</span></a></span></li> {% endcomment %}
-
-                   
-
-                            <li>
-                               <b>Актеры:</b> 
-                                
-                                {% for actor in object.actors.all %}
-                                   <a itemprop="url" href="/name/1117" rel="nofollow">
-                                    <span itemprop="name">{{actor.name}}</span>
-                                    </a> 
-                                {% endfor %}
-                                    
-                                
-                                , 
-                           </li>
-
-
-                            <li><b>Качество:</b> {{object.quality}}</li>
-                     
-                            <li><b>Продолжительность:</b> <span itemprop="duration">{{object.duration}}</span></li>
-
-                            <li><b>Рейтинг IMDb:</b> {{object.rating}}</li>
-                        </ul>
-
-                        <div class="body" itemprop="description">{{object.description}}</div>
-
-                        {% if corporate_movie_share_url %}
-                        <div class="corporate-share-box" style="margin-top:20px;padding:16px;background:#1a1d29;border:1px solid #2a2d3a;border-radius:8px">
-                            <h4 style="color:#fff;font-size:15px;margin:0 0 8px">🔗 {% trans 'Korporativ kino havolasi' %}</h4>
-                            <p style="color:#9ca3af;font-size:13px;margin:0 0 12px">
-                                {% trans 'Xodimlaringizga yuboring — obunasiz faqat shu kinoni ko\'radi.' %}
-                            </p>
-                            <div style="display:flex;gap:8px;flex-wrap:wrap">
-                                <input type="text" id="corpMovieShareUrl" value="{{ corporate_movie_share_url }}" readonly
-                                    style="flex:1;min-width:200px;background:#252836;border:1px solid #2a2d3a;color:#fff;font-size:12px;padding:8px 12px;border-radius:4px">
-                                <button type="button" class="btn btn-default" onclick="copyCorpMovieShare()">{% trans 'Nusxalash' %}</button>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                    </div>
-
-
-                    <div id="watch_block">
-
-                        <ul class="nav nav-tabs" id="tab-options">
-                            <li class="active"><a href="#online" data-toggle="tab">{% trans 'Смотреть онлайн' %}</a></li>
-                            {% if has_trailer %}
-                            <li><a href="#trailer" data-toggle="tab">{% trans 'Трейлер' %}</a></li>
-                            {% endif %}
-                        </ul>
-
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="online">
-                                {% if is_share_link_viewer and not is_authenticated and not share_requires_registration %}
-                                <div id="sharePreviewBanner" style="background:#1e3a2f;border:1px solid #2ecc71;border-radius:6px;padding:10px 14px;margin-bottom:12px;color:#a7f3d0;font-size:13px">
-                                    {% trans 'Korporativ havola — faqat shu kino. 9 daqiqadan keyin xavfsizlik uchun ro\'yxatdan o\'ting.' %}
-                                    <strong id="shareCountdown" style="margin-left:8px"></strong>
-                                </div>
-                                {% elif is_share_link_viewer and is_authenticated %}
-                                <div style="background:#1e2a3a;border:1px solid #3b82f6;border-radius:6px;padding:10px 14px;margin-bottom:12px;color:#bfdbfe;font-size:13px">
-                                    {% trans 'Korporativ havola orqali — faqat shu kino ochiq. Boshqa kinolar bloklangan.' %}
-                                </div>
-                                {% endif %}
-                                {% if can_watch %}
-                                <div id="videoplayer_content" class="videoplayer-wrap" style="position:relative">
-                                    <div id="videoplayer"></div>
-                                    <div id="shareRegisterOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.88);z-index:20;align-items:center;justify-content:center;padding:24px;text-align:center">
-                                        <div style="max-width:420px">
-                                            <div style="font-size:42px;margin-bottom:12px">🛡️</div>
-                                            <h3 style="color:#fff;margin:0 0 10px">{% trans 'Kino xavfsizligi uchun ro\'yxatdan o\'ting' %}</h3>
-                                            <p style="color:#9ca3af;font-size:14px;margin-bottom:20px">
-                                                {% trans '9 daqiqalik bepul ko\'rish tugadi. Davom etish uchun ro\'yxatdan o\'ting — faqat shu kino ochiq qoladi.' %}
-                                            </p>
-                                            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-                                                <a href="{% url 'movie:register' %}?next={{ request.path }}" class="btn btn-primary watch-lock-btn">{% trans 'Регистрация' %}</a>
-                                                <a href="{% url 'movie:login' %}?next={{ request.path }}" class="btn btn-default watch-lock-btn-outline">{% trans 'Вход' %}</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% elif share_requires_registration %}
-                                <div class="watch-lock">
-                                    <div class="watch-lock-icon">🛡️</div>
-                                    <h3>{% trans 'Kino xavfsizligi uchun ro\'yxatdan o\'ting' %}</h3>
-                                    <p>{% trans '9 daqiqalik bepul ko\'rish tugadi. Davom etish uchun ro\'yxatdan o\'ting — faqat shu kino ochiq qoladi.' %}</p>
-                                    <div class="watch-lock-actions">
-                                        <a href="{% url 'movie:register' %}?next={{ request.path }}" class="btn btn-primary watch-lock-btn">{% trans 'Регистрация' %}</a>
-                                        <a href="{% url 'movie:login' %}?next={{ request.path }}" class="btn btn-default watch-lock-btn-outline">{% trans 'Вход' %}</a>
-                                    </div>
-                                </div>
-                                {% elif is_authenticated %}
-                                <div class="watch-lock">
-                                    <div class="watch-lock-icon">🔒</div>
-                                    <h3>{% trans 'Требуется подписка' %}</h3>
-                                    <p>{% trans 'Kinolarni ko\'rish uchun obuna sotib oling.' %}</p>
-                                    <div class="watch-lock-actions">
-                                        <a href="{% url 'movie:subscribe' %}" class="btn btn-primary watch-lock-btn">{% trans 'Obuna olish' %}</a>
-                                    </div>
-                                </div>
-                                {% else %}
-                                <div class="watch-lock">
-                                    <div class="watch-lock-icon">▶</div>
-                                    <h3>{% trans 'После регистрации фильм начнётся' %}</h3>
-                                    <p>{% trans 'Для просмотра онлайн зарегистрируйтесь или войдите в аккаунт.' %}</p>
-                                    <div class="watch-lock-actions">
-                                        <a href="{% url 'movie:register' %}?next={{ request.path }}" class="btn btn-primary watch-lock-btn">{% trans 'Регистрация' %}</a>
-                                        <a href="{% url 'movie:login' %}?next={{ request.path }}" class="btn btn-default watch-lock-btn-outline">{% trans 'Вход' %}</a>
-                                    </div>
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% if has_trailer %}
-                            <div class="tab-pane" id="trailer">
-                                <div id="trailerplayer_content" class="videoplayer-wrap">
-                                    <div id="trailerplayer"></div>
-                                </div>
-                                <p style="color:#9ca3af;font-size:13px;margin-top:10px">{% trans 'Treler barcha foydalanuvchilarga ochiq (obuna shart emas).' %}</p>
-                            </div>
+            <div class="movie-cast">
+                <h3>{% trans 'Aktyorlar' %}</h3>
+                <div class="cast-list">
+                    {% for actor in object.actors.all %}
+                    <div class="cast-member">
+                        <div class="cast-avatar">
+                            {% if actor.image %}
+                            <img src="{{ actor.image.url }}" alt="{{ actor.name }}">
+                            {% else %}
+                            <span>{{ actor.name|slice:":1" }}</span>
                             {% endif %}
                         </div>
-
-                        <div class="row" style="margin-top:12px">
-                            <div class="col-md-12">
-                                <div class="pull-left">
-                                    <button class="btn-icon btn-fav" onclick="addLikedMovie({{ object.id }})" title="{% trans 'Добавить в избранное' %}">{% trans 'В избранное' %}</button>
-                                </div>
-                            </div>
-                        </div>
-
-
+                        <div class="cast-name">{{ actor.name }}</div>
                     </div>
-
-
-                    <div id="comments">
-                        <div class="comments-title" id="comments-count">
-                           {{object.movie_comments.all.count}} {% trans 'комментариев' %}
-                         </div>
-
-                      
-                        <form action="" id="comment_form" method="post">
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        {{form.name}}
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="form-group">
-                                 {{form.comment}}
-                            </div>
-
-                            <button type="submit"
-                            class="btn btn-default btn-post" id="add_comment">
-                            {% trans 'Добавить' %}
-                            </button>
-                        </form>
-
-
-                        <div id="comments-entries">
-                            
-                            {% for comment in object.movie_comments.all|slice:'10' %}
-                                <div class="media new_comment" data-comment-id="" style="display:block;">
-                                    <div class="media-left">
-                                        <img class="media-object img-circle"
-                                        src="{% static 'storage/242x358/posters/2015/4/9yupW0KQrP.jpg'%}" loading="lazy"
-                                            style="width: 50px; height: 50px;">
-                                    </div>
-                                    <div class="media-body">
-                                        <div class="media-heading">
-                                        <b>{{comment.name}}</b> <span></span></div>
-                                        <p class="text">{{comment.comment}}</p>
-                                    
-                                    </div>
-                                </div>
-                                                            
-                            {% endfor %}
-                                
-                        </div>
-
-
-                    </div>
-
+                    {% endfor %}
                 </div>
             </div>
 
+            <div class="movie-actions">
+                <button class="btn-play" onclick="playMovie()">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    {% trans 'Ko\'rish' %}
+                </button>
+                <button class="btn-fav{% if request.user.is_authenticated and request.user.user_like_list.movie.contains(object) %} active{% endif %}" onclick="addLikedMovie({{ object.id }})">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+            </div>
 
+            {% if corporate_movie_share_url %}
+            <div class="corporate-share-box">
+                <h4>{% trans '🔗 Korporativ kino havolasi' %}</h4>
+                <p>{% trans 'Xodimlaringizga yuboring — obunasiz faqat shu kinoni ko\'radi.' %}</p>
+                <div class="share-input-group">
+                    <input type="text" id="corpMovieShareUrl" value="{{ corporate_movie_share_url }}" readonly>
+                    <button onclick="copyCorpMovieShare()" class="btn-share">{% trans 'Nusxalash' %}</button>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 
+    <!-- Video Player Section -->
+    <div class="video-player-section">
+        <ul class="nav-tabs">
+            <li class="active"><a href="#online">{% trans 'Смотреть онлайн' %}</a></li>
+            {% if has_trailer %}
+            <li><a href="#trailer">{% trans 'Трейлер' %}</a></li>
+            {% endif %}
+        </ul>
 
-    <style>
-    #videoplayer_content, .videoplayer-wrap {
-        background: #000;
-        border-radius: 4px;
-        overflow: hidden;
-        position: relative;
+        <div class="tab-content">
+            <div class="tab-pane active" id="online">
+                {% if is_share_link_viewer and not is_authenticated and not share_requires_registration %}
+                <div id="sharePreviewBanner">
+                    {% trans 'Korporativ havola — faqat shu kino. 9 daqiqadan keyin xavfsizlik uchun ro\'yxatdan o\'ting.' %}
+                    <strong id="shareCountdown"></strong>
+                </div>
+                {% elif is_share_link_viewer and is_authenticated %}
+                <div class="share-info">
+                    {% trans 'Korporativ havola orqali — faqat shu kino ochiq. Boshqa kinolar bloklangan.' %}
+                </div>
+                {% endif %}
+                
+                {% if can_watch %}
+                <div id="videoplayer_content">
+                    <div id="videoplayer"></div>
+                    <div id="shareRegisterOverlay">
+                        <div class="overlay-content">
+                            <div class="overlay-icon">🛡️</div>
+                            <h3>{% trans 'Kino xavfsizligi uchun ro\'yxatdan o\'ting' %}</h3>
+                            <p>{% trans '9 daqiqalik bepul ko\'rish tugadi. Davom etish uchun ro\'yxatdan o\'ting.' %}</p>
+                            <div class="overlay-actions">
+                                <a href="{% url 'movie:register' %}?next={{ request.path }}" class="btn-primary">{% trans 'Регистрация' %}</a>
+                                <a href="{% url 'movie:login' %}?next={{ request.path }}" class="btn-secondary">{% trans 'Вход' %}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif share_requires_registration %}
+                <div class="watch-lock">
+                    <div class="watch-lock-icon">🛡️</div>
+                    <h3>{% trans 'Kino xavfsizligi uchun ro\'yxatdan o\'ting' %}</h3>
+                    <p>{% trans '9 daqiqalik bepul ko\'rish tugadi.' %}</p>
+                    <div class="watch-lock-actions">
+                        <a href="{% url 'movie:register' %}?next={{ request.path }}" class="btn-primary">{% trans 'Регистрация' %}</a>
+                        <a href="{% url 'movie:login' %}?next={{ request.path }}" class="btn-secondary">{% trans 'Вход' %}</a>
+                    </div>
+                </div>
+                {% elif is_authenticated %}
+                <div class="watch-lock">
+                    <div class="watch-lock-icon">🔒</div>
+                    <h3>{% trans 'Требуется подписка' %}</h3>
+                    <p>{% trans 'Kinolarni ko\'rish uchun obuna sotib oling.' %}</p>
+                    <div class="watch-lock-actions">
+                        <a href="{% url 'movie:subscribe' %}" class="btn-primary">{% trans 'Obuna olish' %}</a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="watch-lock">
+                    <div class="watch-lock-icon">▶</div>
+                    <h3>{% trans 'Регистрацияni o\'tkazing' %}</h3>
+                    <p>{% trans 'Davom etish uchun ro\'yxatdan o\'ting.' %}</p>
+                    <div class="watch-lock-actions">
+                        <a href="{% url 'movie:register' %}?next={{ request.path }}" class="btn-primary">{% trans 'Регистрация' %}</a>
+                        <a href="{% url 'movie:login' %}?next={{ request.path }}" class="btn-secondary">{% trans 'Вход' %}</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if has_trailer %}
+            <div class="tab-pane" id="trailer">
+                <div id="trailerplayer_content">
+                    <div id="trailerplayer"></div>
+                </div>
+                <p class="trailer-note">{% trans 'Treler barcha foydalanuvchilarga ochiq (obuna shart emas).' %}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <div class="comments-header">
+            <h3>{{ object.movie_comments.all.count }} {% trans 'kommentariyalar' %}</h3>
+        </div>
+
+        <form action="" id="comment_form" method="post">
+            {% csrf_token %}
+            <div class="comment-form">
+                <div class="form-group">
+                    {{ form.name }}
+                </div>
+                <div class="form-group">
+                    {{ form.comment }}
+                </div>
+                <button type="submit" class="btn-post">{% trans 'Qoldirish' %}</button>
+            </div>
+        </form>
+
+        <div class="comments-list">
+            {% for comment in object.movie_comments.all|slice:':10' %}
+            <div class="comment-item">
+                <div class="comment-avatar">
+                    <img src="{% static 'static/images/default-avatar.png' %}" alt="User">
+                </div>
+                <div class="comment-content">
+                    <div class="comment-author">{{ comment.name }}</div>
+                    <p class="comment-text">{{ comment.comment }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modern Movie Detail Page Styles */
+.movie-detail-page {
+    padding-top: 90px;
+    padding-bottom: 60px;
+}
+
+.movie-detail-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+    margin-bottom: 50px;
+}
+
+.movie-poster {
+    background: rgba(30, 41, 59, 0.7);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.movie-poster img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.movie-poster:hover img {
+    transform: scale(1.02);
+}
+
+.movie-info {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.movie-info h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.movie-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.movie-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.movie-meta-item svg {
+    color: #6366f1;
+}
+
+.movie-genres {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.genre-tag {
+    background: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.movie-description h3,
+.movie-cast h3 {
+    font-size: 1.3rem;
+    color: #f8fafc;
+    margin-bottom: 16px;
+}
+
+.movie-description p {
+    color: #94a3b8;
+    line-height: 1.8;
+}
+
+.movie-cast {
+    background: rgba(30, 41, 59, 0.5);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cast-list {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.cast-member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.cast-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cast-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cast-avatar span {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #6366f1;
+}
+
+.cast-name {
+    color: #f8fafc;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.movie-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.btn-play {
+    background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn-play:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+}
+
+.btn-fav {
+    width: 56px;
+    height: 56px;
+    border: 2px solid rgba(236, 72, 153, 0.3);
+    border-radius: 12px;
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-fav:hover {
+    background: rgba(236, 72, 153, 0.2);
+    border-color: #ec4899;
+}
+
+.btn-fav.active {
+    background: #ec4899;
+    border-color: #ec4899;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+}
+
+.corporate-share-box {
+    background: rgba(26, 29, 41, 0.8);
+    border: 1px solid rgba(42, 45, 58, 0.5);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.corporate-share-box h4 {
+    color: #fff;
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+}
+
+.corporate-share-box > p {
+    color: #9ca3af;
+    font-size: 0.95rem;
+    margin: 0 0 16px;
+}
+
+.share-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.share-input-group input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.share-input-group .btn-share {
+    background: #6366f1;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.share-input-group .btn-share:hover {
+    background: #4f46e5;
+}
+
+.video-player-section {
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-tabs li {
+    list-style: none;
+}
+
+.nav-tabs li a {
+    display: block;
+    padding: 10px 20px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.2s;
+}
+
+.nav-tabs li.active a,
+.nav-tabs li a:hover {
+    color: #fff;
+    background: rgba(99, 102, 241, 0.15);
+}
+
+.tab-content {
+    min-height: 400px;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+#videoplayer_content {
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+#trailerplayer_content {
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.watch-lock {
+    padding: 60px 30px;
+    text-align: center;
+}
+
+.watch-lock-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.watch-lock h3 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin: 0 0 12px;
+}
+
+.watch-lock p {
+    color: #94a3b8;
+    font-size: 1rem;
+    margin-bottom: 24px;
+}
+
+.watch-lock-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 12px 28px;
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-post {
+    background: #6366f1;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-post:hover {
+    background: #4f46e5;
+}
+
+.comments-section {
+    margin-top: 40px;
+}
+
+.comments-header h3 {
+    color: #f8fafc;
+    margin-bottom: 20px;
+}
+
+.comment-form {
+    background: rgba(30, 41, 59, 0.5);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.comments-list {
+    margin-top: 24px;
+}
+
+.comment-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(30, 41, 59, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.comment-avatar img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-author {
+    color: #6366f1;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.comment-text {
+    color: #94a3b8;
+    line-height: 1.6;
+}
+
+#sharePreviewBanner,
+.share-info {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #a7f3d0;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+#shareRegisterOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.overlay-content {
+    text-align: center;
+    max-width: 420px;
+}
+
+.overlay-icon {
+    font-size: 42px;
+    margin-bottom: 16px;
+}
+
+.overlay-content h3 {
+    color: #fff;
+    margin: 0 0 12px;
+}
+
+.overlay-content > p {
+    color: #94a3b8;
+    margin-bottom: 24px;
+}
+
+.trailer-note {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 12px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .movie-detail-container {
+        grid-template-columns: 1fr;
     }
-    .player-video-wrap { position: relative; }
-    .player-video-wrap .movie-viewer-watermark {
-        position: absolute;
-        z-index: 35;
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: .5px;
-        color: rgba(255,255,255,.92);
-        text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.6);
-        pointer-events: none;
-        user-select: none;
-        font-family: Arial, Helvetica, sans-serif;
-        white-space: nowrap;
-        transition: left 3.5s ease-in-out, top 3.5s ease-in-out;
+    
+    .movie-info h1 {
+        font-size: 2rem;
     }
-    .player-video-wrap:fullscreen .movie-viewer-watermark,
-    .player-video-wrap:-webkit-full-screen .movie-viewer-watermark {
-        font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .movie-info h1 {
+        font-size: 1.5rem;
     }
-    #videoplayer video {
-        display: block;
+    
+    .movie-meta {
+        gap: 12px;
+    }
+    
+    .cast-list {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .cast-member {
+        min-width: 90px;
+    }
+    
+    .btn-play {
         width: 100%;
-        max-height: 520px;
-        background: #000;
-    }
-    .player-quality-bar {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 14px;
-        background: #2a2d3a;
-        color: #fff;
-        font-size: 13px;
-    }
-    .player-quality-select {
-        background: #1a1d27;
-        color: #fff;
-        border: 1px solid #4067b7;
-        border-radius: 4px;
-        padding: 5px 10px;
-        font-size: 13px;
-        cursor: pointer;
-    }
-    .player-quality-status {
-        color: #9ca3af;
-        margin-left: auto;
-        font-size: 12px;
-    }
-    .player-empty {
-        padding: 60px 20px;
-        text-align: center;
-        color: #9ca3af;
-        background: #1a1d27;
-    }
-    #tab-options li.active a { background: #8b1f35; color: #fff; }
-    .watch-lock {
-        min-height: 400px;
-        padding: 48px 24px;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         justify-content: center;
-        background: #000;
-        border-radius: 4px;
-        color: #e0e0e0;
     }
-    .watch-lock-icon { font-size: 42px; margin-bottom: 12px; }
-    .watch-lock h3 { color: #fff; font-size: 20px; margin: 0 0 10px; }
-    .watch-lock p { color: #9ca3af; font-size: 14px; margin-bottom: 20px; }
-    .watch-lock-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .watch-lock-btn { background: #8b1f35; border: none; padding: 10px 24px; font-weight: 600; }
-    .watch-lock-btn:hover { background: #6b1829; }
-    .watch-lock-btn-outline { background: transparent; border: 1px solid #8b1f35; color: #fff; padding: 10px 24px; }
-    .watch-lock-btn-outline:hover { background: #8b1f35; color: #fff; }
-    </style>
+}
+</style>
 
-    <script>
-        function copyCorpMovieShare() {
-            var el = document.getElementById('corpMovieShareUrl');
-            if (!el) return;
-            el.select();
-            el.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(el.value).catch(function () {
-                document.execCommand('copy');
+<script>
+function playMovie() {
+    if (document.querySelector('#online')) {
+        document.querySelector('#online').scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function copyCorpMovieShare() {
+    var el = document.getElementById('corpMovieShareUrl');
+    if (!el) return;
+    el.select();
+    el.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(el.value).catch(function () {
+        document.execCommand('copy');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (document.querySelector('#tab-options a[href="#online"]')) {
+        document.querySelector('#tab-options a[href="#online"]').click();
+    }
+});
+</script>
+
+{% if has_trailer or can_watch %}
+<script src="{% static 'static/player/378/hls.js' %}"></script>
+<script src="{% static 'static/js/video-player.js' %}"></script>
+{% endif %}
+{% if can_watch %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var streams = {{ video_streams_json|safe }};
+    var viewerCode = '{{ viewer_watermark|escapejs }}';
+    var serverBurn = {{ server_watermark_burn|yesno:"true,false" }};
+    KinoPlayer.init('videoplayer', streams, { watermark: viewerCode, serverBurn: serverBurn });
+    if (viewerCode && !serverBurn) {
+        var wrap = document.querySelector('#videoplayer .player-video-wrap');
+        var video = wrap && wrap.querySelector('video');
+        var canvas = wrap && wrap.querySelector('.player-video-canvas');
+        if (wrap && video && canvas && !wrap.classList.contains('player-video-wrap--burn')) {
+            wrap.classList.add('player-video-wrap--burn');
+            video.controls = false;
+            KinoPlayer.startCanvasBurn(wrap, video, canvas, viewerCode, {
+                getBottomPad: function () { return 12; }
             });
         }
-        document.addEventListener('DOMContentLoaded', function () {
-            $('#tab-options a[href="#online"]').tab('show');
-        });
-    </script>
-    {% if has_trailer or can_watch %}
-    <script src="{% static 'static/player/378/hls.js' %}"></script>
-    <script src="{% static 'static/js/video-player.js' %}"></script>
-    {% endif %}
-    {% if can_watch %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var streams = {{ video_streams_json|safe }};
-            var viewerCode = '{{ viewer_watermark|escapejs }}';
-            var serverBurn = {{ server_watermark_burn|yesno:"true,false" }};
-            KinoPlayer.init('videoplayer', streams, { watermark: viewerCode, serverBurn: serverBurn });
-            if (viewerCode && !serverBurn) {
-                var wrap = document.querySelector('#videoplayer .player-video-wrap');
-                var video = wrap && wrap.querySelector('video');
-                var canvas = wrap && wrap.querySelector('.player-video-canvas');
-                if (wrap && video && canvas && !wrap.classList.contains('player-video-wrap--burn')) {
-                    wrap.classList.add('player-video-wrap--burn');
-                    video.controls = false;
-                    KinoPlayer.startCanvasBurn(wrap, video, canvas, viewerCode, {
-                        getBottomPad: function () { return 12; }
-                    });
-                }
-            }
+    }
 
-            var previewSeconds = {{ share_preview_seconds|default:0 }};
-            var countdownEl = document.getElementById('shareCountdown');
-            var overlay = document.getElementById('shareRegisterOverlay');
-            if (previewSeconds > 0 && countdownEl) {
-                var remaining = previewSeconds;
-                function fmt(sec) {
-                    var m = Math.floor(sec / 60);
-                    var s = sec % 60;
-                    return m + ':' + (s < 10 ? '0' : '') + s;
+    var previewSeconds = {{ share_preview_seconds|default:0 }};
+    var countdownEl = document.getElementById('shareCountdown');
+    var overlay = document.getElementById('shareRegisterOverlay');
+    if (previewSeconds > 0 && countdownEl) {
+        var remaining = previewSeconds;
+        function fmt(sec) {
+            var m = Math.floor(sec / 60);
+            var s = sec % 60;
+            return m + ':' + (s < 10 ? '0' : '') + s;
+        }
+        countdownEl.textContent = '(' + fmt(remaining) + ')';
+        var timer = setInterval(function () {
+            remaining -= 1;
+            if (remaining <= 0) {
+                clearInterval(timer);
+                countdownEl.textContent = '';
+                var video = document.querySelector('#videoplayer video');
+                if (video) { try { video.pause(); } catch (e) {} }
+                if (overlay) {
+                    overlay.style.display = 'flex';
                 }
-                countdownEl.textContent = '(' + fmt(remaining) + ')';
-                var timer = setInterval(function () {
-                    remaining -= 1;
-                    if (remaining <= 0) {
-                        clearInterval(timer);
-                        countdownEl.textContent = '';
-                        var video = document.querySelector('#videoplayer video');
-                        if (video) { try { video.pause(); } catch (e) {} }
-                        if (overlay) {
-                            overlay.style.display = 'flex';
-                        }
-                        return;
-                    }
-                    countdownEl.textContent = '(' + fmt(remaining) + ')';
-                }, 1000);
+                return;
             }
-        });
-    </script>
-    {% endif %}
-    {% if has_trailer %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var trailerUrl = '{{ trailer_stream_url|escapejs }}';
-            if (trailerUrl) {
-                KinoPlayer.init('trailerplayer', { '720': trailerUrl }, {});
-            }
-        });
-    </script>
-    {% endif %}
+            countdownEl.textContent = '(' + fmt(remaining) + ')';
+        }, 1000);
+    }
+});
+</script>
+{% endif %}
+{% if has_trailer %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var trailerUrl = '{{ trailer_stream_url|escapejs }}';
+    if (trailerUrl) {
+        KinoPlayer.init('trailerplayer', { '720': trailerUrl }, {});
+    }
+});
+</script>
+{% endif %}
 
-    {% endblock content %}
+{% endblock content %}

@@ -2,22 +2,57 @@
 {% load static i18n movie_tags %}
 {% block content %}
 
-<div id="main" class="container home-page">
+<div id="main" class="container-modern home-page">
+    <!-- Hero Section -->
+    {% if home_sections.0.movies.0 %}
+    <section class="hero-section">
+        <div class="hero-bg" style="background-image: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.6) 100%), url('{{ home_sections.0.movies.0.poster.url }}')"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">{{ home_sections.0.movies.0|movie_title }}</h1>
+            <p class="hero-subtitle">{{ home_sections.0.movies.0.short_description|default:home_sections.0.movies.0.description }}</p>
+            <div class="hero-btns">
+                <a href="{% url 'movie:detail' home_sections.0.movies.0.slug %}" class="btn-hero btn-primary">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    {% trans 'Ko\'rish' %}
+                </a>
+                <a href="{% url 'movie:detail' home_sections.0.movies.0.slug %}" class="btn-hero btn-secondary">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    {% trans 'Batafsil' %}
+                </a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Movie Sections -->
     {% for section in home_sections %}
     <section class="home-row">
         <div class="home-row-header">
             <h2 class="home-row-title">{{ section.title }}</h2>
             <a href="{{ section.url }}" class="home-row-more">{% trans 'Barchasi' %} →</a>
         </div>
-        <div class="home-row-scroll">
+        <div class="movie-grid">
             {% for movie in section.movies %}
-            <article class="home-card">
+            <article class="movie-card">
                 <a href="{% url 'movie:detail' movie.slug %}" class="home-card-poster">
                     <img src="{{ movie.poster.url }}" alt="{{ movie|movie_title }}" loading="lazy">
+                    {% if movie.is_premium %}
+                    <span class="badge-premium">Premium</span>
+                    {% endif %}
                 </a>
-                <div class="home-card-info">
-                    <a href="{% url 'movie:detail' movie.slug %}" class="home-card-title">{{ movie|movie_title }}</a>
-                    <div class="home-card-meta">{{ movie.year }}{% if movie.quality %}, {{ movie.quality }}{% endif %}</div>
+                <div class="movie-card-content">
+                    <a href="{% url 'movie:detail' movie.slug %}" class="movie-card-title">{{ movie|movie_title }}</a>
+                    <div class="movie-card-meta">
+                        <span>{{ movie.year }}</span>
+                        {% if movie.quality %}
+                        <span>{{ movie.quality }}</span>
+                        {% endif %}
+                    </div>
                 </div>
             </article>
             {% endfor %}
@@ -29,63 +64,236 @@
 </div>
 
 <style>
+/* Custom styles for modern homepage */
 .home-page {
-    max-width: 1320px;
-    background: transparent !important;
+    padding-top: 90px;
+    padding-bottom: 60px;
 }
+
+.hero-section {
+    margin-bottom: 60px;
+    position: relative;
+    padding: 80px 0 60px;
+    overflow: hidden;
+}
+
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    background: linear-gradient(135deg, #f8fafc 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 30px;
+}
+
+.btn-hero {
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+    border: none;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    backdrop-filter: blur(10px);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-4px);
+}
+
+.home-row {
+    margin-bottom: 50px;
+}
+
 .home-row-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 24px;
 }
+
 .home-row-title {
     margin: 0;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     color: #f3f5f8;
 }
-.home-row-scroll {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    gap: 12px;
-    overflow-x: auto;
-    width: 100%;
+
+.home-row-more {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
 }
-.home-card {
-    flex: 0 0 148px !important;
-    width: 148px !important;
-    min-width: 148px !important;
-    max-width: 148px !important;
+
+.home-row-more:hover {
+    color: #ec4899;
 }
-.home-card-poster {
-    display: block;
-    aspect-ratio: 2 / 3;
-    border-radius: 10px;
+
+.movie-card {
+    background: rgba(30, 41, 59, 0.7);
+    border-radius: 12px;
     overflow: hidden;
-    background: #1a1a22;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
 }
-.home-card-poster img {
+
+.movie-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.movie-card:hover {
+    transform: translateY(-8px);
+    border-color: #ec4899;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.movie-card:hover::before {
+    opacity: 0.15;
+}
+
+.movie-card img {
     width: 100%;
-    height: 100%;
+    height: 330px;
     object-fit: cover;
     display: block;
+    transition: transform 0.5s ease;
 }
-.home-card-title {
-    display: block;
-    color: #eef0f4 !important;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none !important;
+
+.movie-card:hover img {
+    transform: scale(1.05);
+}
+
+.movie-card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    z-index: 1;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, transparent 100%);
+    transition: height 0.3s ease;
+}
+
+.movie-card:hover .movie-card-content {
+    height: 60%;
+}
+
+.movie-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
-.home-card-meta {
-    color: #8b93a1;
-    font-size: 12px;
+
+.movie-card-meta {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.badge-premium {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.home-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+    font-size: 1.2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 50px 0 30px;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+    
+    .movie-card img {
+        height: 240px;
+    }
+    
+    .home-row-title {
+        font-size: 1.5rem;
+    }
 }
 </style>
 
