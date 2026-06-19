@@ -2,92 +2,39 @@
 {% load static i18n movie_tags %}
 {% block content %}
 
-<div id="main" class="container">
-<div class="clearfix">
-    <div class="pull-left">
-        <a href="#" class="h3 catalog-title">{% trans 'Фильмы' %} : {{filter_category}}</a>
-    </div>
+<div id="main" class="container home-page">
+    <nav class="home-tabs">
+        <a href="{% url 'movie:home' %}" class="home-tab is-active">{% trans 'Barchasi' %}</a>
+        {% for cat in home_tabs %}
+        <a href="{{ cat.obj.get_absolute_url }}" class="home-tab">{{ cat.name }}</a>
+        {% endfor %}
+        <a href="{% url 'movie:channel_list' %}" class="home-tab">{% trans 'Telekanallar' %}</a>
+        <a href="{% url 'movie:live_list' %}" class="home-tab">{% trans 'Jonli efir' %}</a>
+    </nav>
 
-    <div class="dropdown-filters" style="padding-bottom:10px ;">
-
-        <div class="dropdown dropdown-filter">
-            <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                <span class="dropdown-u">{% trans 'Жанр' %} </span> <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">   
-                {% for gen in genres %}
-                    <li class="active" id="genreLinks" itemid="{{gen.id}}">
-                        <a href=""
-                        rel="nofollow">{{gen.name}}</a>
-                    </li>  
-                {% endfor %}                          
-            </ul>
+    {% for section in home_sections %}
+    <section class="home-row">
+        <div class="home-row-header">
+            <h2 class="home-row-title">{{ section.title }}</h2>
+            <a href="{{ section.url }}" class="home-row-more">{% trans 'Barchasi' %} →</a>
         </div>
-
-        <div class="dropdown dropdown-filter">
-            <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                <span class="dropdown-u">{% trans 'Год' %}</span> <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <li class="active">
-                    <a href="{% url 'movie:sort' 'year=2026' %}" rel="nofollow">2026</a>
-                </li>
-                <li>
-                    <a href="{% url 'movie:sort' 'year=2018' %}" rel="nofollow">2018</a>
-                </li>
-                <li>
-                    <a href="{% url 'movie:sort' 'year=2015' %}" rel="nofollow">2015</a>
-                </li>
-                <li>
-                    <a href="{% url 'movie:sort' 'year=2014' %}" rel="nofollow">2014</a>
-                </li>
-           
-            </ul>
-        </div>
-        <div class="dropdown dropdown-filter">
-            <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                <span class="dropdown-u">{% trans 'Качество' %}</span> <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <li class="active">
-                    <a href="{% url 'movie:sort' 'quality=HDR' %}" rel="nofollow">HDR</a>
-                </li>
-                <li>
-                    <a href="{% url 'movie:sort' 'quality=TS' %}" rel="nofollow">TS</a>
-                </li>
-        
-            </ul>
-        </div>
-    </div>
-</div>
-<div class="items">
-{% comment %} MOVIES  {% endcomment %}
-
-{% for movie in object_list %}  
-
-    <div class="item">
-            <a href="{% url 'movie:detail' movie.slug %}">
-            <img src="{{movie.poster.url}}" class="img-responsive" loading="lazy" alt="{{ movie|movie_title }}" title="{{ movie|movie_title }}">
-            </a>
-                <button class="favorite" onclick="addLikedMovie({{ movie.id }})" data-movie-id="194038" title="{% trans 'Добавить в избранное' %}"></button>
-            <div class="info">
-                <div class="title">
-                    <a href="{% url 'movie:detail' movie.slug %}" class="link" 
-                    alt="{{ movie|movie_title }}" title="{{ movie|movie_title }}">{{ movie|movie_title }}</a>
+        <div class="home-row-scroll">
+            {% for movie in section.movies %}
+            <article class="home-card">
+                <a href="{% url 'movie:detail' movie.slug %}" class="home-card-poster">
+                    <img src="{{ movie.poster.url }}" alt="{{ movie|movie_title }}" loading="lazy">
+                </a>
+                <div class="home-card-info">
+                    <a href="{% url 'movie:detail' movie.slug %}" class="home-card-title">{{ movie|movie_title }}</a>
+                    <div class="home-card-meta">{{ movie.year }}{% if movie.quality %}, {{ movie.quality }}{% endif %}</div>
                 </div>
-                <div class="desc">{{ movie.year }}, {{ movie.quality }}</div>
-            </div>
+            </article>
+            {% endfor %}
         </div>
-   
-{% endfor %}
-    {% comment %} ENDMOVIES {% endcomment %}
+    </section>
+    {% empty %}
+    <div class="home-empty">{% trans "Hozircha kinolar yo'q." %}</div>
+    {% endfor %}
 </div>
-<script>
-    let links = document.querySelectorAll("#genreLinks")
-    for(let l of links){
-        let value = l.getAttribute("itemid")
-        l.children[0].href = `/films/genres=${value}`
-    }   
-</script>
 
 {% endblock %}

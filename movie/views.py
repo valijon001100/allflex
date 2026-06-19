@@ -143,6 +143,48 @@ class HomeView(ListView):
     model = Movie
     template_name = 'index.html'
 
+    def get_queryset(self):
+        return Movie.objects.select_related('category').order_by('-created_at', '-id')
+
+    def get_context_data(self, **kwargs):
+        from django.urls import reverse
+        from django.utils.translation import get_language, gettext as _
+
+        from .context_pro import _nav_categories
+
+        context = super().get_context_data(**kwargs)
+        lang = get_language() or 'uz'
+        home_tabs = _nav_categories(lang)
+        sections = []
+
+        latest = Movie.objects.select_related('category').order_by('-created_at', '-id')[:16]
+        if latest:
+            sections.append({
+                'title': _('Yangi kinolar'),
+                'movies': latest,
+                'url': reverse('movie:home'),
+            })
+
+        for cat in home_tabs:
+            cat_obj = cat['obj']
+            child_ids = list(cat_obj.children.filter(is_active=True).values_list('id', flat=True))
+            cat_ids = [cat_obj.id] + child_ids
+            movies = list(
+                Movie.objects.filter(category_id__in=cat_ids)
+                .select_related('category')
+                .order_by('-created_at', '-id')[:16]
+            )
+            if movies:
+                sections.append({
+                    'title': cat['name'],
+                    'movies': movies,
+                    'url': cat_obj.get_absolute_url(),
+                })
+
+        context['home_tabs'] = home_tabs
+        context['home_sections'] = sections
+        return context
+
 class MovieDetailView(FormMixin,DetailView):
     model = Movie
     template_name = 'movie-detail.html'

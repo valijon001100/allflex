@@ -28,6 +28,8 @@ services:
           property: connectionString
       - key: WEB_CONCURRENCY
         value: "1"
+      - key: RUN_DEPLOY_SEED
+        value: "false"
       - key: TELEGRAM_CHANNEL_ID
         value: "-1003920859525"
       - key: TELEGRAM_WEBHOOK_SECRET

@@ -8,12 +8,15 @@ if ! python manage.py migrate --no-input; then
     python manage.py migrate --no-input
 fi
 
-python manage.py load_initial_data || true
-python manage.py load_ticket_data || true
-python manage.py ensure_protection_data || true
-python manage.py load_tv_channels --priority || true
-python manage.py load_tv_channels --all-countries --min-countries 50 || true
-python manage.py refresh_channel_logos || true
+# Ma'lumotlar bazasini deployda o'zgartirmaymiz (faqat schema migrate).
+# Birinchi marta seed kerak bo'lsa: RUN_DEPLOY_SEED=true qo'ying.
+if [ "${RUN_DEPLOY_SEED:-false}" = "true" ]; then
+    python manage.py load_initial_data || true
+    python manage.py load_ticket_data || true
+    python manage.py load_tv_channels --priority || true
+    python manage.py load_tv_channels --all-countries --min-countries 50 || true
+    python manage.py refresh_channel_logos || true
+fi
 
 echo "Starting gunicorn..."
 exec gunicorn kinobase.wsgi:application \
