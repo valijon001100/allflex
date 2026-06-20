@@ -482,9 +482,9 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  background:
     linear-gradient(to right, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(15, 23, 42, 0) 100%),
-    url('../images/hero-bg.jpg') center/cover no-repeat;
+    radial-gradient(circle at 70% 40%, rgba(99, 102, 241, 0.25) 0%, transparent 55%);
   z-index: -1;
 }
 
