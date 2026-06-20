@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=26" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=27" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -288,42 +288,9 @@ window.addEventListener('scroll', function() {
     var navbar = document.getElementById('mainNavbar');
     if (!navbar) return;
 
-    function dropdownAnchor(dropdown) {
-        return dropdown.querySelector('.dropdown-toggle')
-            || dropdown.querySelector('.nav-cat-caret')
-            || dropdown.querySelector('.nav-split-wrap')
-            || dropdown.querySelector('.user-avatar');
-    }
-
-    function positionNavbarDropdown(dropdown) {
-        var menu = dropdown.querySelector('.dropdown-menu');
-        var anchor = dropdownAnchor(dropdown);
-        if (!menu || !anchor) return;
-        var rect = anchor.getBoundingClientRect();
-        menu.classList.add('nav-dropdown-floating');
-        menu.style.top = Math.round(rect.bottom + 6) + 'px';
-        if (menu.classList.contains('dropdown-menu-end')) {
-            menu.style.left = 'auto';
-            menu.style.right = Math.round(window.innerWidth - rect.right) + 'px';
-        } else {
-            menu.style.left = Math.round(rect.left) + 'px';
-            menu.style.right = 'auto';
-        }
-    }
-
-    function resetNavbarDropdown(dropdown) {
-        var menu = dropdown.querySelector('.dropdown-menu');
-        if (!menu) return;
-        menu.classList.remove('nav-dropdown-floating');
-        menu.style.top = '';
-        menu.style.left = '';
-        menu.style.right = '';
-    }
-
     function closeAllDropdowns() {
         navbar.querySelectorAll('.dropdown.open').forEach(function (d) {
             d.classList.remove('open');
-            resetNavbarDropdown(d);
             var t = d.querySelector('.dropdown-toggle');
             if (t) t.setAttribute('aria-expanded', 'false');
         });
@@ -343,21 +310,11 @@ window.addEventListener('scroll', function() {
                 if (!open) {
                     dropdown.classList.add('open');
                     toggle.setAttribute('aria-expanded', 'true');
-                    positionNavbarDropdown(dropdown);
                 }
             });
         }
 
         menu.addEventListener('click', function (e) { e.stopPropagation(); });
-
-        if (window.matchMedia('(min-width: 992px)').matches) {
-            dropdown.addEventListener('mouseenter', function () {
-                positionNavbarDropdown(dropdown);
-            });
-            dropdown.addEventListener('mouseleave', function () {
-                resetNavbarDropdown(dropdown);
-            });
-        }
     });
 
     if (window.matchMedia('(min-width: 992px)').matches) {
@@ -366,26 +323,14 @@ window.addEventListener('scroll', function() {
                 dropdown.classList.add('open');
                 var t = dropdown.querySelector('.dropdown-toggle');
                 if (t) t.setAttribute('aria-expanded', 'true');
-                positionNavbarDropdown(dropdown);
             });
             dropdown.addEventListener('mouseleave', function () {
                 dropdown.classList.remove('open');
-                resetNavbarDropdown(dropdown);
                 var t = dropdown.querySelector('.dropdown-toggle');
                 if (t) t.setAttribute('aria-expanded', 'false');
             });
         });
     }
-
-    window.addEventListener('resize', closeAllDropdowns);
-    window.addEventListener('scroll', function () {
-        navbar.querySelectorAll('.dropdown').forEach(function (d) {
-            var menu = d.querySelector('.dropdown-menu');
-            if (menu && menu.classList.contains('nav-dropdown-floating')) {
-                positionNavbarDropdown(d);
-            }
-        });
-    }, { passive: true });
 
     document.addEventListener('click', closeAllDropdowns);
 })();
