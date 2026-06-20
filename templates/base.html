@@ -13,65 +13,31 @@
 <link rel="dns-prefetch" href="#">
 <link rel="icon" href="{% static 'static/images/alflix-logo.png' %}" type="image/png">
 
-<link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=6" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=15" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=1" type="text/css">
-<style>
-/* Inline styles for critical path */
-#main .items, .items {
-    display: grid !important;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    gap: 18px 14px !important;
-    width: 100% !important;
-    margin: 0 0 20px !important;
-    padding: 0 !important;
-}
-#main .items .item, .items .item {
-    float: none !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    position: relative;
-    box-sizing: border-box;
-}
-#main .items .item > a, .items .item > a {
-    display: block; width: 100%; height: 0; padding-bottom: 150%;
-    overflow: hidden; position: relative; background: #1a1a22;
-}
-#main .items .item > a img, .items .item > a img {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
-}
-#main .items .item .title, .items .item .title { font-size: 15px !important; }
-#main .items .item .desc, .items .item .desc { font-size: 13px !important; }
-#main .items .item .info, .items .item .info { min-height: 58px !important; padding: 10px 8px !important; }
-@media (max-width: 1200px) { #main .items, .items { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; } }
-@media (max-width: 992px) { #main .items, .items { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
-@media (max-width: 768px) { #main .items, .items { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
-</style>
+<link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=6" type="text/css">
 </head>
 <body>
-<script src="/static/static/js/jquery.js"></script>
-<script src="/static/static/js/bootstrap.js"></script>
-<script src="/static/static/js/master.js"></script>
+<script src="{% static 'static/js/jquery.js' %}"></script>
+<script src="{% static 'static/js/bootstrap.js' %}"></script>
+<script src="{% static 'static/js/master.js' %}"></script>
 
 <div id="ad110695"></div>
 
-<!-- Modern Glassmorphism Navbar -->
 <nav class="navbar-modern" id="mainNavbar">
     <div class="container-modern navbar-content">
-        <!-- Logo -->
+        <button type="button" class="navbar-mobile-toggle" id="mobileNavToggle" aria-label="{% trans 'Menyu' %}" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+
         <div class="navbar-logo">
             <a href="/" aria-label="AL-FLIX Bosh sahifa">
                 <img src="{% static 'static/images/alflix-logo.png' %}" alt="AL-FLIX">
             </a>
         </div>
 
-        <!-- Desktop Navigation -->
-        <ul class="navbar-nav">
+        <ul class="navbar-nav navbar-nav-desktop">
             <li class="nav-item">
                 <a href="{% url 'movie:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                     {% trans 'Bosh sahifa' %}
@@ -79,12 +45,19 @@
             </li>
             {% for cat in categories %}
                 {% if cat.children %}
-                <li class="nav-item nav-dropdown-hover">
-                    <a href="{{ cat.obj.get_absolute_url }}">
-                        {{ cat.name }} <span class="caret"></span>
-                    </a>
-                    <ul class="nav-dropdown-menu">
-                        <li><a href="{{ cat.obj.get_absolute_url }}"><strong>{{ cat.name }}</strong></a></li>
+                <li class="nav-item dropdown nav-item--split">
+                    <div class="nav-split-wrap">
+                        <a href="{{ cat.obj.get_absolute_url }}"
+                           class="nav-cat-link{% if request.resolver_match.url_name == 'category_list' %}{% if request.resolver_match.kwargs.slug == cat.obj.slug %} active{% else %}{% for child in cat.children %}{% if request.resolver_match.kwargs.slug == child.obj.slug %} active{% endif %}{% endfor %}{% endif %}{% endif %}">
+                            {{ cat.name }}
+                        </a>
+                        <button type="button" class="nav-cat-caret dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{% trans "Boshqa bo'limlar" %}">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ cat.obj.get_absolute_url }}"><strong>{{ cat.name }} — {% trans 'Barchasi' %}</strong></a></li>
+                        <li><hr class="dropdown-divider"></li>
                         {% for child in cat.children %}
                         <li><a href="{{ child.obj.get_absolute_url }}">{{ child.name }}</a></li>
                         {% endfor %}
@@ -92,23 +65,26 @@
                 </li>
                 {% else %}
                 <li class="nav-item">
-                    <a href="{{ cat.obj.get_absolute_url }}">
+                    <a href="{{ cat.obj.get_absolute_url }}"
+                       class="{% if cat.obj.slug == 'teleperedachi' %}{% if request.resolver_match.url_name == 'channel_list' or request.resolver_match.url_name == 'channel_watch' %}active{% endif %}{% elif request.resolver_match.url_name == 'category_list' and request.resolver_match.kwargs.slug == cat.obj.slug %}active{% endif %}">
                         {{ cat.name }}
                     </a>
                 </li>
                 {% endif %}
             {% endfor %}
             <li class="nav-item">
-                <a href="{% url 'movie:live_list' %}" class="nav-live-badge">
-                    {% trans 'Jonli efir' %}
+                <a href="{% url 'movie:live_list' %}" class="nav-live-badge{% if request.resolver_match.url_name == 'live_list' or request.resolver_match.url_name == 'live_watch' %} active{% endif %}">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    <span>{% trans 'Jonli efir' %}</span>
                 </a>
             </li>
-            <li class="nav-item nav-dropdown-hover">
-                <a href="{% url 'movie:ticket_home' %}" class="nav-ticket">
-                    {% trans 'Biletlar' %} <span class="caret"></span>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-ticket dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {% trans 'Biletlar' %}
                 </a>
-                <ul class="nav-dropdown-menu">
-                    <li><a href="{% url 'movie:ticket_home' %}"><strong>{% trans 'Barcha biletlar' %}</strong></a></li>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'movie:ticket_home' %}"><strong>{% trans 'Qora bilet sotish' %}</strong></a></li>
+                    <li><hr class="dropdown-divider"></li>
                     {% for tcat in ticket_categories %}
                     <li><a href="{{ tcat.obj.get_absolute_url }}">{{ tcat.obj.icon }} {{ tcat.name }}</a></li>
                     {% empty %}
@@ -117,16 +93,16 @@
                     <li><a href="{% url 'movie:ticket_category' 'sirk' %}">{% trans 'Sirk' %}</a></li>
                     {% endfor %}
                     {% if request.user.is_authenticated %}
+                    <li><hr class="dropdown-divider"></li>
                     <li><a href="{% url 'movie:my_tickets' %}">{% trans 'Mening biletlarim' %}</a></li>
                     {% endif %}
                 </ul>
             </li>
         </ul>
 
-        <!-- Search Form -->
         <form action="{% url 'movie:search' %}" method="get" class="search-form">
-            <input type="text" name="query" id="autocomplete_search" placeholder="{% trans 'Search...' %}" autocomplete="off">
-            <button type="submit" aria-label="Search">
+            <input type="text" name="query" id="autocomplete_search" placeholder="{% trans 'Qidirish...' %}" autocomplete="off">
+            <button type="submit" aria-label="{% trans 'Qidirish' %}">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -134,48 +110,44 @@
             </button>
         </form>
 
-        <!-- Right Navigation -->
         <ul class="navbar-right">
-            <!-- Language Dropdown -->
-            <li class="lang-dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color:#fff;padding:8px 14px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;text-decoration:none;font-weight:600;font-size:0.85rem;">
+            <li class="lang-dropdown dropdown">
+                <button type="button" class="dropdown-toggle" data-toggle="dropdown" aria-label="{% trans 'Til' %}">
                     {% if LANGUAGE_CODE == 'uz' %}UZ{% elif LANGUAGE_CODE == 'en' %}EN{% else %}RU{% endif %}
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu" style="min-width:80px;background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:8px;">
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
                     {% if LANGUAGE_CODE != 'uz' %}
-                    <li><a href="#" onclick="setLang('uz');return false;" style="color:#fff;padding:8px 14px;">UZ</a></li>
+                    <li><a href="#" onclick="setLang('uz');return false;">UZ</a></li>
                     {% endif %}
                     {% if LANGUAGE_CODE != 'ru' %}
-                    <li><a href="#" onclick="setLang('ru');return false;" style="color:#fff;padding:8px 14px;">RU</a></li>
+                    <li><a href="#" onclick="setLang('ru');return false;">RU</a></li>
                     {% endif %}
                     {% if LANGUAGE_CODE != 'en' %}
-                    <li><a href="#" onclick="setLang('en');return false;" style="color:#fff;padding:8px 14px;">EN</a></li>
+                    <li><a href="#" onclick="setLang('en');return false;">EN</a></li>
                     {% endif %}
                 </ul>
             </li>
 
-            <!-- Auth States -->
             {% if not request.user.is_authenticated %}
             <li class="auth-buttons">
-                <a href="{% url 'movie:login' %}" class="btn-auth btn-login">{% trans 'Вход' %}</a>
-                <a href="{% url 'movie:register' %}" class="btn-auth btn-register">{% trans 'Register' %}</a>
+                <a href="{% url 'movie:login' %}" class="btn-auth btn-login">{% trans 'Kirish' %}</a>
+                <a href="{% url 'movie:register' %}" class="btn-auth btn-register">{% trans "Ro'yxatdan o'tish" %}</a>
             </li>
             {% else %}
             <li class="nav-item">
                 <a href="{% url 'movie:likedMovies' %}" class="{% if request.resolver_match.url_name == 'likedMovies' %}active{% endif %}">
-                    {% trans 'Избранное' %}
+                    {% trans 'Sevimlilar' %}
                 </a>
             </li>
-            <li class="user-dropdown">
-                <a href="#" class="user-avatar" id="userMenu">
+            <li class="user-dropdown dropdown">
+                <a href="#" class="user-avatar dropdown-toggle" data-toggle="dropdown" aria-label="{% trans 'Profil' %}">
                     {{ request.user.username|slice:":2"|upper }}
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     {% if not request.user.is_staff %}
                     <li><a href="{% url 'movie:my_subscription' %}">{% trans 'Mening obunam' %}</a></li>
                     {% endif %}
-                    <li><a href="{% url 'movie:logout' %}">{% trans 'Выход' %}</a></li>
+                    <li><a href="{% url 'movie:logout' %}">{% trans 'Chiqish' %}</a></li>
                 </ul>
             </li>
             {% endif %}
@@ -183,7 +155,37 @@
     </div>
 </nav>
 
-<!-- Language Form -->
+<div class="navbar-mobile-panel" id="mobileNavPanel" aria-hidden="true">
+    <ul class="mobile-nav-list">
+        <li><a href="{% url 'movie:home' %}">{% trans 'Bosh sahifa' %}</a></li>
+        {% for cat in categories %}
+        <li>
+            <a href="{{ cat.obj.get_absolute_url }}">{{ cat.name }}</a>
+            {% if cat.children %}
+            <ul class="mobile-nav-sub">
+                {% for child in cat.children %}
+                <li><a href="{{ child.obj.get_absolute_url }}">{{ child.name }}</a></li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </li>
+        {% endfor %}
+        <li><a href="{% url 'movie:live_list' %}">{% trans 'Jonli efir' %}</a></li>
+        <li><a href="{% url 'movie:ticket_home' %}">{% trans 'Biletlar' %}</a></li>
+        {% if request.user.is_authenticated %}
+        <li><a href="{% url 'movie:likedMovies' %}">{% trans 'Sevimlilar' %}</a></li>
+        <li><a href="{% url 'movie:my_subscription' %}">{% trans 'Mening obunam' %}</a></li>
+        <li><a href="{% url 'movie:logout' %}">{% trans 'Chiqish' %}</a></li>
+        {% else %}
+        <li><a href="{% url 'movie:login' %}">{% trans 'Kirish' %}</a></li>
+        <li><a href="{% url 'movie:register' %}">{% trans "Ro'yxatdan o'tish" %}</a></li>
+        {% endif %}
+    </ul>
+    <form action="{% url 'movie:search' %}" method="get" style="margin-top:16px">
+        <input type="text" name="query" placeholder="{% trans 'Qidirish...' %}" class="form-control" style="background:#252836;border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:12px;width:100%">
+    </form>
+</div>
+
 <form id="lang-form" action="{% url 'set_language' %}" method="post" style="display:none">
     {% csrf_token %}
     <input name="next" type="hidden" value="{{ request.get_full_path }}">
@@ -196,20 +198,19 @@ function setLang(code) {
 }
 </script>
 
-<!-- Messages -->
 {% if messages %}
     {% for message in messages %}
     <div class="message{% if message.tags %} message-{{ message.tags }}{% endif %}">
-        <div class="close"><a href="#" onclick="closeMessages()">x</a></div>
+        <div class="close"><a href="#" onclick="closeMessages();return false;">×</a></div>
         <div class="text">{{ message }}</div>
     </div>
     {% endfor %}
 {% endif %}
 
-<!-- Main Content -->
+<main class="site-main">
 {% block content %}{% endblock %}
+</main>
 
-<!-- Footer -->
 <footer class="footer-modern">
     <div class="container-modern">
         <div class="footer-content">
@@ -235,14 +236,12 @@ function setLang(code) {
             </div>
         </div>
         <div class="footer-bottom" style="text-align: center; padding-top: var(--spacing-lg); border-top: 1px solid var(--glass-border);">
-            <p>纏 2026 AL-FLIX. {% trans 'Barcha huquqlar himoyalangan' %}</p>
+            <p>&copy; 2026 AL-FLIX. {% trans 'Barcha huquqlar himoyalangan' %}</p>
         </div>
     </div>
 </footer>
 
-<!-- Custom Scripts -->
 <script>
-// Navbar scroll effect
 window.addEventListener('scroll', function() {
     const navbar = document.getElementById('mainNavbar');
     if (window.scrollY > 50) {
@@ -252,28 +251,43 @@ window.addEventListener('scroll', function() {
     }
 });
 
-// Close messages
-function closeMessages() {
-    const messages = document.querySelectorAll('.message');
-    messages.forEach(msg => msg.style.display = 'none');
-}
-</script>
+(function() {
+    const toggle = document.getElementById('mobileNavToggle');
+    const panel = document.getElementById('mobileNavPanel');
+    if (!toggle || !panel) return;
+    toggle.addEventListener('click', function() {
+        const open = document.body.classList.toggle('mobile-nav-open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+    });
+    panel.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() {
+            document.body.classList.remove('mobile-nav-open');
+            toggle.setAttribute('aria-expanded', 'false');
+            panel.setAttribute('aria-hidden', 'true');
+        });
+    });
+})();
 
-<script>
+function closeMessages() {
+    document.querySelectorAll('.message').forEach(function(msg) {
+        msg.style.display = 'none';
+    });
+}
+
 function addLikedMovie(movie_id) {
-    let data = JSON.stringify(movie_id);
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            let status = JSON.parse(this.responseText);
-            if(status['status'] == 200) { 
-                alert("OK"); 
-            } else { 
-                window.location.href = "/login/"; 
+            const status = JSON.parse(this.responseText);
+            if (status['status'] == 200) {
+                alert('OK');
+            } else {
+                window.location.href = '/login/';
             }
         }
     };
-    xhttp.open("GET", "/like/?data=" + data, true);
+    xhttp.open('GET', '/like/?data=' + JSON.stringify(movie_id), true);
     xhttp.send();
 }
 </script>
