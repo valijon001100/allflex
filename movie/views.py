@@ -323,9 +323,7 @@ def search(request):
 
 
 def genre_index(request):
-    return render(request, 'genre_index.html', {
-        'page_title': _('Janrlar'),
-    })
+    return redirect('movie:home')
 
 
 def genre_list(request, slug):

@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=20" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=21" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -44,10 +44,10 @@
                 </a>
             </li>
             <li class="nav-item dropdown nav-item--janr">
-                <button type="button" class="nav-janr-toggle dropdown-toggle{% if request.resolver_match.url_name == 'genre_index' or request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span>{% trans 'Janr' %}</span>
-                    <span class="caret"></span>
-                </button>
+                <div class="nav-split-wrap nav-janr-wrap{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">
+                    <span class="nav-cat-link">{% trans 'Janr' %}</span>
+                    <span class="caret" aria-hidden="true"></span>
+                </div>
                 <ul class="dropdown-menu nav-genre-dropdown">
                     {% for gen in genres %}
                     <li>
@@ -182,9 +182,8 @@
 <div class="navbar-mobile-panel" id="mobileNavPanel" aria-hidden="true">
     <ul class="mobile-nav-list">
         <li><a href="{% url 'movie:home' %}">{% trans 'Bosh sahifa' %}</a></li>
-        <li><a href="{% url 'movie:genre_index' %}">{% trans 'Janr — barchasi' %}</a></li>
         <li class="mobile-nav-genre">
-            <span class="mobile-nav-label">{% trans 'Janrlar' %}</span>
+            <span class="mobile-nav-label">{% trans 'Janr' %}</span>
             <ul class="mobile-nav-sub">
                 {% for gen in genres %}
                 <li><a href="{% url 'movie:genre_list' gen.slug %}">{{ gen|genre_name:current_language }}</a></li>
@@ -287,7 +286,10 @@ window.addEventListener('scroll', function() {
 (function() {
     var navbar = document.getElementById('mainNavbar');
     if (!navbar) return;
+
     navbar.querySelectorAll('.dropdown').forEach(function (dropdown) {
+        if (dropdown.classList.contains('nav-item--janr')) return;
+
         var toggle = dropdown.querySelector('.dropdown-toggle');
         var menu = dropdown.querySelector('.dropdown-menu');
         if (!toggle || !menu) return;
@@ -306,15 +308,31 @@ window.addEventListener('scroll', function() {
             }
         });
     });
+
+    var janr = navbar.querySelector('.nav-item--janr');
+    if (janr) {
+        var janrWrap = janr.querySelector('.nav-janr-wrap');
+        var janrMenu = janr.querySelector('.nav-genre-dropdown');
+        if (janrWrap && janrMenu) {
+            janrWrap.addEventListener('click', function (e) {
+                if (window.innerWidth >= 992) return;
+                e.preventDefault();
+                e.stopPropagation();
+                var open = janr.classList.toggle('open');
+                janrWrap.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            janrMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+        }
+    }
+
     document.addEventListener('click', function () {
         navbar.querySelectorAll('.dropdown.open').forEach(function (d) {
             d.classList.remove('open');
+            var wrap = d.querySelector('.nav-janr-wrap');
             var t = d.querySelector('.dropdown-toggle');
+            if (wrap) wrap.setAttribute('aria-expanded', 'false');
             if (t) t.setAttribute('aria-expanded', 'false');
         });
-    });
-    navbar.querySelectorAll('.dropdown-menu').forEach(function (menu) {
-        menu.addEventListener('click', function (e) { e.stopPropagation(); });
     });
 })();
 

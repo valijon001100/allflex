@@ -327,17 +327,33 @@ body {
 .navbar-modern .nav-genre-dropdown {
   min-width: 260px;
   max-width: 300px;
-  max-height: 340px;
+  /* 5 ta janr ko'rinsin, qolgani scroll */
+  max-height: 228px;
   overflow-y: auto;
   overflow-x: hidden;
   background: #232736 !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 10px;
-  padding: 8px 0;
-  margin-top: 6px;
+  padding: 6px 0;
+  margin-top: 4px;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.35) rgba(255, 255, 255, 0.06);
+}
+
+.nav-item--janr .nav-janr-wrap {
+  cursor: default;
+  gap: 6px;
+}
+
+.nav-item--janr .nav-janr-wrap .nav-cat-link {
+  cursor: default;
+  pointer-events: none;
+}
+
+.nav-item--janr .nav-janr-wrap .caret {
+  border-top-color: currentColor;
+  margin: 0;
 }
 
 .navbar-modern .nav-genre-dropdown::-webkit-scrollbar {
@@ -350,9 +366,10 @@ body {
 }
 
 .navbar-modern .nav-genre-dropdown > li > a {
-  padding: 11px 22px;
+  padding: 10px 22px;
   font-size: 0.9375rem;
   font-weight: 400;
+  line-height: 1.35;
   color: #f1f5f9 !important;
   white-space: nowrap;
 }
@@ -2059,5 +2076,16 @@ body.mobile-nav-open {
   .navbar-nav-desktop .nav-item.dropdown:hover > .dropdown-menu,
   .navbar-nav-desktop .nav-item.dropdown.open > .dropdown-menu {
     display: block;
+  }
+
+  .navbar-nav-desktop .nav-item--janr:hover > .nav-genre-dropdown,
+  .navbar-nav-desktop .nav-item--janr:focus-within > .nav-genre-dropdown {
+    display: block;
+  }
+
+  .navbar-nav-desktop .nav-item--janr:hover .nav-janr-wrap,
+  .navbar-nav-desktop .nav-item--janr:focus-within .nav-janr-wrap {
+    color: #fff;
+    background: rgba(99, 102, 241, 0.22);
   }
 }
