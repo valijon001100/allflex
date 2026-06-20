@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=31" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=32" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -43,7 +43,7 @@
                     {% trans 'Bosh sahifa' %}
                 </a>
             </li>
-            <li class="nav-item dropdown nav-janr-dropdown{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}">
+            <li class="nav-item lang-dropdown dropdown nav-janr-dropdown{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}">
                 <button type="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Janrlar' %}">
                     {% trans 'Janr' %}
                 </button>
@@ -357,7 +357,8 @@ window.addEventListener('scroll', function() {
     });
 
     if (window.matchMedia('(min-width: 992px)').matches) {
-        navbar.querySelectorAll('.navbar-right .lang-dropdown').forEach(function (dropdown) {
+        navbar.querySelectorAll('.lang-dropdown').forEach(function (dropdown) {
+            if (dropdown.classList.contains('nav-janr-dropdown')) return;
             dropdown.addEventListener('mouseenter', function () {
                 if (janr) janr.classList.remove('open');
                 closeOtherDropdowns();
