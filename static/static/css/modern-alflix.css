@@ -81,6 +81,8 @@ body {
 .site-main {
   flex: 1 0 auto;
   width: 100%;
+  position: relative;
+  z-index: 0;
 }
 
 /* --- Glassmorphism Container --- */
@@ -96,14 +98,24 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 10050;
   height: 72px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(15, 23, 42, 0.82);
   border-bottom: 1px solid var(--glass-border);
   transition: all var(--transition-normal);
   overflow: visible;
+  isolation: isolate;
+}
+
+.navbar-modern::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: inherit;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  pointer-events: none;
 }
 
 .navbar-modern.scrolled {
@@ -2088,8 +2100,15 @@ body.mobile-nav-open {
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1100;
+  z-index: 10060;
   display: none !important;
+}
+
+.navbar-modern .dropdown-menu.nav-dropdown-floating {
+  position: fixed !important;
+  top: auto;
+  left: auto;
+  z-index: 10060 !important;
 }
 
 .navbar-modern .dropdown.open > .dropdown-menu,
