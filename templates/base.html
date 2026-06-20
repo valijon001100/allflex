@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=30" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=31" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -43,7 +43,7 @@
                     {% trans 'Bosh sahifa' %}
                 </a>
             </li>
-            <li class="nav-item lang-dropdown dropdown nav-janr-dropdown{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}">
+            <li class="nav-item dropdown nav-janr-dropdown{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}">
                 <button type="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Janrlar' %}">
                     {% trans 'Janr' %}
                 </button>
@@ -289,42 +289,9 @@ window.addEventListener('scroll', function() {
     if (!navbar) return;
 
     var janr = navbar.querySelector('.nav-janr-dropdown');
-    var janrMenu = document.getElementById('janrDropdownMenu');
     var janrToggle = janr ? janr.querySelector('.dropdown-toggle') : null;
+    var janrMenu = document.getElementById('janrDropdownMenu');
     var janrTimer;
-
-    function hideJanrMenu() {
-        if (!janrMenu || !janr) return;
-        clearTimeout(janrTimer);
-        janrMenu.classList.remove('is-visible');
-        janr.classList.remove('open');
-        if (janrToggle) janrToggle.setAttribute('aria-expanded', 'false');
-        janr.appendChild(janrMenu);
-        janrMenu.style.top = '';
-        janrMenu.style.left = '';
-    }
-
-    function positionJanrMenu() {
-        if (!janrMenu || !janrToggle) return;
-        var rect = janrToggle.getBoundingClientRect();
-        janrMenu.style.top = Math.round(rect.bottom + 6) + 'px';
-        janrMenu.style.left = Math.round(rect.left) + 'px';
-    }
-
-    function showJanrMenu() {
-        if (!janrMenu || !janr || window.innerWidth < 992) return;
-        clearTimeout(janrTimer);
-        document.body.appendChild(janrMenu);
-        janr.classList.add('open');
-        janrMenu.classList.add('is-visible');
-        if (janrToggle) janrToggle.setAttribute('aria-expanded', 'true');
-        positionJanrMenu();
-    }
-
-    function scheduleHideJanr() {
-        clearTimeout(janrTimer);
-        janrTimer = setTimeout(hideJanrMenu, 180);
-    }
 
     function closeOtherDropdowns() {
         navbar.querySelectorAll('.dropdown.open').forEach(function (d) {
@@ -335,28 +302,38 @@ window.addEventListener('scroll', function() {
         });
     }
 
+    function openJanr() {
+        if (!janr || window.innerWidth < 992) return;
+        clearTimeout(janrTimer);
+        closeOtherDropdowns();
+        janr.classList.add('open');
+        if (janrToggle) janrToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function scheduleCloseJanr() {
+        if (!janr) return;
+        clearTimeout(janrTimer);
+        janrTimer = setTimeout(function () {
+            janr.classList.remove('open');
+            if (janrToggle) janrToggle.setAttribute('aria-expanded', 'false');
+        }, 160);
+    }
+
     if (janr && janrMenu && janrToggle) {
-        janr.addEventListener('mouseenter', function () {
-            closeOtherDropdowns();
-            showJanrMenu();
-        });
-        janr.addEventListener('mouseleave', scheduleHideJanr);
+        janr.addEventListener('mouseenter', openJanr);
+        janr.addEventListener('mouseleave', scheduleCloseJanr);
         janrMenu.addEventListener('mouseenter', function () { clearTimeout(janrTimer); });
-        janrMenu.addEventListener('mouseleave', scheduleHideJanr);
+        janrMenu.addEventListener('mouseleave', scheduleCloseJanr);
         janrToggle.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
-            if (janrMenu.classList.contains('is-visible')) {
-                hideJanrMenu();
+            if (janr.classList.contains('open')) {
+                janr.classList.remove('open');
+                janrToggle.setAttribute('aria-expanded', 'false');
             } else {
-                closeOtherDropdowns();
-                showJanrMenu();
+                openJanr();
             }
         });
-        window.addEventListener('resize', hideJanrMenu);
-        window.addEventListener('scroll', function () {
-            if (janrMenu.classList.contains('is-visible')) positionJanrMenu();
-        }, { passive: true });
     }
 
     navbar.querySelectorAll('.dropdown').forEach(function (dropdown) {
@@ -370,7 +347,7 @@ window.addEventListener('scroll', function() {
             e.stopPropagation();
             var open = dropdown.classList.contains('open');
             closeOtherDropdowns();
-            hideJanrMenu();
+            if (janr) janr.classList.remove('open');
             if (!open) {
                 dropdown.classList.add('open');
                 toggle.setAttribute('aria-expanded', 'true');
@@ -380,9 +357,9 @@ window.addEventListener('scroll', function() {
     });
 
     if (window.matchMedia('(min-width: 992px)').matches) {
-        navbar.querySelectorAll('.lang-dropdown:not(.nav-janr-dropdown)').forEach(function (dropdown) {
+        navbar.querySelectorAll('.navbar-right .lang-dropdown').forEach(function (dropdown) {
             dropdown.addEventListener('mouseenter', function () {
-                hideJanrMenu();
+                if (janr) janr.classList.remove('open');
                 closeOtherDropdowns();
                 dropdown.classList.add('open');
                 var t = dropdown.querySelector('.dropdown-toggle');
@@ -398,7 +375,10 @@ window.addEventListener('scroll', function() {
 
     document.addEventListener('click', function () {
         closeOtherDropdowns();
-        hideJanrMenu();
+        if (janr) {
+            janr.classList.remove('open');
+            if (janrToggle) janrToggle.setAttribute('aria-expanded', 'false');
+        }
     });
 })();
 
