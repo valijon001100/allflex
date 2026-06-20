@@ -139,7 +139,7 @@
                 <button type="button" class="dropdown-toggle" data-toggle="dropdown" aria-label="{% trans 'Til' %}">
                     {% if LANGUAGE_CODE == 'uz' %}UZ{% elif LANGUAGE_CODE == 'en' %}EN{% else %}RU{% endif %}
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end">
+                <ul class="dropdown-menu dropdown-menu-end nav-compact-dropdown">
                     {% if LANGUAGE_CODE != 'uz' %}
                     <li><a href="#" onclick="setLang('uz');return false;">UZ</a></li>
                     {% endif %}
