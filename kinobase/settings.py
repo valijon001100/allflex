@@ -268,8 +268,12 @@ LOGIN_LOCKOUT_SECONDS = 300
 # Telegram video storage (kanal: https://t.me/+RuYY7cUR7gk4MWIy)
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_CHANNEL_ID = os.environ.get('TELEGRAM_CHANNEL_ID', '-1003920859525')
+TELEGRAM_ADMIN_USER_IDS = os.environ.get('TELEGRAM_ADMIN_USER_IDS', '8630643858')
 TELEGRAM_WEBHOOK_SECRET = os.environ.get('TELEGRAM_WEBHOOK_SECRET', '')
-TELEGRAM_WEBHOOK_URL = os.environ.get('TELEGRAM_WEBHOOK_URL', '')
+TELEGRAM_WEBHOOK_URL = os.environ.get(
+    'TELEGRAM_WEBHOOK_URL',
+    'https://allflex.doccmed.uz/telegram/webhook/',
+)
 TELEGRAM_DELETE_LOCAL_AFTER_UPLOAD = os.environ.get(
     'TELEGRAM_DELETE_LOCAL_AFTER_UPLOAD', 'True',
 ).lower() in ('1', 'true', 'yes')
@@ -279,6 +283,7 @@ TELEGRAM_MAX_UPLOAD_BYTES = int(os.environ.get('TELEGRAM_MAX_UPLOAD_BYTES', str(
 TELEGRAM_CLOUD_MAX_BYTES = int(os.environ.get('TELEGRAM_CLOUD_MAX_BYTES', str(50 * 1024 ** 2)))
 TELEGRAM_UPLOAD_TIMEOUT = int(os.environ.get('TELEGRAM_UPLOAD_TIMEOUT', '0') or 0)
 TELEGRAM_LOCAL_MEDIA_ROOT = os.environ.get('TELEGRAM_LOCAL_MEDIA_ROOT', '/media')
+SITE_BASE_URL = os.environ.get('SITE_BASE_URL', 'https://allflex.doccmed.uz').rstrip('/')
 
 # Katta video yuklash (admin panel)
 FILE_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024

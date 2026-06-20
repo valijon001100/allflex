@@ -309,19 +309,31 @@ def iter_telegram_stream(file_id: str, range_header: str = '') -> Tuple[Iterator
     return generator(), response_headers
 
 
-def extract_channel_video(update: dict) -> Optional[dict]:
-    channel_id = str(getattr(settings, 'TELEGRAM_CHANNEL_ID', '') or '')
-    if not channel_id:
-        return None
+def get_telegram_admin_ids() -> set:
+    raw = getattr(settings, 'TELEGRAM_ADMIN_USER_IDS', '') or ''
+    ids = set()
+    for part in raw.replace(' ', '').split(','):
+        part = part.strip()
+        if not part:
+            continue
+        try:
+            ids.add(int(part))
+        except ValueError:
+            continue
+    return ids
 
-    message = update.get('channel_post') or update.get('edited_channel_post')
-    if not message:
-        return None
 
-    chat = message.get('chat') or {}
-    if str(chat.get('id')) != channel_id:
-        return None
+def is_telegram_admin(user_id) -> bool:
+    admin_ids = get_telegram_admin_ids()
+    if not admin_ids:
+        return False
+    try:
+        return int(user_id) in admin_ids
+    except (TypeError, ValueError):
+        return False
 
+
+def extract_video_from_message(message: dict) -> Optional[dict]:
     media = message.get('video') or message.get('document')
     if not media:
         return None
@@ -335,13 +347,110 @@ def extract_channel_video(update: dict) -> Optional[dict]:
         if not file_name.lower().endswith(('.mp4', '.mkv', '.webm', '.mov', '.m4v', '.avi')):
             return None
 
+    if not media.get('file_id'):
+        return None
+
     return {
-        'channel_id': chat.get('id'),
-        'message_id': message.get('message_id'),
         'file_id': media.get('file_id', ''),
         'file_unique_id': media.get('file_unique_id', ''),
         'file_name': file_name,
         'file_size': media.get('file_size'),
         'duration': media.get('duration'),
-        'caption': (message.get('caption') or '')[:2000],
     }
+
+
+def extract_channel_video(update: dict) -> Optional[dict]:
+    channel_id = str(getattr(settings, 'TELEGRAM_CHANNEL_ID', '') or '')
+    if not channel_id:
+        return None
+
+    message = update.get('channel_post') or update.get('edited_channel_post')
+    if not message:
+        return None
+
+    chat = message.get('chat') or {}
+    if str(chat.get('id')) != channel_id:
+        return None
+
+    media = extract_video_from_message(message)
+    if not media:
+        return None
+
+    return {
+        'channel_id': chat.get('id'),
+        'message_id': message.get('message_id'),
+        'caption': (message.get('caption') or '')[:2000],
+        **media,
+    }
+
+
+def extract_bot_video(update: dict) -> Optional[dict]:
+    message = update.get('message') or update.get('edited_message')
+    if not message:
+        return None
+
+    user = message.get('from') or {}
+    if not is_telegram_admin(user.get('id')):
+        return None
+
+    media = extract_video_from_message(message)
+    if not media:
+        return None
+
+    chat = message.get('chat') or {}
+    return {
+        'channel_id': chat.get('id'),
+        'message_id': message.get('message_id'),
+        'caption': (message.get('caption') or '')[:2000],
+        **media,
+    }
+
+
+def extract_telegram_video_update(update: dict) -> Optional[dict]:
+    return extract_channel_video(update) or extract_bot_video(update)
+
+
+def save_telegram_video(video_data: dict):
+    from .models import TelegramChannelVideo
+
+    return TelegramChannelVideo.objects.update_or_create(
+        file_unique_id=video_data['file_unique_id'],
+        defaults={
+            'channel_id': video_data['channel_id'],
+            'message_id': video_data['message_id'],
+            'file_id': video_data['file_id'],
+            'file_name': video_data.get('file_name', ''),
+            'file_size': video_data.get('file_size'),
+            'duration': video_data.get('duration'),
+            'caption': video_data.get('caption', ''),
+        },
+    )
+
+
+def send_bot_message(chat_id, text: str, reply_markup: Optional[dict] = None) -> None:
+    if not chat_id or not getattr(settings, 'TELEGRAM_BOT_TOKEN', ''):
+        return
+    payload = {'chat_id': chat_id, 'text': text[:4096]}
+    if reply_markup:
+        payload['reply_markup'] = reply_markup
+    try:
+        _request_api('sendMessage', timeout=15, json=payload)
+    except TelegramStorageError as exc:
+        logger.warning('Bot javobi yuborilmadi: %s', exc)
+
+
+def answer_callback_query(callback_query_id: str, text: str = '') -> None:
+    if not callback_query_id:
+        return
+    payload = {'callback_query_id': callback_query_id}
+    if text:
+        payload['text'] = text[:200]
+    try:
+        _request_api('answerCallbackQuery', timeout=10, json=payload)
+    except TelegramStorageError as exc:
+        logger.warning('Callback javobi yuborilmadi: %s', exc)
+
+
+def process_telegram_update(update: dict) -> bool:
+    from .telegram_bot_wizard import handle_telegram_update
+    return handle_telegram_update(update)

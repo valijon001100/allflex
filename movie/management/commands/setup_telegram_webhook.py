@@ -23,7 +23,13 @@ class Command(BaseCommand):
 
         payload = {
             'url': webhook_url,
-            'allowed_updates': ['channel_post', 'edited_channel_post'],
+            'allowed_updates': [
+                'callback_query',
+                'channel_post',
+                'edited_channel_post',
+                'message',
+                'edited_message',
+            ],
         }
         if secret:
             payload['secret_token'] = secret

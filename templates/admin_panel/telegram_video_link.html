@@ -1,0 +1,56 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Videoni filmga bog\'lash' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🔗 {% trans 'Videoni filmga bog\'lash' %}</h1>
+    <a href="{% url 'movie:admin_telegram_videos' %}" class="btn-outline">← {% trans 'Telegram videolar' %}</a>
+</div>
+
+<div class="panel-card" style="max-width:720px;margin-bottom:20px">
+    <p style="color:#9ca3af;margin:0 0 8px"><strong style="color:#fff">{% trans 'Fayl' %}:</strong> {{ video.file_name|default:"video" }}</p>
+    {% if video.caption %}
+    <p style="color:#9ca3af;margin:0 0 8px"><strong style="color:#fff">Caption:</strong> {{ video.caption|truncatechars:120 }}</p>
+    {% endif %}
+    {% if video.file_size %}
+    <p style="color:#9ca3af;margin:0"><strong style="color:#fff">{% trans 'Hajm' %}:</strong> {{ video.file_size|filesizeformat }}</p>
+    {% endif %}
+</div>
+
+<div class="panel-card" style="max-width:720px">
+    <form method="get" style="margin-bottom:20px">
+        <div class="form-group">
+            <label>{% trans 'Film qidirish' %}</label>
+            <div style="display:flex;gap:8px">
+                <input type="text" name="movie_q" value="{{ movie_q }}" class="form-control" placeholder="{% trans 'Film nomi...' %}">
+                <button type="submit" class="btn-outline">{% trans 'Qidirish' %}</button>
+            </div>
+        </div>
+    </form>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>{% trans 'Film' %} *</label>
+            <select name="movie_id" class="form-control" required>
+                <option value="">— {% trans 'Tanlang' %} —</option>
+                {% for m in movies %}
+                <option value="{{ m.pk }}">{{ m.title }}{% if m.year %} ({{ m.year }}){% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>{% trans 'Video turi' %} *</label>
+            <select name="quality" class="form-control" required>
+                <option value="trailer">{% trans 'Treler' %}</option>
+                {% for value, label in qualities %}
+                <option value="{{ value }}" {% if value == '720' %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button type="submit" class="btn-admin">{% trans 'Bog\'lash' %}</button>
+            <a href="{% url 'movie:admin_movie_add' %}" class="btn-outline">+ {% trans 'Yangi film yaratish' %}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

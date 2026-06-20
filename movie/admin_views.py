@@ -34,7 +34,9 @@ def _movie_form_context(form, title, movie=None):
         'title': title,
         'movie': movie,
         'telegram_configured': telegram_configured(),
-        'telegram_videos': TelegramChannelVideo.objects.filter(linked_stream__isnull=True)[:50],
+        'telegram_videos': TelegramChannelVideo.objects.filter(
+            linked_stream__isnull=True,
+        ).order_by('-created_at')[:200],
         'stream_qualities': ['480', '720', '1080', '4k'],
     }
 
@@ -214,11 +216,64 @@ def telegram_video_list(request):
         videos = videos.filter(linked_stream__isnull=False)
     paginator = Paginator(videos, 25)
     page_obj = paginator.get_page(request.GET.get('page'))
+    from .telegram_storage import get_telegram_admin_ids
     return render(request, 'admin_panel/telegram_video_list.html', {
         'page_obj': page_obj,
         'q': q,
         'status': status,
         'telegram_configured': telegram_configured(),
+        'telegram_admin_ids': get_telegram_admin_ids(),
+    })
+
+
+@admin_required
+def telegram_video_link(request, pk):
+    video = get_object_or_404(TelegramChannelVideo, pk=pk)
+    if video.linked_stream_id:
+        messages.error(request, _('Bu video allaqachon filmga bog\'langan.'))
+        return redirect('movie:admin_telegram_videos')
+
+    movies = Movie.objects.order_by('-id')
+    movie_q = request.GET.get('movie_q', '') or request.POST.get('movie_q', '')
+    if movie_q:
+        movies = movies.filter(title__icontains=movie_q)
+
+    if request.method == 'POST':
+        movie_id = request.POST.get('movie_id')
+        quality = request.POST.get('quality', '720')
+        movie = get_object_or_404(Movie, pk=movie_id)
+
+        if quality == 'trailer':
+            movie.trailer_telegram_file_id = video.file_id
+            movie.trailer_telegram_file_unique_id = video.file_unique_id
+            movie.save(update_fields=[
+                'trailer_telegram_file_id',
+                'trailer_telegram_file_unique_id',
+            ])
+            messages.success(
+                request,
+                _('Treler "%(title)s" filmiga bog\'landi.') % {'title': movie.title},
+            )
+        else:
+            stream, _ = MovieStream.objects.get_or_create(movie=movie, quality=quality)
+            stream.telegram_file_id = video.file_id
+            stream.telegram_file_unique_id = video.file_unique_id
+            stream.url = ''
+            stream.save()
+            video.linked_stream = stream
+            video.save(update_fields=['linked_stream'])
+            messages.success(
+                request,
+                _('%(quality)s video "%(title)s" filmiga bog\'landi.')
+                % {'quality': quality, 'title': movie.title},
+            )
+        return redirect('movie:admin_telegram_videos')
+
+    return render(request, 'admin_panel/telegram_video_link.html', {
+        'video': video,
+        'movies': movies[:100],
+        'movie_q': movie_q,
+        'qualities': MovieStream.QUALITY_CHOICES,
     })
 
 

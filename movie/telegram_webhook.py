@@ -6,8 +6,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from .models import TelegramChannelVideo
-from .telegram_storage import extract_channel_video
+from .telegram_storage import process_telegram_update
 
 logger = logging.getLogger(__name__)
 
@@ -26,20 +25,18 @@ def telegram_webhook(request):
     except (json.JSONDecodeError, UnicodeDecodeError):
         return HttpResponse('bad request', status=400)
 
-    video_data = extract_channel_video(update)
-    if video_data and video_data.get('file_id'):
-        TelegramChannelVideo.objects.update_or_create(
-            file_unique_id=video_data['file_unique_id'],
-            defaults={
-                'channel_id': video_data['channel_id'],
-                'message_id': video_data['message_id'],
-                'file_id': video_data['file_id'],
-                'file_name': video_data.get('file_name', ''),
-                'file_size': video_data.get('file_size'),
-                'duration': video_data.get('duration'),
-                'caption': video_data.get('caption', ''),
-            },
-        )
-        logger.info('Telegram kanal videosi saqlandi: %s', video_data['file_unique_id'])
+    try:
+        process_telegram_update(update)
+    except Exception:
+        logger.exception('Telegram update qayta ishlash xatosi')
+        try:
+            from .telegram_storage import send_bot_message, is_telegram_admin
+            message = update.get('message') or update.get('callback_query', {}).get('message')
+            user = (update.get('message') or {}).get('from') or update.get('callback_query', {}).get('from') or {}
+            chat_id = (message or {}).get('chat', {}).get('id')
+            if chat_id and is_telegram_admin(user.get('id')):
+                send_bot_message(chat_id, '⚠️ Server xatosi. Deploy/migrate tekshiring.')
+        except Exception:
+            logger.exception('Telegram xato xabari yuborilmadi')
 
     return HttpResponse('ok')

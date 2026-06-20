@@ -295,6 +295,40 @@ class TelegramChannelVideo(models.Model):
         return label
 
 
+class TelegramBotDraft(models.Model):
+    STEP_TITLE = 'title'
+    STEP_CATEGORY = 'category'
+    STEP_YEAR = 'year'
+    STEP_DESCRIPTION = 'description'
+    STEP_QUALITY = 'quality'
+    STEP_POSTER = 'poster'
+    STEP_VIDEO = 'video'
+    STEP_CONFIRM = 'confirm'
+
+    chat_id = models.BigIntegerField(db_index=True)
+    admin_user_id = models.BigIntegerField(null=True, blank=True)
+    media_group_id = models.CharField(max_length=64, blank=True, default='', db_index=True)
+    step = models.CharField(max_length=20, blank=True, default='')
+    poster_file_id = models.CharField(max_length=255, blank=True, default='')
+    poster_file_unique_id = models.CharField(max_length=255, blank=True, default='')
+    video_file_id = models.CharField(max_length=255, blank=True, default='')
+    video_file_unique_id = models.CharField(max_length=255, blank=True, default='')
+    caption = models.TextField(blank=True, default='')
+    metadata = models.JSONField(default=dict, blank=True)
+    is_complete = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Telegram bot draft'
+        verbose_name_plural = 'Telegram bot draftlar'
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        title = (self.metadata or {}).get('title') or self.caption[:40] or str(self.chat_id)
+        return title
+
+
 class Comment(models.Model):
     """Model definition for Comment."""
     movie = models.ForeignKey(Movie, on_delete=models.PROTECT,

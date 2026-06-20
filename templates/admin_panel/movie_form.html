@@ -22,13 +22,15 @@
         {% for field in form %}
             {% if field.name == 'trailer' %}
             <h4 style="color:#fff;margin:24px 0 12px;padding-top:16px;border-top:1px solid #2a2d3a">{% trans 'Treler' %}</h4>
-            <p style="color:#9ca3af;font-size:13px;margin-bottom:16px">{% trans 'Treler barchaga ochiq — obuna talab qilinmaydi. Telegram kanalga ham yuboriladi.' %}</p>
+            <p style="color:#9ca3af;font-size:13px;margin-bottom:16px">{% trans 'Treler barchaga ochiq — obuna talab qilinmaydi. Fayl yuklang yoki Telegram bot/kanaldan tanlang.' %}</p>
             {% endif %}
             {% if field.name == 'stream_480' %}
             <h4 style="color:#fff;margin:24px 0 12px;padding-top:16px;border-top:1px solid #2a2d3a">{% trans 'Качества видео' %}</h4>
             <p style="color:#9ca3af;font-size:13px;margin-bottom:16px">
                 {% if telegram_configured %}
-                {% trans 'Video yuklanganda Telegram kanalga tushadi. GB videolar uchun Local Bot API kerak (docker-compose.telegram.yml).' %}
+                {% trans 'Fayl yuklang, Telegram bot/kanaldan tanlang yoki' %}
+                <a href="{% url 'movie:admin_telegram_videos' %}" style="color:#6ee7b7">{% trans 'Telegram bo\'limi' %}</a>
+                {% trans 'dan bog\'lang.' %}
                 {% else %}
                 {% trans 'Загрузите видеофайл для каждого качества (.mp4, .webm, .mkv)' %}
                 {% endif %}
@@ -42,10 +44,21 @@
             {{ field }}
             {% if field.help_text %}<p style="color:#6ee7b7;font-size:12px;margin-top:6px">{{ field.help_text }}</p>{% endif %}
             {% if field.errors %}<div style="color:#e74c3c;font-size:12px;margin-top:4px">{{ field.errors.0 }}</div>{% endif %}
+            {% if telegram_configured and field.name == 'trailer' %}
+            <div style="margin-top:10px">
+                <label style="color:#9ca3af;font-size:12px;display:block;margin-bottom:6px">{% trans 'Yoki Telegram bot/kanaldan tanlang' %} ({% trans 'Treler' %})</label>
+                <select name="tg_trailer" class="form-control" style="max-width:100%">
+                    <option value="">— {% trans 'Yangi fayl yuklang yoki tanlang' %} —</option>
+                    {% for tv in telegram_videos %}
+                    <option value="{{ tv.pk }}">{{ tv.file_name|default:"video" }} — {{ tv.caption|truncatechars:40|default:tv.file_unique_id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
             {% if telegram_configured and field.name|slice:"0:7" == 'stream_' %}
             {% with quality=field.name|slice:"7:" %}
             <div style="margin-top:10px">
-                <label style="color:#9ca3af;font-size:12px;display:block;margin-bottom:6px">{% trans 'Yoki Telegram kanaldan tanlang' %} ({{ quality }}p)</label>
+                <label style="color:#9ca3af;font-size:12px;display:block;margin-bottom:6px">{% trans 'Yoki Telegram bot/kanaldan tanlang' %} ({{ quality }}p)</label>
                 <select name="tg_video_{{ quality }}" class="form-control" style="max-width:100%">
                     <option value="">— {% trans 'Yangi fayl yuklang yoki tanlang' %} —</option>
                     {% for tv in telegram_videos %}

@@ -3,13 +3,36 @@
 {% block title %}{% trans 'Telegram videolar' %}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>📱 {% trans 'Telegram kanal videolari' %}</h1>
-    <a href="{% url 'movie:admin_movie_list' %}" class="btn-outline">← {% trans 'Filmlar' %}</a>
+    <h1>📱 {% trans 'Telegram videolar' %}</h1>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="{% url 'movie:admin_movie_add' %}" class="btn-admin">+ {% trans 'Film qo\'shish' %}</a>
+        <a href="{% url 'movie:admin_movie_list' %}" class="btn-outline">← {% trans 'Filmlar' %}</a>
+    </div>
 </div>
 
 {% if not telegram_configured %}
-<div class="panel-card" style="max-width:800px;margin-bottom:16px;border-color:#f59e0b">
+<div class="panel-card" style="max-width:900px;margin-bottom:16px;border-color:#f59e0b">
     <p style="color:#fbbf24;margin:0">{% trans 'TELEGRAM_BOT_TOKEN va TELEGRAM_CHANNEL_ID sozlang.' %}</p>
+</div>
+{% else %}
+<div class="panel-card" style="max-width:900px;margin-bottom:16px">
+    <h4 style="color:#fff;margin:0 0 12px">{% trans 'Bot orqali film yuklash (tugmalar)' %}</h4>
+    <ol style="color:#9ca3af;font-size:14px;margin:0;padding-left:20px;line-height:1.8">
+        <li>Botga <code>/start</code> → <strong style="color:#fff">🎬 Film qo'shish</strong></li>
+        <li>1 Nom → 2 Bo'lim (tugma) → 3 Yil → 4 Tavsif</li>
+        <li>5 Sifat (tugma) → 6 Poster → 7 Video</li>
+        <li><strong style="color:#fff">✅ Saqlash</strong> — saytda avtomatik paydo bo'ladi</li>
+    </ol>
+    <p style="color:#9ca3af;font-size:13px;margin:12px 0 0">{% trans 'Yordam:' %} botga <code>/help</code> yuboring</p>
+    {% if telegram_admin_ids %}
+    <p style="color:#6ee7b7;font-size:13px;margin:12px 0 0">
+        {% trans 'Ruxsat berilgan admin ID' %}: {% for uid in telegram_admin_ids %}{{ uid }}{% if not forloop.last %}, {% endif %}{% endfor %}
+    </p>
+    {% else %}
+    <p style="color:#fbbf24;font-size:13px;margin:12px 0 0">
+        {% trans 'TELEGRAM_ADMIN_USER_IDS sozlanmagan — faqat kanal postlari qabul qilinadi. Bot orqali yuklash uchun admin Telegram ID kiriting.' %}
+    </p>
+    {% endif %}
 </div>
 {% endif %}
 
@@ -35,6 +58,7 @@
                 <th>{% trans 'Caption' %}</th>
                 <th>{% trans 'Hajm' %}</th>
                 <th>{% trans 'Holat' %}</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -51,9 +75,14 @@
                 <span class="badge-expired">{% trans 'Bog\'lanmagan' %}</span>
                 {% endif %}
             </td>
+            <td>
+                {% if not v.linked_stream %}
+                <a href="{% url 'movie:admin_telegram_video_link' v.pk %}" class="btn-outline btn-sm">{% trans 'Filmlarga bog\'lash' %}</a>
+                {% endif %}
+            </td>
         </tr>
         {% empty %}
-        <tr><td colspan="5" style="text-align:center;padding:32px">{% trans 'Kanal videolari yo\'q. Botni kanalga admin qiling va video yuboring.' %}</td></tr>
+        <tr><td colspan="6" style="text-align:center;padding:32px">{% trans 'Videolar yo\'q. Botga yoki kanalga video yuboring.' %}</td></tr>
         {% endfor %}
         </tbody>
     </table>
@@ -61,6 +90,6 @@
 </div>
 
 <p style="color:#9ca3af;font-size:13px;margin-top:16px">
-    {% trans 'Video kanalga tushganda webhook orqali avtomatik ro\'yxatga olinadi. GB videolarni Telegram ilovasi orqali to\'g\'ridan-to\'g\'ri kanalga yuborish mumkin (4GB gacha).' %}
+    {% trans 'Webhook: kanal va bot xabarlari avtomatik saqlanadi. Eski videolarni botga forward qiling. Import: python manage.py sync_telegram_videos' %}
 </p>
 {% endblock %}

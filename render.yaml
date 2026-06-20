@@ -38,5 +38,9 @@ services:
         value: "https://allflex.doccmed.uz/telegram/webhook/"
       - key: TELEGRAM_DELETE_LOCAL_AFTER_UPLOAD
         value: "True"
+      - key: TELEGRAM_ADMIN_USER_IDS
+        value: "8630643858"
+      - key: SITE_BASE_URL
+        value: "https://allflex.doccmed.uz"
       - key: TELEGRAM_BOT_TOKEN
         sync: false

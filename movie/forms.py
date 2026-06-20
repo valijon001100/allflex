@@ -203,6 +203,7 @@ class MovieForm(forms.ModelForm):
         self.telegram_warnings = []
         if commit:
             trailer_upload = self.cleaned_data.get('trailer')
+            tg_trailer_id = self.data.get('tg_trailer', '').strip()
             if trailer_upload:
                 movie.trailer_file = trailer_upload
                 movie.trailer_url = ''
@@ -244,6 +245,17 @@ class MovieForm(forms.ModelForm):
                         self.telegram_warnings.append(
                             _('Treler Telegramga yuklanmadi: %(error)s') % {'error': exc},
                         )
+            elif tg_trailer_id:
+                tg_video = TelegramChannelVideo.objects.filter(
+                    pk=tg_trailer_id, linked_stream__isnull=True,
+                ).first()
+                if tg_video:
+                    movie.trailer_telegram_file_id = tg_video.file_id
+                    movie.trailer_telegram_file_unique_id = tg_video.file_unique_id
+                    movie.save(update_fields=[
+                        'trailer_telegram_file_id',
+                        'trailer_telegram_file_unique_id',
+                    ])
 
             for q in STREAM_QUALITIES:
                 uploaded = self.cleaned_data.get(f'stream_{q}')

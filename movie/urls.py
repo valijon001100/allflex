@@ -89,6 +89,7 @@ urlpatterns = [
     path('panel/movies/<int:pk>/edit/', admin_views.movie_edit, name='admin_movie_edit'),
     path('panel/movies/<int:pk>/delete/', admin_views.movie_delete, name='admin_movie_delete'),
     path('panel/telegram-videos/', admin_views.telegram_video_list, name='admin_telegram_videos'),
+    path('panel/telegram-videos/<int:pk>/link/', admin_views.telegram_video_link, name='admin_telegram_video_link'),
     path('panel/users/', admin_views.user_list, name='admin_user_list'),
     path('panel/watch-history/', admin_views.watch_history_list, name='admin_watch_history'),
     path('panel/subscriptions/', admin_views.subscription_list, name='admin_subscription_list'),

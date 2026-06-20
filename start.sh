@@ -23,6 +23,10 @@ if [ "${RUN_DEPLOY_SEED:-false}" = "true" ]; then
     python manage.py refresh_channel_logos || true
 fi
 
+if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_WEBHOOK_URL:-}" ]; then
+    python manage.py setup_telegram_webhook || true
+fi
+
 echo "Starting gunicorn..."
 exec gunicorn kinobase.wsgi:application \
     --bind "0.0.0.0:${PORT:-8000}" \
