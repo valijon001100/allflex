@@ -1,0 +1,16 @@
+{% load i18n movie_tags %}
+<article class="movie-card">
+    <a href="{% url 'movie:detail' movie.slug %}" class="home-card-poster">
+        <img src="{{ movie.poster.url }}" alt="{{ movie|movie_title }}" loading="lazy">
+        {% if movie.is_premium %}
+        <span class="badge-premium">Premium</span>
+        {% endif %}
+    </a>
+    <div class="movie-card-content">
+        <a href="{% url 'movie:detail' movie.slug %}" class="movie-card-title">{{ movie|movie_title }}</a>
+        <div class="movie-card-meta">
+            <span>{{ movie.year }}</span>
+            {% if movie.quality %}<span>{{ movie.quality }}</span>{% endif %}
+        </div>
+    </div>
+</article>

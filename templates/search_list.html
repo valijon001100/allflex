@@ -42,23 +42,13 @@
             </div>
         </div>
 
-        <div class="items">
+        <div class="movie-grid catalog-movie-grid">
             {% if object_list %}
             {% for movie in object_list %}
-            <div class="item">
-                <a href="{% url 'movie:detail' movie.slug %}">
-                    <img src="{{ movie.poster.url }}" loading="lazy" alt="{{ movie|movie_title }}" title="{{ movie|movie_title }}">
-                </a>
-                <div class="info">
-                    <div class="title">
-                        <a href="{% url 'movie:detail' movie.slug %}" class="link" title="{{ movie|movie_title }}">{{ movie|movie_title }}</a>
-                    </div>
-                    <div class="desc">{{ movie.year }}{% if movie.quality %}, {{ movie.quality }}{% endif %}</div>
-                </div>
-            </div>
+            {% include 'partials/movie_card.html' %}
             {% endfor %}
             {% else %}
-            <div class="page-empty">
+            <div class="page-empty catalog-empty">
                 <h3>{% trans 'Film topilmadi' %}</h3>
                 <p>{% trans "Boshqa so'z bilan qidiring yoki bosh sahifaga qayting." %}</p>
                 <a href="{% url 'movie:home' %}" class="btn-hero btn-primary" style="margin-top:16px;display:inline-flex">{% trans 'Bosh sahifa' %}</a>

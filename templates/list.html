@@ -50,21 +50,11 @@
             </div>
         </div>
 
-        <div class="items">
+        <div class="movie-grid catalog-movie-grid">
             {% for movie in page_obj %}
-            <div class="item">
-                <a href="{% url 'movie:detail' movie.slug %}">
-                    <img src="{{ movie.poster.url }}" loading="lazy" alt="{{ movie|movie_title }}" title="{{ movie|movie_title }}">
-                </a>
-                <div class="info">
-                    <div class="title">
-                        <a href="{% url 'movie:detail' movie.slug %}" class="link" title="{{ movie|movie_title }}">{{ movie|movie_title }}</a>
-                    </div>
-                    <div class="desc">{{ movie.year }}{% if movie.quality %}, {{ movie.quality }}{% endif %}</div>
-                </div>
-            </div>
+            {% include 'partials/movie_card.html' %}
             {% empty %}
-            <div class="page-empty">
+            <div class="page-empty catalog-empty">
                 <h3>{% trans "Kontent topilmadi" %}</h3>
                 <p>
                     {% if category.slug == 'Teatr' %}
