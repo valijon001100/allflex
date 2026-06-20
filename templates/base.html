@@ -80,12 +80,12 @@
             {% for cat in categories %}
                 {% if cat.children %}
                 <li class="nav-item dropdown">
-                    <a href="{{ cat.obj.get_absolute_url }}" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">
-                        {{ cat.name }}
+                    <a href="{{ cat.obj.get_absolute_url }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        {{ cat.name }} <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ cat.obj.get_absolute_url }}"><strong>{{ cat.name }}</strong></a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li role="separator" class="divider"></li>
                         {% for child in cat.children %}
                         <li><a href="{{ child.obj.get_absolute_url }}">{{ child.name }}</a></li>
                         {% endfor %}
@@ -93,7 +93,7 @@
                 </li>
                 {% else %}
                 <li class="nav-item">
-                    <a href="{{ cat.obj.get_absolute_url }}" class="{% if cat.obj.slug == 'teleperedachi' and request.resolver_match.url_name in 'channel_list,channel_watch' %}active{% endif %}">
+                    <a href="{{ cat.obj.get_absolute_url }}">
                         {{ cat.name }}
                     </a>
                 </li>
@@ -101,27 +101,25 @@
             {% endfor %}
             <li class="nav-item">
                 <a href="{% url 'movie:live_list' %}" class="nav-live-badge">
-                    <span>纄{% trans 'Jonli efir' %}</span>
+                    {% trans 'Jonli efir' %}
                 </a>
             </li>
             <li class="nav-item dropdown">
-                <a href="#" class="nav-ticket dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">
-                    纄 {% trans 'Biletlar' %}
+                <a href="#" class="nav-ticket dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {% trans 'Biletlar' %} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'movie:home' %}">纏 {% trans 'Bosh sahifa' %}</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a href="{% url 'movie:ticket_home' %}"><strong>{% trans 'Qora bilet sotish' %}</strong></a></li>
-                    <li><hr class="dropdown-divider"></li>
+                    <li><a href="{% url 'movie:ticket_home' %}"><strong>{% trans 'Barcha biletlar' %}</strong></a></li>
+                    <li role="separator" class="divider"></li>
                     {% for tcat in ticket_categories %}
                     <li><a href="{{ tcat.obj.get_absolute_url }}">{{ tcat.obj.icon }} {{ tcat.name }}</a></li>
                     {% empty %}
-                    <li><a href="{% url 'movie:ticket_category' 'kino' %}">纈 {% trans 'Kino' %}</a></li>
-                    <li><a href="{% url 'movie:ticket_category' 'teatr' %}">纒 {% trans 'Teatr' %}</a></li>
-                    <li><a href="{% url 'movie:ticket_category' 'sirk' %}">纓 {% trans 'Sirk' %}</a></li>
+                    <li><a href="{% url 'movie:ticket_category' 'kino' %}">{% trans 'Kino' %}</a></li>
+                    <li><a href="{% url 'movie:ticket_category' 'teatr' %}">{% trans 'Teatr' %}</a></li>
+                    <li><a href="{% url 'movie:ticket_category' 'sirk' %}">{% trans 'Sirk' %}</a></li>
                     {% endfor %}
                     {% if request.user.is_authenticated %}
-                    <li><hr class="dropdown-divider"></li>
+                    <li role="separator" class="divider"></li>
                     <li><a href="{% url 'movie:my_tickets' %}">{% trans 'Mening biletlarim' %}</a></li>
                     {% endif %}
                 </ul>
