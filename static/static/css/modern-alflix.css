@@ -103,6 +103,7 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--glass-border);
   transition: all var(--transition-normal);
+  overflow: visible;
 }
 
 .navbar-modern.scrolled {
@@ -117,6 +118,7 @@ body {
   justify-content: space-between;
   height: 100%;
   padding: 0 var(--spacing-md);
+  overflow: visible;
 }
 
 .navbar-logo {
@@ -332,20 +334,13 @@ body {
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  margin-top: 6px;
 }
 
-.navbar-modern .nav-item--janr .nav-genre-dropdown::before {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: 0;
-  right: 0;
-  height: 10px;
-}
-
-.navbar-modern .nav-item--janr .nav-cat-link {
-  cursor: default;
-  pointer-events: none;
+.navbar-modern .nav-janr-dropdown.lang-dropdown.is-active > .dropdown-toggle {
+  background: var(--gradient-primary);
+  border-color: var(--accent-color);
+  color: #fff;
 }
 
 .navbar-modern .nav-genre-dropdown::-webkit-scrollbar {
@@ -506,9 +501,10 @@ body {
   flex-shrink: 0;
 }
 
-/* Language Dropdown */
+/* Language / Janr ? bir xil kompakt tugma */
 .lang-dropdown {
   position: relative;
+  list-style: none;
 }
 
 .lang-dropdown button {
@@ -523,9 +519,19 @@ body {
   transition: all var(--transition-fast);
   min-width: 50px;
   text-align: center;
+  line-height: 1.2;
 }
 
-.lang-dropdown button:hover {
+.navbar-nav .nav-janr-dropdown.lang-dropdown button {
+  min-width: 56px;
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 0.875rem;
+}
+
+.lang-dropdown button:hover,
+.lang-dropdown.open > button,
+.lang-dropdown:hover > button {
   background: var(--gradient-primary);
   border-color: var(--accent-color);
   color: #fff;
@@ -2083,28 +2089,19 @@ body.mobile-nav-open {
   top: 100%;
   left: 0;
   z-index: 1100;
-  display: none;
+  display: none !important;
 }
 
 .navbar-modern .dropdown.open > .dropdown-menu,
-.navbar-modern .dropdown.show > .dropdown-menu {
-  display: block;
+.navbar-modern .dropdown.show > .dropdown-menu,
+.navbar-modern .lang-dropdown:hover > .dropdown-menu,
+.navbar-modern .lang-dropdown.open > .dropdown-menu {
+  display: block !important;
 }
 
 @media (min-width: 992px) {
   .navbar-nav-desktop .nav-item.dropdown:hover > .dropdown-menu,
   .navbar-nav-desktop .nav-item.dropdown.open > .dropdown-menu {
-    display: block;
-  }
-
-  .navbar-nav-desktop .nav-item--janr:hover .nav-split-wrap,
-  .navbar-nav-desktop .nav-item--janr:focus-within .nav-split-wrap {
-    color: #fff;
-    background: rgba(99, 102, 241, 0.22);
-  }
-
-  .navbar-nav-desktop .lang-dropdown:hover > .nav-compact-dropdown,
-  .navbar-nav-desktop .lang-dropdown.open > .nav-compact-dropdown {
-    display: block;
+    display: block !important;
   }
 }

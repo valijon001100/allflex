@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=24" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=25" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -43,14 +43,11 @@
                     {% trans 'Bosh sahifa' %}
                 </a>
             </li>
-            <li class="nav-item dropdown nav-item--split nav-item--janr">
-                <div class="nav-split-wrap{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}">
-                    <span class="nav-cat-link">{% trans 'Janr' %}</span>
-                    <button type="button" class="nav-cat-caret dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Janrlar' %}">
-                        <span class="caret"></span>
-                    </button>
-                </div>
-                <ul class="dropdown-menu nav-genre-dropdown nav-compact-dropdown">
+            <li class="nav-item lang-dropdown dropdown nav-janr-dropdown{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}">
+                <button type="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Janrlar' %}">
+                    {% trans 'Janr' %}
+                </button>
+                <ul class="dropdown-menu nav-compact-dropdown nav-genre-dropdown">
                     {% for gen in genres %}
                     <li>
                         <a href="{% url 'movie:genre_list' gen.slug %}"{% if request.resolver_match.url_name == 'genre_list' and request.resolver_match.kwargs.slug == gen.slug %} class="is-selected"{% endif %}>
@@ -138,7 +135,7 @@
 
         <ul class="navbar-right">
             <li class="lang-dropdown dropdown">
-                <button type="button" class="dropdown-toggle" data-toggle="dropdown" aria-label="{% trans 'Til' %}">
+                <button type="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Til' %}">
                     {% if LANGUAGE_CODE == 'uz' %}UZ{% elif LANGUAGE_CODE == 'en' %}EN{% else %}RU{% endif %}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end nav-compact-dropdown">
@@ -311,6 +308,21 @@ window.addEventListener('scroll', function() {
         });
         menu.addEventListener('click', function (e) { e.stopPropagation(); });
     });
+
+    if (window.matchMedia('(min-width: 992px)').matches) {
+        navbar.querySelectorAll('.lang-dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('mouseenter', function () {
+                dropdown.classList.add('open');
+                var t = dropdown.querySelector('.dropdown-toggle');
+                if (t) t.setAttribute('aria-expanded', 'true');
+            });
+            dropdown.addEventListener('mouseleave', function () {
+                dropdown.classList.remove('open');
+                var t = dropdown.querySelector('.dropdown-toggle');
+                if (t) t.setAttribute('aria-expanded', 'false');
+            });
+        });
+    }
 
     document.addEventListener('click', function () {
         navbar.querySelectorAll('.dropdown.open').forEach(function (d) {

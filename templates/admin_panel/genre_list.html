@@ -41,7 +41,6 @@
             <td>
                 <a href="{{ genre.get_absolute_url }}" class="btn-outline btn-sm" target="_blank">{% trans 'Смотреть' %}</a>
                 <a href="{% url 'movie:admin_genre_edit' genre.pk %}" class="btn-outline btn-sm">{% trans 'Редактировать' %}</a>
-                <a href="{% url 'movie:admin_genre_delete' genre.pk %}" class="btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c">{% trans 'Удалить' %}</a>
             </td>
         </tr>
         {% empty %}
