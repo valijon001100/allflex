@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=27" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=28" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -339,16 +339,31 @@ window.addEventListener('scroll', function() {
     const toggle = document.getElementById('mobileNavToggle');
     const panel = document.getElementById('mobileNavPanel');
     if (!toggle || !panel) return;
-    toggle.addEventListener('click', function() {
-        const open = document.body.classList.toggle('mobile-nav-open');
+
+    function setMobileNav(open) {
+        document.body.classList.toggle('mobile-nav-open', open);
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        setMobileNav(!document.body.classList.contains('mobile-nav-open'));
     });
+
+    panel.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    document.addEventListener('click', function() {
+        if (document.body.classList.contains('mobile-nav-open')) {
+            setMobileNav(false);
+        }
+    });
+
     panel.querySelectorAll('a').forEach(function(link) {
         link.addEventListener('click', function() {
-            document.body.classList.remove('mobile-nav-open');
-            toggle.setAttribute('aria-expanded', 'false');
-            panel.setAttribute('aria-hidden', 'true');
+            setMobileNav(false);
         });
     });
 })();
