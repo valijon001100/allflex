@@ -21,8 +21,8 @@
                     </a>
                     <ul class="dropdown-menu">
                         {% for gen in genres %}
-                        <li id="genreLinks" data-genre-id="{{ gen.id }}">
-                            <a href="#" rel="nofollow">{{ gen.name }}</a>
+                        <li>
+                            <a href="{% url 'movie:genre_list' gen.slug %}"{% if active_genre_slug == gen.slug %} class="is-selected"{% endif %}>{{ gen|genre_name:current_language }}</a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -94,12 +94,4 @@
         {% endif %}
     </div>
 </div>
-<script>
-document.querySelectorAll('#genreLinks').forEach(function(el) {
-    const id = el.getAttribute('data-genre-id');
-    if (id && el.querySelector('a')) {
-        el.querySelector('a').href = '/films/genres=' + id;
-    }
-});
-</script>
 {% endblock %}

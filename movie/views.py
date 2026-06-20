@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect ,HttpResponse, JsonResponse
@@ -70,11 +70,30 @@ def _movies_for_films_section():
     return Movie.objects.exclude(category_id__in=exclude_ids).select_related('category').order_by('-created_at', '-id')
 
 
+CATEGORY_GENRE_ALIASES = {
+    'ujalar': 'uzhasy',
+    'ujas': 'uzhasy',
+    'fentezi': 'fentezi',
+}
+
+
 def _movies_for_category_page(category):
     if category.slug == 'filmy':
         return _movies_for_films_section()
     cat_ids = _category_descendant_ids(category)
-    return Movie.objects.filter(category_id__in=cat_ids).select_related('category').order_by('-created_at', '-id')
+    qs = Movie.objects.filter(category_id__in=cat_ids)
+    genre_slug = CATEGORY_GENRE_ALIASES.get(category.slug, category.slug)
+    genre = Genre.objects.filter(slug=genre_slug).first()
+    if genre and category.parent_id:
+        try:
+            filmy = Category.objects.get(slug='filmy', parent__isnull=True)
+            filmy_ids = _category_descendant_ids(filmy)
+            qs = Movie.objects.filter(
+                Q(category_id__in=cat_ids) | Q(category_id__in=filmy_ids, genres=genre),
+            ).distinct()
+        except Category.DoesNotExist:
+            pass
+    return qs.select_related('category').order_by('-created_at', '-id')
 
 
 def category_list(request, slug):
@@ -217,6 +236,8 @@ class HomeView(ListView):
                 })
 
         context['home_sections'] = sections
+        from .premiere_utils import get_home_premiere_context
+        context.update(get_home_premiere_context())
         return context
 
 class MovieDetailView(FormMixin,DetailView):
@@ -300,13 +321,32 @@ def search(request):
 
     return render(request, 'search_list.html', {"object_list": data})
 
+
+def genre_list(request, slug):
+    genre = get_object_or_404(Genre, slug=slug)
+    lang = get_language() or 'uz'
+    movies = Movie.objects.filter(genres=genre).order_by('-created_at', '-id')
+    paginator = Paginator(movies, 12)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'list.html', {
+        'page_obj': page_obj,
+        'cat_name': _('Janr'),
+        'filter_category': genre.get_translated_name(lang),
+        'active_genre_slug': slug,
+    })
+
+
 def movie_sorting(request, sort_params):
     sort_type = sort_params.split("=")[0]
     sort_value = sort_params.split("=")[1]
     if sort_type == "genres":
-        genre = Genre.objects.get(id=sort_value)
-        movies = Movie.objects.filter(genres=sort_value).order_by('-created_at', '-id')
-        filter_label = genre.name
+        if sort_value.isdigit():
+            genre = Genre.objects.filter(id=sort_value).first()
+        else:
+            genre = Genre.objects.filter(slug=sort_value).first()
+        if not genre:
+            return HttpResponseRedirect("/")
+        return redirect('movie:genre_list', slug=genre.slug)
     elif sort_type == "year":
         movies = Movie.objects.filter(year=sort_value).order_by('-created_at', '-id')
         filter_label = sort_value
@@ -386,6 +426,9 @@ def channel_list(request):
                 messages.error(request, f"Kanallar yuklanmadi: {exc}")
 
     channels_qs = TvChannel.objects.filter(is_active=True, country_code=active_country).order_by('order', 'name')
+    q = (request.GET.get('q') or '').strip()
+    if q:
+        channels_qs = channels_qs.filter(name__icontains=q)
     paginator = Paginator(channels_qs, 48)
     page_obj = paginator.get_page(request.GET.get('page'))
     active_qs = TvChannel.objects.filter(is_active=True)
@@ -397,6 +440,7 @@ def channel_list(request):
         'country_label': country_label(active_country, lang),
         'country_nav': build_country_nav(active_qs, lang, include_empty=True),
         'popular_countries': popular_country_nav(lang, active_qs),
+        'q': q,
     })
 
 

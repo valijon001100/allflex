@@ -639,6 +639,47 @@ class PaymentSettingsForm(forms.ModelForm):
         })
 
 
+class SiteSettingsForm(forms.ModelForm):
+    class Meta:
+        from .models import SiteSettings
+        model = SiteSettings
+        fields = [
+            'premiere_enabled',
+            'premiere_slides_count',
+            'premiere_rotate_seconds',
+            'premiere_title',
+            'premiere_title_uz',
+            'premiere_title_en',
+        ]
+        widgets = {
+            'premiere_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'premiere_slides_count': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 20}),
+            'premiere_rotate_seconds': forms.NumberInput(attrs={'class': 'form-control', 'min': 3, 'max': 60}),
+            'premiere_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'premiere_title_uz': forms.TextInput(attrs={'class': 'form-control'}),
+            'premiere_title_en': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+    def clean_premiere_slides_count(self):
+        value = self.cleaned_data.get('premiere_slides_count') or 5
+        return max(1, min(int(value), 20))
+
+    def clean_premiere_rotate_seconds(self):
+        value = self.cleaned_data.get('premiere_rotate_seconds') or 6
+        return max(3, min(int(value), 60))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _apply_labels(self, {
+            'premiere_enabled': _('Premyera karuselini ko\'rsatish'),
+            'premiere_slides_count': _('Slaydlar soni (navbat)'),
+            'premiere_rotate_seconds': _('Aylanish vaqti (sekund)'),
+            'premiere_title': _('Sarlavha (RU)'),
+            'premiere_title_uz': _('Sarlavha (UZ)'),
+            'premiere_title_en': _('Sarlavha (EN)'),
+        })
+
+
 class CommentForm(forms.ModelForm):
 
     class Meta:

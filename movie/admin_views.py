@@ -14,13 +14,13 @@ from django.views.decorators.http import require_POST
 from .decorators import admin_required
 from .forms import (
     APIPartnerForm, CategoryForm, CorporateMemberForm, LiveStreamForm, MovieForm,
-    PaymentSettingsForm, SubscriptionForm, SubscriptionPlanForm, TicketEventForm,
+    PaymentSettingsForm, SubscriptionForm, SubscriptionPlanForm, SiteSettingsForm, TicketEventForm,
 )
 from .payment_config import click_configured, payme_configured
 from .models import (
     APIAccessLog, APIPartner, Category, Comment, CorporateMember, CorporateOrganization,
     CorporateSubscriptionRequest, Genre, LiveStream, Movie, MovieStream,
-    PaymentSettings, PiracyAlert, PurchasedTicket, SubscriptionPlan, TelegramChannelVideo,
+    PaymentSettings, PiracyAlert, PurchasedTicket, SubscriptionPlan, SiteSettings, HomePremiere, TelegramChannelVideo,
     TicketEvent,
     UserProfile, UserSubscription, WatchHistory,
 )
@@ -500,6 +500,66 @@ def payment_settings(request):
         'form': form,
         'click_ready': click_configured(),
         'payme_ready': payme_configured(),
+    })
+
+
+@admin_required
+def site_settings(request):
+    settings_obj = SiteSettings.load()
+    premieres = HomePremiere.objects.select_related('movie').order_by('order', 'id')
+
+    if request.method == 'POST':
+        action = request.POST.get('action', 'save_settings')
+
+        if action == 'add_premiere':
+            movie_id = request.POST.get('movie_id')
+            movie = Movie.objects.filter(pk=movie_id).first()
+            if not movie:
+                messages.error(request, _('Kino topilmadi.'))
+            elif HomePremiere.objects.filter(movie=movie).exists():
+                messages.error(request, _('Bu kino allaqachon premyeralarda.'))
+            else:
+                next_order = (
+                    HomePremiere.objects.order_by('-order').values_list('order', flat=True).first() or 0
+                ) + 1
+                HomePremiere.objects.create(movie=movie, order=next_order, is_active=True)
+                messages.success(request, _('Premyera qo\'shildi: %(title)s') % {'title': movie.title})
+            return redirect('movie:admin_site_settings')
+
+        if action == 'delete_premiere':
+            HomePremiere.objects.filter(pk=request.POST.get('premiere_id')).delete()
+            messages.success(request, _('Premyera o\'chirildi.'))
+            return redirect('movie:admin_site_settings')
+
+        if action == 'save_order':
+            for premiere in premieres:
+                key = f'order_{premiere.pk}'
+                if key in request.POST:
+                    try:
+                        premiere.order = max(0, int(request.POST.get(key, premiere.order)))
+                        premiere.is_active = request.POST.get(f'active_{premiere.pk}') == 'on'
+                        premiere.save(update_fields=['order', 'is_active'])
+                    except ValueError:
+                        pass
+            messages.success(request, _('Premyera navbati saqlandi.'))
+            return redirect('movie:admin_site_settings')
+
+        form = SiteSettingsForm(request.POST, instance=settings_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('Sayt sozlamalari saqlandi!'))
+            return redirect('movie:admin_site_settings')
+    else:
+        form = SiteSettingsForm(instance=settings_obj)
+
+    used_ids = set(HomePremiere.objects.values_list('movie_id', flat=True))
+    available_movies = Movie.objects.exclude(pk__in=used_ids).order_by('-created_at')[:200]
+
+    return render(request, 'admin_panel/site_settings.html', {
+        'form': form,
+        'premieres': HomePremiere.objects.select_related('movie').order_by('order', 'id'),
+        'available_movies': available_movies,
+        'settings_obj': settings_obj,
     })
 
 

@@ -3,7 +3,39 @@
 {% block content %}
 
 <div id="main" class="container-modern home-page">
-    {% if home_sections.0.movies.0 %}
+    {% if premiere_movies %}
+    <section class="premiere-carousel" id="premiereCarousel" data-rotate="{{ premiere_rotate_seconds|default:6 }}">
+        <div class="premiere-carousel-inner">
+            {% for movie in premiere_movies %}
+            <article class="premiere-slide{% if forloop.first %} is-active{% endif %}" data-index="{{ forloop.counter0 }}">
+                <div class="premiere-slide-bg" style="background-image: linear-gradient(to right, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.55) 45%, rgba(15,23,42,0.25) 100%), url('{{ movie.poster.url }}');"></div>
+                <div class="premiere-slide-content">
+                    <p class="premiere-slide-label">{{ premiere_title|default:"Premyeralar" }}</p>
+                    <h1 class="premiere-slide-title">{{ movie|movie_title }}</h1>
+                    <p class="premiere-slide-desc">{{ movie.short_description|default:movie.description|truncatewords:35 }}</p>
+                    <a href="{% url 'movie:detail' movie.slug %}" class="btn-hero btn-primary premiere-watch-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        {% trans "Tomosha qilish" %}
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% if premiere_movies|length > 1 %}
+        <button type="button" class="premiere-nav premiere-prev" aria-label="{% trans 'Oldingi' %}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button type="button" class="premiere-nav premiere-next" aria-label="{% trans 'Keyingi' %}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        <div class="premiere-dots" role="tablist">
+            {% for movie in premiere_movies %}
+            <button type="button" class="premiere-dot{% if forloop.first %} is-active{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="{{ movie|movie_title }}"></button>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+    {% elif home_sections.0.movies.0 %}
     <section class="hero-section">
         <div class="hero-bg" style="background-image: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.6) 100%), url('{{ home_sections.0.movies.0.poster.url }}')"></div>
         <div class="hero-content">
@@ -53,5 +85,57 @@
     <div class="home-empty">{% trans "Hozircha kinolar yo'q." %}</div>
     {% endfor %}
 </div>
+
+{% if premiere_movies|length > 1 %}
+<script>
+(function () {
+    var root = document.getElementById('premiereCarousel');
+    if (!root) return;
+    var slides = root.querySelectorAll('.premiere-slide');
+    var dots = root.querySelectorAll('.premiere-dot');
+    var total = slides.length;
+    var current = 0;
+    var intervalMs = (parseInt(root.getAttribute('data-rotate'), 10) || 6) * 1000;
+    var timer = null;
+
+    function show(index) {
+        current = (index + total) % total;
+        slides.forEach(function (slide, i) {
+            slide.classList.toggle('is-active', i === current);
+        });
+        dots.forEach(function (dot, i) {
+            dot.classList.toggle('is-active', i === current);
+        });
+    }
+
+    function next() { show(current + 1); }
+    function prev() { show(current - 1); }
+
+    function startAuto() {
+        stopAuto();
+        timer = setInterval(next, intervalMs);
+    }
+    function stopAuto() {
+        if (timer) clearInterval(timer);
+        timer = null;
+    }
+
+    var prevBtn = root.querySelector('.premiere-prev');
+    var nextBtn = root.querySelector('.premiere-next');
+    if (prevBtn) prevBtn.addEventListener('click', function () { prev(); startAuto(); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { next(); startAuto(); });
+    dots.forEach(function (dot) {
+        dot.addEventListener('click', function () {
+            show(parseInt(dot.getAttribute('data-index'), 10));
+            startAuto();
+        });
+    });
+
+    root.addEventListener('mouseenter', stopAuto);
+    root.addEventListener('mouseleave', startAuto);
+    startAuto();
+})();
+</script>
+{% endif %}
 
 {% endblock %}

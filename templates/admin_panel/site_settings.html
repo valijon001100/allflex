@@ -1,0 +1,108 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Sayt sozlamalari' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>⚙️ {% trans 'Sayt sozlamalari' %}</h1>
+</div>
+
+<div class="panel-card" style="max-width:640px;margin-bottom:24px">
+    <h3 style="color:#fff;margin:0 0 16px">{% trans 'Bosh sahifa premyeralari' %}</h3>
+    <p style="color:#9ca3af;font-size:14px;margin-bottom:20px">
+        {% trans 'Bosh sahifadagi katta karuselda qaysi kinolar va nechta slayd navbat bilan aylanishini belgilang.' %}
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="save_settings">
+        {% for field in form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {% if field.field.widget.input_type == 'checkbox' %}
+            <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+                {{ field }}
+            </div>
+            {% else %}
+            {{ field }}
+            {% endif %}
+            {% if field.errors %}<div style="color:#e74c3c;font-size:12px;margin-top:4px">{{ field.errors.0 }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-admin">{% trans 'Saqlash' %}</button>
+    </form>
+</div>
+
+<div class="panel-card">
+    <h3 style="color:#fff;margin:0 0 8px">{% trans 'Premyera navbati' %}</h3>
+    <p style="color:#9ca3af;font-size:14px;margin-bottom:20px">
+        {% trans 'Birinchi' %} {{ settings_obj.premiere_slides_count }} {% trans 'ta kino bosh sahifada navbat bilan chiqadi. Pastdagi tartib bo\'yicha.' %}
+    </p>
+
+    {% if premieres %}
+    <form method="post" id="premiere-order-form" style="margin-bottom:24px">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="save_order">
+        <div style="overflow-x:auto">
+            <table class="admin-table" style="width:100%;min-width:520px">
+                <thead>
+                    <tr>
+                        <th>{% trans 'Tartib' %}</th>
+                        <th>{% trans 'Kino' %}</th>
+                        <th>{% trans 'Faol' %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for premiere in premieres %}
+                    <tr>
+                        <td style="width:80px">
+                            <input type="number" name="order_{{ premiere.pk }}" value="{{ premiere.order }}" min="0" class="form-control" style="width:70px">
+                        </td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:12px">
+                                {% if premiere.movie.poster %}
+                                <img src="{{ premiere.movie.poster.url }}" alt="" style="width:40px;height:56px;object-fit:cover;border-radius:4px">
+                                {% endif %}
+                                <span>{{ premiere.movie.title }}</span>
+                            </div>
+                        </td>
+                        <td style="width:70px;text-align:center">
+                            <input type="checkbox" name="active_{{ premiere.pk }}" {% if premiere.is_active %}checked{% endif %}>
+                        </td>
+                        <td style="width:100px">
+                            <button type="submit" form="delete-premiere-{{ premiere.pk }}" class="btn-admin btn-danger" style="padding:6px 10px;font-size:12px">{% trans 'O\'chirish' %}</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn-admin" style="margin-top:16px">{% trans 'Navbatni saqlash' %}</button>
+    </form>
+    {% for premiere in premieres %}
+    <form method="post" id="delete-premiere-{{ premiere.pk }}" style="display:none" onsubmit="return confirm('{% trans "O\'chirishni tasdiqlaysizmi?" %}');">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete_premiere">
+        <input type="hidden" name="premiere_id" value="{{ premiere.pk }}">
+    </form>
+    {% endfor %}
+    {% else %}
+    <p style="color:#9ca3af;margin-bottom:20px">{% trans 'Hozircha premyera qo\'shilmagan. Avtomatik yangi kinolar ko\'rsatiladi.' %}</p>
+    {% endif %}
+
+    <h4 style="color:#fff;margin:24px 0 12px;padding-top:16px;border-top:1px solid #2a2d3a">{% trans 'Premyera qo\'shish' %}</h4>
+    <form method="post" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_premiere">
+        <div class="form-group" style="flex:1;min-width:220px;margin:0">
+            <label>{% trans 'Kino tanlang' %}</label>
+            <select name="movie_id" class="form-control" required>
+                <option value="">—</option>
+                {% for movie in available_movies %}
+                <option value="{{ movie.pk }}">{{ movie.title }}{% if movie.year %} ({{ movie.year }}){% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn-admin">{% trans 'Qo\'shish' %}</button>
+    </form>
+</div>
+{% endblock %}

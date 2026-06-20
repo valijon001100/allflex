@@ -39,7 +39,7 @@ def view_all(request):
     return {
         'categories': categories,
         'ticket_categories': ticket_categories,
-        'genres': Genre.objects.all(),
+        'genres': Genre.objects.all().order_by('name_uz', 'name'),
         'current_language': lang,
         'has_subscription': user_has_subscription(request.user),
         'has_movie_access': user_can_watch_movies(request.user),

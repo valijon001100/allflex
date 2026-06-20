@@ -11,9 +11,10 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Genre)
 class GenresAdmin(admin.ModelAdmin):
-    list_display = ["name", "id"]
+    list_display = ["name", "name_uz", "slug", "id"]
     list_display_links = ["name"]
-    prepopulated_fields = {"slug": ("name",)}
+    prepopulated_fields = {"slug": ("name_uz",)}
+    search_fields = ["name", "name_uz", "name_en", "slug"]
 
 @admin.register(Actor)
 class ActorAdmin(admin.ModelAdmin):

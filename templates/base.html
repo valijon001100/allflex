@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n movie_tags %}
 <!doctype html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=10" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=15" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -43,19 +43,36 @@
                     {% trans 'Bosh sahifa' %}
                 </a>
             </li>
+            <li class="nav-item dropdown nav-item--genre">
+                <a href="#" class="dropdown-toggle{% if request.resolver_match.url_name == 'genre_list' %} active{% endif %}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {% trans 'Janr' %} <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu nav-genre-dropdown">
+                    {% for gen in genres %}
+                    <li>
+                        <a href="{% url 'movie:genre_list' gen.slug %}"{% if request.resolver_match.url_name == 'genre_list' and request.resolver_match.kwargs.slug == gen.slug %} class="is-selected"{% endif %}>
+                            {{ gen|genre_name:current_language }}
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li><span class="dropdown-empty">{% trans "Janrlar yo'q" %}</span></li>
+                    {% endfor %}
+                </ul>
+            </li>
             {% for cat in categories %}
                 {% if cat.children %}
                 <li class="nav-item dropdown nav-item--split">
-                    <div class="nav-split-wrap">
+                    <div class="nav-split-wrap{% if request.resolver_match.url_name == 'category_list' %}{% if request.resolver_match.kwargs.slug == cat.obj.slug %} is-active{% else %}{% for child in cat.children %}{% if request.resolver_match.kwargs.slug == child.obj.slug %} is-active{% endif %}{% endfor %}{% endif %}{% endif %}">
                         <a href="{{ cat.obj.get_absolute_url }}"
-                           class="nav-cat-link{% if request.resolver_match.url_name == 'category_list' %}{% if request.resolver_match.kwargs.slug == cat.obj.slug %} active{% else %}{% for child in cat.children %}{% if request.resolver_match.kwargs.slug == child.obj.slug %} active{% endif %}{% endfor %}{% endif %}{% endif %}">
+                           class="nav-cat-link">
                             {{ cat.name }}
                         </a>
                         <button type="button" class="nav-cat-caret dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{% trans "Boshqa bo'limlar" %}">
                             <span class="caret"></span>
                         </button>
                     </div>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu nav-cat-dropdown">
+                        <li class="dropdown-header">{% trans "Yo'nalishlar" %}</li>
                         <li><a href="{{ cat.obj.get_absolute_url }}"><strong>{{ cat.name }} — {% trans 'Barchasi' %}</strong></a></li>
                         <li><hr class="dropdown-divider"></li>
                         {% for child in cat.children %}
@@ -158,6 +175,14 @@
 <div class="navbar-mobile-panel" id="mobileNavPanel" aria-hidden="true">
     <ul class="mobile-nav-list">
         <li><a href="{% url 'movie:home' %}">{% trans 'Bosh sahifa' %}</a></li>
+        <li class="mobile-nav-genre">
+            <span class="mobile-nav-label">{% trans 'Janr' %}</span>
+            <ul class="mobile-nav-sub">
+                {% for gen in genres %}
+                <li><a href="{% url 'movie:genre_list' gen.slug %}">{{ gen|genre_name:current_language }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
         {% for cat in categories %}
         <li>
             <a href="{{ cat.obj.get_absolute_url }}">{{ cat.name }}</a>

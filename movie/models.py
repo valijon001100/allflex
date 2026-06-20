@@ -51,15 +51,27 @@ class Category(models.Model):
 
 class Genre(models.Model):
     """Model definition for Genre."""
-    name = models.CharField("Genre name", max_length=100)
+    name = models.CharField("Genre name (RU)", max_length=100)
+    name_uz = models.CharField("Nomi (UZ)", max_length=100, blank=True, default='')
+    name_en = models.CharField("Name (EN)", max_length=100, blank=True, default='')
     slug = models.SlugField(max_length=100, unique=True)
-    # TODO: Define fields here
 
     class Meta:
         """Meta definition for Genre."""
 
         verbose_name = 'Genre'
         verbose_name_plural = 'Genres'
+        ordering = ['name_uz', 'name']
+
+    def get_translated_name(self, lang='uz'):
+        if lang == 'uz' and self.name_uz:
+            return self.name_uz
+        if lang == 'en' and self.name_en:
+            return self.name_en
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('movie:genre_list', kwargs={'slug': self.slug})
 
     def __str__(self):
         """Unicode representation of Genre."""
@@ -610,6 +622,66 @@ class PaymentSettings(models.Model):
 
     def __str__(self):
         return 'To\'lov sozlamalari'
+
+
+class SiteSettings(models.Model):
+    premiere_slides_count = models.PositiveSmallIntegerField(
+        'Premyera slaydlar soni',
+        default=5,
+    )
+    premiere_rotate_seconds = models.PositiveSmallIntegerField(
+        'Aylanish vaqti (sekund)',
+        default=6,
+    )
+    premiere_title = models.CharField(max_length=120, default='Premyeralar', blank=True)
+    premiere_title_uz = models.CharField(max_length=120, default='Premyeralar', blank=True)
+    premiere_title_en = models.CharField(max_length=120, default='Premieres', blank=True)
+    premiere_enabled = models.BooleanField('Bosh sahifada ko\'rsatish', default=True)
+
+    class Meta:
+        verbose_name = 'Sayt sozlamalari'
+        verbose_name_plural = 'Sayt sozlamalari'
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def get_premiere_title(self, lang='uz'):
+        if lang == 'uz' and self.premiere_title_uz:
+            return self.premiere_title_uz
+        if lang == 'en' and self.premiere_title_en:
+            return self.premiere_title_en
+        return self.premiere_title or 'Premyeralar'
+
+    def __str__(self):
+        return 'Sayt sozlamalari'
+
+
+class HomePremiere(models.Model):
+    movie = models.ForeignKey(
+        'Movie',
+        on_delete=models.CASCADE,
+        related_name='home_premiere_slots',
+    )
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Bosh sahifa premyerasi'
+        verbose_name_plural = 'Bosh sahifa premyeralari'
+        ordering = ['order', 'id']
+        constraints = [
+            models.UniqueConstraint(fields=['movie'], name='unique_home_premiere_movie'),
+        ]
+
+    def __str__(self):
+        return f'{self.order}. {self.movie.title}'
 
 
 class TicketCategory(models.Model):

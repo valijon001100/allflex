@@ -10,6 +10,8 @@ fi
 
 # Telekanallar bo'limidagi kinolarni tuzatish (har deployda xavfsiz).
 python manage.py fix_movie_categories || true
+python manage.py seed_film_subcategories || true
+python manage.py seed_genres || true
 
 # Bo'sh bo'lsa namuna bilet tadbirlari (mavjud ma'lumotga tegmaydi).
 python manage.py load_ticket_data || true
