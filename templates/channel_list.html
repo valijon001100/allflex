@@ -11,11 +11,22 @@
     <div class="channel-country-panel">
         <p class="channel-country-hint">{% trans "Boshqa davlat kanallarini ko'rish uchun mamlakatni tanlang" %}</p>
 
+        <div class="channel-search-wrap">
+            <input type="search"
+                   id="country-search"
+                   class="channel-search-input"
+                   placeholder="{% trans 'Mamlakat qidirish...' %}"
+                   autocomplete="off"
+                   aria-label="{% trans 'Mamlakat qidirish' %}">
+        </div>
+        <p id="country-search-empty" class="channel-search-empty" hidden>{% trans 'Mamlakat topilmadi' %}</p>
+
         {% if popular_countries %}
-        <div class="channel-popular-nav">
+        <div class="channel-popular-nav" id="country-popular-nav">
             {% for item in popular_countries %}
             <a href="{% url 'movie:channel_list' %}?country={{ item.code }}"
-               class="channel-country-chip {% if item.code == active_country %}is-active{% endif %}">
+               class="channel-country-chip {% if item.code == active_country %}is-active{% endif %}"
+               data-search="{{ item.label|lower }} {{ item.code|lower }}">
                 {{ item.label }}
             </a>
             {% endfor %}
@@ -23,10 +34,11 @@
         {% endif %}
 
         {% if country_nav %}
-        <div class="channel-country-scroll">
+        <div class="channel-country-scroll" id="country-scroll">
             {% for item in country_nav %}
             <a href="{% url 'movie:channel_list' %}?country={{ item.code }}"
-               class="channel-country-chip {% if item.code == active_country %}is-active{% endif %}">
+               class="channel-country-chip {% if item.code == active_country %}is-active{% endif %}"
+               data-search="{{ item.label|lower }} {{ item.code|lower }}">
                 <span>{{ item.label }}</span>
                 {% if item.loaded %}<em>{{ item.count }}</em>{% endif %}
             </a>
@@ -35,7 +47,22 @@
         {% endif %}
     </div>
 
-    <h2 class="channel-section-title">{{ country_label }}</h2>
+    <div class="channel-list-toolbar">
+        <h2 class="channel-section-title">{{ country_label }}</h2>
+        <form class="channel-search-form" method="get" role="search">
+            <input type="hidden" name="country" value="{{ active_country }}">
+            <input type="search"
+                   name="q"
+                   class="channel-search-input"
+                   value="{{ q }}"
+                   placeholder="{% trans 'Kanal qidirish...' %}"
+                   aria-label="{% trans 'Kanal qidirish' %}">
+            <button type="submit" class="channel-search-btn">{% trans 'Qidirish' %}</button>
+            {% if q %}
+            <a href="{% url 'movie:channel_list' %}?country={{ active_country }}" class="channel-search-clear">✕</a>
+            {% endif %}
+        </form>
+    </div>
 
     <div class="items">
         {% for channel in channels %}
@@ -58,8 +85,13 @@
         </div>
         {% empty %}
         <div class="page-empty">
+            {% if q %}
+            <h3>{% trans 'Kanal topilmadi' %}</h3>
+            <p>{% blocktrans with query=q %}«{{ query }}» bo'yicha natija yo'q.{% endblocktrans %}</p>
+            {% else %}
             <h3>{% trans 'Kanallar yuklanmoqda' %}</h3>
             <p>{% trans "Bir oz kuting va sahifani yangilang." %}</p>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
@@ -67,13 +99,48 @@
     {% if page_obj.paginator.num_pages > 1 %}
     <nav style="margin-top:24px;text-align:center">
         {% if page_obj.has_previous %}
-        <a href="?country={{ active_country }}&page={{ page_obj.previous_page_number }}" class="btn-outline-sm">←</a>
+        <a href="?country={{ active_country }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}&amp;page={{ page_obj.previous_page_number }}" class="btn-outline-sm">←</a>
         {% endif %}
         <span style="margin:0 12px;color:var(--text-secondary)">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-        <a href="?country={{ active_country }}&page={{ page_obj.next_page_number }}" class="btn-outline-sm">→</a>
+        <a href="?country={{ active_country }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}&amp;page={{ page_obj.next_page_number }}" class="btn-outline-sm">→</a>
         {% endif %}
     </nav>
     {% endif %}
 </div>
+
+<script>
+(function () {
+    var input = document.getElementById('country-search');
+    var scroll = document.getElementById('country-scroll');
+    var popular = document.getElementById('country-popular-nav');
+    var empty = document.getElementById('country-search-empty');
+    if (!input) return;
+
+    function filterCountries() {
+        var query = (input.value || '').trim().toLowerCase();
+        var visible = 0;
+
+        [popular, scroll].forEach(function (container) {
+            if (!container) return;
+            container.querySelectorAll('.channel-country-chip').forEach(function (chip) {
+                var hay = chip.getAttribute('data-search') || chip.textContent.toLowerCase();
+                var match = !query || hay.indexOf(query) !== -1;
+                chip.style.display = match ? '' : 'none';
+                if (match) visible += 1;
+            });
+        });
+
+        if (scroll) {
+            scroll.classList.toggle('is-filtering', query.length > 0);
+        }
+        if (empty) {
+            empty.hidden = !query || visible > 0;
+        }
+    }
+
+    input.addEventListener('input', filterCountries);
+    input.addEventListener('search', filterCountries);
+})();
+</script>
 {% endblock %}
