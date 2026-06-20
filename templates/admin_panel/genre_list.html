@@ -1,0 +1,63 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Janrlar' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🎭 {% trans 'Janrlar' %}</h1>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <form method="post" action="{% url 'movie:admin_genre_seed' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-outline">{% trans 'Standart janrlarni yuklash' %}</button>
+        </form>
+        <a href="{% url 'movie:admin_genre_add' %}" class="btn-admin">+ {% trans 'Janr qo\'shish' %}</a>
+    </div>
+</div>
+
+<p style="color:#9ca3af;font-size:14px;margin-bottom:20px">{% trans 'Navbar dagi «Janr» menyusida ko\'rinadi. Filmlarga janr biriktirish — kino tahrirlash sahifasidan.' %}</p>
+
+<div class="panel-card panel-card--table">
+    <div class="table-responsive">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{% trans 'Название (RU)' %}</th>
+                <th>UZ</th>
+                <th>EN</th>
+                <th>Slug</th>
+                <th>{% trans 'Фильмов' %}</th>
+                <th>{% trans 'Действия' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for genre in genres %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><strong>{{ genre.name }}</strong></td>
+            <td>{{ genre.name_uz|default:"—" }}</td>
+            <td>{{ genre.name_en|default:"—" }}</td>
+            <td><code style="color:#9ca3af">{{ genre.slug }}</code></td>
+            <td>{{ genre.movie_count }}</td>
+            <td>
+                <a href="{{ genre.get_absolute_url }}" class="btn-outline btn-sm" target="_blank">{% trans 'Смотреть' %}</a>
+                <a href="{% url 'movie:admin_genre_edit' genre.pk %}" class="btn-outline btn-sm">{% trans 'Редактировать' %}</a>
+                <a href="{% url 'movie:admin_genre_delete' genre.pk %}" class="btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c">{% trans 'Удалить' %}</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" style="text-align:center;padding:32px">
+                {% trans 'Janrlar topilmadi.' %}
+                <br><br>
+                <form method="post" action="{% url 'movie:admin_genre_seed' %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-admin">{% trans 'Standart janrlarni yuklash' %}</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

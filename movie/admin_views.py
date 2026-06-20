@@ -13,7 +13,7 @@ from django.views.decorators.http import require_POST
 
 from .decorators import admin_required
 from .forms import (
-    APIPartnerForm, CategoryForm, CorporateMemberForm, LiveStreamForm, MovieForm,
+    APIPartnerForm, CategoryForm, CorporateMemberForm, GenreForm, LiveStreamForm, MovieForm,
     PaymentSettingsForm, SubscriptionForm, SubscriptionPlanForm, SiteSettingsForm, TicketEventForm,
 )
 from .payment_config import click_configured, payme_configured
@@ -151,6 +151,77 @@ def category_delete(request, pk):
         'category': category,
         'has_movies': has_movies,
         'has_children': has_children,
+    })
+
+
+@admin_required
+def genre_list(request):
+    from .context_pro import GENRE_NAV_ORDER
+    order = {slug: idx for idx, slug in enumerate(GENRE_NAV_ORDER)}
+    genres = list(
+        Genre.objects.annotate(movie_count=Count('movie')).order_by('name_uz', 'name')
+    )
+    genres.sort(key=lambda g: (order.get(g.slug, 999), g.name_uz or g.name))
+    return render(request, 'admin_panel/genre_list.html', {'genres': genres})
+
+
+@admin_required
+@require_POST
+def genre_seed_defaults(request):
+    from django.core.management import call_command
+    call_command('seed_genres')
+    messages.success(request, _('Standart janrlar yuklandi!'))
+    return redirect('movie:admin_genre_list')
+
+
+@admin_required
+def genre_add(request):
+    if request.method == 'POST':
+        form = GenreForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('Janr qo\'shildi!'))
+            return redirect('movie:admin_genre_list')
+    else:
+        form = GenreForm()
+    return render(request, 'admin_panel/genre_form.html', {
+        'form': form,
+        'title': _('Janr qo\'shish'),
+    })
+
+
+@admin_required
+def genre_edit(request, pk):
+    genre = get_object_or_404(Genre, pk=pk)
+    if request.method == 'POST':
+        form = GenreForm(request.POST, instance=genre)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('Janr yangilandi!'))
+            return redirect('movie:admin_genre_list')
+    else:
+        form = GenreForm(instance=genre)
+    return render(request, 'admin_panel/genre_form.html', {
+        'form': form,
+        'title': _('Janrni tahrirlash'),
+        'genre': genre,
+    })
+
+
+@admin_required
+def genre_delete(request, pk):
+    genre = get_object_or_404(Genre, pk=pk)
+    has_movies = genre.movie_set.exists()
+    if request.method == 'POST':
+        if has_movies:
+            messages.error(request, _('O\'chirib bo\'lmaydi: bu janrda filmlar bor!'))
+        else:
+            genre.delete()
+            messages.success(request, _('Janr o\'chirildi!'))
+        return redirect('movie:admin_genre_list')
+    return render(request, 'admin_panel/genre_delete.html', {
+        'genre': genre,
+        'has_movies': has_movies,
     })
 
 

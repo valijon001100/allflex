@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from transliterate import translit
 from .models import (
     Category, Comment, CorporateMember, CorporateOrganization,
-    CorporateSubscriptionRequest, LiveStream, Movie, MovieStream,
+    CorporateSubscriptionRequest, Genre, LiveStream, Movie, MovieStream,
     SubscriptionPlan, TelegramChannelVideo, UserSubscription,
 )
 from .telegram_storage import (
@@ -364,6 +364,27 @@ class CategoryForm(forms.ModelForm):
         if self.instance.pk and self.instance.children.exists() and parent:
             raise forms.ValidationError(_('Ichki bo\'limlari bor bo\'limni boshqa bo\'lim ichiga qo\'yib bo\'lmaydi.'))
         return parent
+
+
+class GenreForm(forms.ModelForm):
+    class Meta:
+        model = Genre
+        fields = ['name', 'name_uz', 'name_en', 'slug']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Комедия'}),
+            'name_uz': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Komediya'}),
+            'name_en': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Comedy'}),
+            'slug': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'komediya'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _apply_labels(self, {
+            'name': _('Название (RU)'),
+            'name_uz': _('Название (UZ)'),
+            'name_en': _('Название (EN)'),
+            'slug': _('Slug (URL)'),
+        })
 
 
 class APIPartnerForm(forms.ModelForm):

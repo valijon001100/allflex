@@ -187,6 +187,7 @@
         <nav class="sidebar-nav">
             <a href="{% url 'movie:admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">📊 {% trans 'Статистика' %}</a>
             <a href="{% url 'movie:admin_category_list' %}" class="{% if 'admin_category' in request.resolver_match.url_name %}active{% endif %}">📂 {% trans 'Разделы' %}</a>
+            <a href="{% url 'movie:admin_genre_list' %}" class="{% if 'admin_genre' in request.resolver_match.url_name %}active{% endif %}">🎭 {% trans 'Janrlar' %}</a>
             <a href="{% url 'movie:admin_movie_list' %}" class="{% if 'admin_movie' in request.resolver_match.url_name %}active{% endif %}">🎥 {% trans 'Фильмы' %}</a>
             <a href="{% url 'movie:admin_telegram_videos' %}" class="{% if request.resolver_match.url_name == 'admin_telegram_videos' %}active{% endif %}">📱 Telegram</a>
             <a href="{% url 'movie:admin_live_list' %}" class="{% if 'admin_live' in request.resolver_match.url_name %}active{% endif %}">📡 {% trans 'Прямой эфир' %}</a>

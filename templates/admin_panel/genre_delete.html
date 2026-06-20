@@ -1,0 +1,21 @@
+{% extends 'admin_panel/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Janrni o\'chirish' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{% trans 'Janrni o\'chirish' %}</h1>
+</div>
+<div class="panel-card" style="max-width:500px">
+    <p>{% trans 'Haqiqatan ham' %} <strong>{{ genre.name_uz|default:genre.name }}</strong> {% trans 'janrini o\'chirmoqchimisiz?' %}</p>
+    {% if has_movies %}
+    <p style="color:#e74c3c;margin-top:12px">{% trans 'Bu janrda filmlar bor — o\'chirib bo\'lmaydi.' %}</p>
+    {% endif %}
+    <form method="post" style="margin-top:20px;display:flex;gap:12px">
+        {% csrf_token %}
+        {% if not has_movies %}
+        <button type="submit" class="btn-admin btn-danger">{% trans 'Ha, o\'chirish' %}</button>
+        {% endif %}
+        <a href="{% url 'movie:admin_genre_list' %}" class="btn-outline">{% trans 'Отмена' %}</a>
+    </form>
+</div>
+{% endblock %}

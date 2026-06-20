@@ -14,7 +14,10 @@ GENRE_NAV_ORDER = [
 
 def _ordered_genres():
     order = {slug: idx for idx, slug in enumerate(GENRE_NAV_ORDER)}
-    genres = list(Genre.objects.all())
+    try:
+        genres = list(Genre.objects.all())
+    except OperationalError:
+        return []
     genres.sort(key=lambda genre: (order.get(genre.slug, 999), genre.name_uz or genre.name))
     return genres
 

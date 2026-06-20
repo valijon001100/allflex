@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=23" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=24" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -43,10 +43,12 @@
                     {% trans 'Bosh sahifa' %}
                 </a>
             </li>
-            <li class="nav-item dropdown nav-item--janr">
-                <div class="nav-split-wrap nav-janr-wrap{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown nav-item--split nav-item--janr">
+                <div class="nav-split-wrap{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}">
                     <span class="nav-cat-link">{% trans 'Janr' %}</span>
-                    <span class="caret" aria-hidden="true"></span>
+                    <button type="button" class="nav-cat-caret dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Janrlar' %}">
+                        <span class="caret"></span>
+                    </button>
                 </div>
                 <ul class="dropdown-menu nav-genre-dropdown nav-compact-dropdown">
                     {% for gen in genres %}
@@ -187,6 +189,8 @@
             <ul class="mobile-nav-sub">
                 {% for gen in genres %}
                 <li><a href="{% url 'movie:genre_list' gen.slug %}">{{ gen|genre_name:current_language }}</a></li>
+                {% empty %}
+                <li><span style="color:var(--text-muted);padding:8px 0;display:block">{% trans "Janrlar yo'q" %}</span></li>
                 {% endfor %}
             </ul>
         </li>
@@ -288,8 +292,6 @@ window.addEventListener('scroll', function() {
     if (!navbar) return;
 
     navbar.querySelectorAll('.dropdown').forEach(function (dropdown) {
-        if (dropdown.classList.contains('nav-item--janr')) return;
-
         var toggle = dropdown.querySelector('.dropdown-toggle');
         var menu = dropdown.querySelector('.dropdown-menu');
         if (!toggle || !menu) return;
@@ -307,30 +309,13 @@ window.addEventListener('scroll', function() {
                 toggle.setAttribute('aria-expanded', 'true');
             }
         });
+        menu.addEventListener('click', function (e) { e.stopPropagation(); });
     });
-
-    var janr = navbar.querySelector('.nav-item--janr');
-    if (janr) {
-        var janrWrap = janr.querySelector('.nav-janr-wrap');
-        var janrMenu = janr.querySelector('.nav-genre-dropdown');
-        if (janrWrap && janrMenu) {
-            janrWrap.addEventListener('click', function (e) {
-                if (window.innerWidth >= 992) return;
-                e.preventDefault();
-                e.stopPropagation();
-                var open = janr.classList.toggle('open');
-                janrWrap.setAttribute('aria-expanded', open ? 'true' : 'false');
-            });
-            janrMenu.addEventListener('click', function (e) { e.stopPropagation(); });
-        }
-    }
 
     document.addEventListener('click', function () {
         navbar.querySelectorAll('.dropdown.open').forEach(function (d) {
             d.classList.remove('open');
-            var wrap = d.querySelector('.nav-janr-wrap');
             var t = d.querySelector('.dropdown-toggle');
-            if (wrap) wrap.setAttribute('aria-expanded', 'false');
             if (t) t.setAttribute('aria-expanded', 'false');
         });
     });
