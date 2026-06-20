@@ -11,7 +11,6 @@ fi
 # Telekanallar bo'limidagi kinolarni tuzatish (har deployda xavfsiz).
 python manage.py fix_movie_categories || true
 python manage.py seed_film_subcategories || true
-python manage.py seed_genres || true
 
 # Bo'sh bo'lsa namuna bilet tadbirlari (mavjud ma'lumotga tegmaydi).
 python manage.py load_ticket_data || true
@@ -23,6 +22,8 @@ if [ "${RUN_DEPLOY_SEED:-false}" = "true" ]; then
     python manage.py load_tv_channels --priority || true
     python manage.py load_tv_channels --all-countries --min-countries 50 || true
     python manage.py refresh_channel_logos || true
+else
+    python manage.py seed_genres || true
 fi
 
 if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_WEBHOOK_URL:-}" ]; then
