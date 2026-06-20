@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=15" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=16" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -95,19 +95,25 @@
                     <span>{% trans 'Jonli efir' %}</span>
                 </a>
             </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-ticket dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    {% trans 'Biletlar' %}
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="{% url 'movie:ticket_home' %}"><strong>{% trans 'Qora bilet sotish' %}</strong></a></li>
+            <li class="nav-item dropdown nav-item--split">
+                <div class="nav-split-wrap{% if request.resolver_match.url_name == 'ticket_home' or request.resolver_match.url_name == 'ticket_category' or request.resolver_match.url_name == 'ticket_detail' or request.resolver_match.url_name == 'my_tickets' %} is-active{% endif %}">
+                    <a href="{% url 'movie:ticket_home' %}" class="nav-cat-link">
+                        {% trans 'Biletlar' %}
+                    </a>
+                    <button type="button" class="nav-cat-caret dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Bilet bo\'limlari' %}">
+                        <span class="caret"></span>
+                    </button>
+                </div>
+                <ul class="dropdown-menu nav-cat-dropdown">
+                    <li class="dropdown-header">{% trans 'Bilet bo\'limlari' %}</li>
+                    <li><a href="{% url 'movie:ticket_home' %}"><strong>{% trans 'Barchasi' %}</strong></a></li>
                     <li><hr class="dropdown-divider"></li>
                     {% for tcat in ticket_categories %}
                     <li><a href="{{ tcat.obj.get_absolute_url }}">{{ tcat.obj.icon }} {{ tcat.name }}</a></li>
                     {% empty %}
-                    <li><a href="{% url 'movie:ticket_category' 'kino' %}">{% trans 'Kino' %}</a></li>
-                    <li><a href="{% url 'movie:ticket_category' 'teatr' %}">{% trans 'Teatr' %}</a></li>
-                    <li><a href="{% url 'movie:ticket_category' 'sirk' %}">{% trans 'Sirk' %}</a></li>
+                    <li><a href="{% url 'movie:ticket_category' 'kino' %}">🎬 {% trans 'Kino' %}</a></li>
+                    <li><a href="{% url 'movie:ticket_category' 'teatr' %}">🎭 {% trans 'Teatr' %}</a></li>
+                    <li><a href="{% url 'movie:ticket_category' 'sirk' %}">🎪 {% trans 'Sirk' %}</a></li>
                     {% endfor %}
                     {% if request.user.is_authenticated %}
                     <li><hr class="dropdown-divider"></li>
