@@ -212,6 +212,40 @@ body {
   margin: 0;
 }
 
+.nav-janr-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  height: 36px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.nav-janr-btn:hover,
+.nav-item--janr.dropdown.open .nav-janr-btn,
+.nav-janr-btn.active {
+  color: #fff;
+  background: rgba(99, 102, 241, 0.22);
+}
+
+.nav-janr-btn .caret {
+  border-top-color: currentColor;
+  margin-left: 2px;
+}
+
 .nav-item > a:not(.nav-live-badge):not(.dropdown-toggle):hover,
 .nav-item--split .nav-split-wrap:hover,
 .nav-item--split.dropdown.open .nav-split-wrap {

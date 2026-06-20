@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=17" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=18" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -43,16 +43,13 @@
                     {% trans 'Bosh sahifa' %}
                 </a>
             </li>
-            <li class="nav-item dropdown nav-item--split nav-item--genre">
-                <div class="nav-split-wrap{% if request.resolver_match.url_name == 'genre_index' or request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}">
-                    <a href="{% url 'movie:genre_index' %}" class="nav-cat-link">
-                        {% trans 'Janr' %}
-                    </a>
-                    <button type="button" class="nav-cat-caret dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Janrlar ro\'yxati' %}">
-                        <span class="caret"></span>
-                    </button>
-                </div>
+            <li class="nav-item dropdown nav-item--janr">
+                <button type="button" class="nav-janr-btn dropdown-toggle{% if request.resolver_match.url_name == 'genre_index' or request.resolver_match.url_name == 'genre_list' %} active{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {% trans 'Janr' %} <span class="caret"></span>
+                </button>
                 <ul class="dropdown-menu nav-genre-dropdown">
+                    <li><a href="{% url 'movie:genre_index' %}"><strong>{% trans 'Barcha janrlar' %}</strong></a></li>
+                    <li><hr class="dropdown-divider"></li>
                     {% for gen in genres %}
                     <li>
                         <a href="{% url 'movie:genre_list' gen.slug %}"{% if request.resolver_match.url_name == 'genre_list' and request.resolver_match.kwargs.slug == gen.slug %} class="is-selected"{% endif %}>
@@ -186,9 +183,9 @@
 <div class="navbar-mobile-panel" id="mobileNavPanel" aria-hidden="true">
     <ul class="mobile-nav-list">
         <li><a href="{% url 'movie:home' %}">{% trans 'Bosh sahifa' %}</a></li>
-        <li><a href="{% url 'movie:genre_index' %}">{% trans 'Janr' %}</a></li>
+        <li><a href="{% url 'movie:genre_index' %}">{% trans 'Janr — barchasi' %}</a></li>
         <li class="mobile-nav-genre">
-            <span class="mobile-nav-label">{% trans 'Janr' %}</span>
+            <span class="mobile-nav-label">{% trans 'Janrlar' %}</span>
             <ul class="mobile-nav-sub">
                 {% for gen in genres %}
                 <li><a href="{% url 'movie:genre_list' gen.slug %}">{{ gen|genre_name:current_language }}</a></li>
@@ -287,6 +284,40 @@ window.addEventListener('scroll', function() {
         navbar.classList.remove('scrolled');
     }
 });
+
+(function() {
+    var navbar = document.getElementById('mainNavbar');
+    if (!navbar) return;
+    navbar.querySelectorAll('.dropdown').forEach(function (dropdown) {
+        var toggle = dropdown.querySelector('.dropdown-toggle');
+        var menu = dropdown.querySelector('.dropdown-menu');
+        if (!toggle || !menu) return;
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var open = dropdown.classList.contains('open');
+            navbar.querySelectorAll('.dropdown.open').forEach(function (d) {
+                d.classList.remove('open');
+                var t = d.querySelector('.dropdown-toggle');
+                if (t) t.setAttribute('aria-expanded', 'false');
+            });
+            if (!open) {
+                dropdown.classList.add('open');
+                toggle.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+    document.addEventListener('click', function () {
+        navbar.querySelectorAll('.dropdown.open').forEach(function (d) {
+            d.classList.remove('open');
+            var t = d.querySelector('.dropdown-toggle');
+            if (t) t.setAttribute('aria-expanded', 'false');
+        });
+    });
+    navbar.querySelectorAll('.dropdown-menu').forEach(function (menu) {
+        menu.addEventListener('click', function (e) { e.stopPropagation(); });
+    });
+})();
 
 (function() {
     const toggle = document.getElementById('mobileNavToggle');

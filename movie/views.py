@@ -323,10 +323,7 @@ def search(request):
 
 
 def genre_index(request):
-    lang = get_language() or 'uz'
-    genres = Genre.objects.all().order_by('name_uz', 'name')
     return render(request, 'genre_index.html', {
-        'all_genres': genres,
         'page_title': _('Janrlar'),
     })
 
