@@ -5,6 +5,19 @@ from .models import Category, Genre, TicketCategory
 from .translations import translate_category
 from .utils import user_can_watch_live, user_can_watch_movies, user_has_subscription
 
+GENRE_NAV_ORDER = [
+    'komediya', 'drama', 'tarixiy', 'semejnyj', 'hujjatli', 'uzhasy', 'musiqiy',
+    'boevik', 'fantastika', 'fentezi', 'triller', 'priklyucheniya',
+    'melodrama', 'kriminal', 'biografiya', 'sport', 'voennyj',
+]
+
+
+def _ordered_genres():
+    order = {slug: idx for idx, slug in enumerate(GENRE_NAV_ORDER)}
+    genres = list(Genre.objects.all())
+    genres.sort(key=lambda genre: (order.get(genre.slug, 999), genre.name_uz or genre.name))
+    return genres
+
 
 def _nav_categories(lang):
     child_qs = Category.objects.filter(is_active=True).order_by('order', 'name')
@@ -39,7 +52,7 @@ def view_all(request):
     return {
         'categories': categories,
         'ticket_categories': ticket_categories,
-        'genres': Genre.objects.all().order_by('name_uz', 'name'),
+        'genres': _ordered_genres(),
         'current_language': lang,
         'has_subscription': user_has_subscription(request.user),
         'has_movie_access': user_can_watch_movies(request.user),
