@@ -2,12 +2,28 @@
 {% load static i18n movie_tags %}
 {% block content %}
 
+<style>
+#premiereCarousel.premiere-carousel{position:relative;min-height:420px;overflow:hidden;border-radius:16px;background:#0f172a;margin:0 -16px 32px}
+#premiereCarousel .premiere-carousel-inner{position:relative;width:100%;min-height:420px}
+#premiereCarousel .premiere-slide{position:absolute!important;top:0;left:0;right:0;bottom:0;width:100%;height:100%;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s ease;pointer-events:none;margin:0;padding:0;display:block}
+#premiereCarousel .premiere-slide.is-active{opacity:1!important;visibility:visible!important;pointer-events:auto;z-index:2}
+#premiereCarousel .premiere-slide-bg{position:absolute;inset:0;background-size:cover;background-position:center top}
+#premiereCarousel .premiere-slide-content{position:relative;z-index:2;max-width:640px;padding:48px 32px 56px}
+#premiereCarousel .premiere-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:48px;height:48px;border:none;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+#premiereCarousel .premiere-prev{left:16px}
+#premiereCarousel .premiere-next{right:16px}
+#premiereCarousel .premiere-dots{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:8px}
+#premiereCarousel .premiere-dot{width:10px;height:10px;border-radius:50%;border:none;padding:0;background:rgba(255,255,255,.35);cursor:pointer}
+#premiereCarousel .premiere-dot.is-active{background:#fff;transform:scale(1.15)}
+@media(max-width:768px){#premiereCarousel.premiere-carousel,#premiereCarousel .premiere-carousel-inner{min-height:360px}#premiereCarousel .premiere-slide-content{padding:32px 20px 48px}}
+</style>
+
 <div id="main" class="container-modern home-page">
     {% if premiere_movies %}
     <section class="premiere-carousel" id="premiereCarousel" data-rotate="{{ premiere_rotate_seconds|default:6 }}">
         <div class="premiere-carousel-inner">
             {% for movie in premiere_movies %}
-            <article class="premiere-slide{% if forloop.first %} is-active{% endif %}" data-index="{{ forloop.counter0 }}">
+            <div class="premiere-slide{% if forloop.first %} is-active{% endif %}" data-index="{{ forloop.counter0 }}">
                 <div class="premiere-slide-bg" style="background-image: linear-gradient(to right, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.55) 45%, rgba(15,23,42,0.25) 100%), url('{{ movie.poster.url }}');"></div>
                 <div class="premiere-slide-content">
                     <p class="premiere-slide-label">{{ premiere_title|default:"Premyeralar" }}</p>
@@ -18,7 +34,7 @@
                         {% trans "Tomosha qilish" %}
                     </a>
                 </div>
-            </article>
+            </div>
             {% endfor %}
         </div>
         {% if premiere_movies|length > 1 %}

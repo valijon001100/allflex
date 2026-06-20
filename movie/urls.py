@@ -18,6 +18,7 @@ urlpatterns = [
     path("category/<slug>", views.category_list, name='category_list'),
     path("movie/<slug:slug>/", views.MovieDetailView.as_view(), name='detail'),
     path("search/", views.search, name='search'),
+    path("janr/", views.genre_index, name='genre_index'),
     path("janr/<slug:slug>/", views.genre_list, name='genre_list'),
     path("liked/", views.likedMovies, name='likedMovies'),
     path("like/", views.likeMovie, name='likeMovie'),

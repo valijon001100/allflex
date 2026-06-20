@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load i18n movie_tags %}
+
+{% block content %}
+<div id="main" class="container-modern page-main">
+    <div class="catalog-toolbar">
+        <h1 class="catalog-title">{{ page_title }}</h1>
+    </div>
+    <div class="genre-index-grid">
+        {% for gen in all_genres %}
+        <a href="{% url 'movie:genre_list' gen.slug %}" class="genre-index-card">
+            <span class="genre-index-name">{{ gen|genre_name:current_language }}</span>
+            <span class="genre-index-arrow">→</span>
+        </a>
+        {% empty %}
+        <p class="page-empty">{% trans "Janrlar yo'q." %}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

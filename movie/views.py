@@ -322,6 +322,15 @@ def search(request):
     return render(request, 'search_list.html', {"object_list": data})
 
 
+def genre_index(request):
+    lang = get_language() or 'uz'
+    genres = Genre.objects.all().order_by('name_uz', 'name')
+    return render(request, 'genre_index.html', {
+        'all_genres': genres,
+        'page_title': _('Janrlar'),
+    })
+
+
 def genre_list(request, slug):
     genre = get_object_or_404(Genre, slug=slug)
     lang = get_language() or 'uz'
