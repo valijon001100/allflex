@@ -45,12 +45,44 @@ def _viewer_subscriber_code(user):
     return profile.subscriber_code
 
 
+def _category_descendant_ids(category):
+    ids = [category.id]
+    for child in Category.objects.filter(parent=category, is_active=True):
+        ids.extend(_category_descendant_ids(child))
+    return ids
+
+
+NON_FILM_CATEGORY_SLUGS = ('multfilmy', 'teleperedachi', 'Teatr')
+
+
+def _category_ids_for_slugs(slugs):
+    ids = []
+    for slug in slugs:
+        try:
+            ids.extend(_category_descendant_ids(Category.objects.get(slug=slug)))
+        except Category.DoesNotExist:
+            pass
+    return ids
+
+
+def _movies_for_films_section():
+    exclude_ids = _category_ids_for_slugs(NON_FILM_CATEGORY_SLUGS)
+    return Movie.objects.exclude(category_id__in=exclude_ids).select_related('category').order_by('-created_at', '-id')
+
+
+def _movies_for_category_page(category):
+    if category.slug == 'filmy':
+        return _movies_for_films_section()
+    cat_ids = _category_descendant_ids(category)
+    return Movie.objects.filter(category_id__in=cat_ids).select_related('category').order_by('-created_at', '-id')
+
+
 def category_list(request, slug):
     if slug == 'teleperedachi':
         return channel_list(request)
     category = get_object_or_404(Category, slug=slug)
     subcategories = Category.objects.filter(parent=category, is_active=True).order_by('order', 'name')
-    movies = Movie.objects.filter(category=category)
+    movies = _movies_for_category_page(category)
     paginator = Paginator(movies, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -167,13 +199,16 @@ class HomeView(ListView):
 
         for cat in home_tabs:
             cat_obj = cat['obj']
-            child_ids = list(cat_obj.children.filter(is_active=True).values_list('id', flat=True))
-            cat_ids = [cat_obj.id] + child_ids
-            movies = list(
-                Movie.objects.filter(category_id__in=cat_ids)
-                .select_related('category')
-                .order_by('-created_at', '-id')[:16]
-            )
+            if cat_obj.slug == 'filmy':
+                movies = list(_movies_for_films_section()[:16])
+            else:
+                child_ids = list(cat_obj.children.filter(is_active=True).values_list('id', flat=True))
+                cat_ids = [cat_obj.id] + child_ids
+                movies = list(
+                    Movie.objects.filter(category_id__in=cat_ids)
+                    .select_related('category')
+                    .order_by('-created_at', '-id')[:16]
+                )
             if movies:
                 sections.append({
                     'title': cat['name'],
@@ -266,25 +301,28 @@ def search(request):
     return render(request, 'search_list.html', {"object_list": data})
 
 def movie_sorting(request, sort_params):
-    # sort_params.split("=")[0] sort type 
-    # sort_params.split("=")[1] sort value
     sort_type = sort_params.split("=")[0]
     sort_value = sort_params.split("=")[1]
-    # print(sort_type)
-    # print(sort_params)
     if sort_type == "genres":
         genre = Genre.objects.get(id=sort_value)
-        object_list = Movie.objects.filter(genres=sort_value)
-        return render(request, "index.html", {"object_list":object_list, "filter_category":genre.name})
+        movies = Movie.objects.filter(genres=sort_value).order_by('-created_at', '-id')
+        filter_label = genre.name
     elif sort_type == "year":
-        object_list = Movie.objects.filter(year=sort_value)
-        return render(request, "index.html", {"object_list":object_list, "filter_category":sort_value})
+        movies = Movie.objects.filter(year=sort_value).order_by('-created_at', '-id')
+        filter_label = sort_value
     elif sort_type == "quality":
-        object_list = Movie.objects.filter(quality=sort_value)
-        return render(request, "index.html", {"object_list":object_list, "filter_category":sort_value})
+        movies = Movie.objects.filter(quality=sort_value).order_by('-created_at', '-id')
+        filter_label = sort_value
     else:
-        print("ERROR" * 10)
         return HttpResponseRedirect("/")
+
+    paginator = Paginator(movies, 12)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, "list.html", {
+        'page_obj': page_obj,
+        'cat_name': _('Filmlar'),
+        'filter_category': filter_label,
+    })
     
 
 

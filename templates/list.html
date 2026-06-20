@@ -2,141 +2,104 @@
 {% load i18n movie_tags %}
 
 {% block content %}
-
-
-
-<div id="main" class="container">
-
-
+<div id="main" class="container-modern page-main">
     <div id="movies">
-
         {% if subcategories %}
-        <div style="margin-bottom:20px;display:flex;flex-wrap:wrap;gap:10px">
+        <div class="subcategory-pills">
             {% for sub in subcategories %}
-            <a href="{{ sub.obj.get_absolute_url }}" class="btn btn-default btn-sm" style="border-radius:20px">{{ sub.name }}</a>
+            <a href="{{ sub.obj.get_absolute_url }}" class="subcategory-pill">{{ sub.name }}</a>
             {% endfor %}
         </div>
         {% endif %}
 
-        <div class="clearfix">
-            <div class="pull-left">
-                <a href="#" class="h3 catalog-title">{% if cat_name %}{{cat_name}}{% else %}{% trans 'Фильмы' %}{% endif %} : {{filter_category}}</a>
-            </div>
-        
-            <div class="dropdown-filters" style="padding-bottom:10px ;">
-        
+        <div class="catalog-toolbar">
+            <h1 class="catalog-title">{% if cat_name %}{{ cat_name }}{% else %}{% trans 'Filmlar' %}{% endif %}{% if filter_category %} — {{ filter_category }}{% endif %}</h1>
+            <div class="catalog-filters dropdown-filters">
                 <div class="dropdown dropdown-filter">
                     <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                        <span class="dropdown-u">{% trans 'Жанр' %} </span> <span class="caret"></span>
+                        <span>{% trans 'Janr' %}</span> <span class="caret"></span>
                     </a>
-                    <ul class="dropdown-menu">   
+                    <ul class="dropdown-menu">
                         {% for gen in genres %}
-                            <li class="active" id="genreLinks" itemid="{{gen.id}}">
-                                <a href=""
-                                rel="nofollow">{{gen.name}}</a>
-                            </li>  
-                        {% endfor %}                          
-                    </ul>
-                </div>
-        
-                <div class="dropdown dropdown-filter">
-                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                        <span class="dropdown-u">{% trans 'Год' %}</span> <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li class="active">
-                            <a href="{% url 'movie:sort' 'year=2026' %}" rel="nofollow">2026</a>
+                        <li id="genreLinks" data-genre-id="{{ gen.id }}">
+                            <a href="#" rel="nofollow">{{ gen.name }}</a>
                         </li>
-                        <li>
-                            <a href="{% url 'movie:sort' 'year=2018' %}" rel="nofollow">2018</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'movie:sort' 'year=2015' %}" rel="nofollow">2015</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'movie:sort' 'year=2014' %}" rel="nofollow">2014</a>
-                        </li>
-                   
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="dropdown dropdown-filter">
                     <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                        <span class="dropdown-u">{% trans 'Качество' %}</span> <span class="caret"></span>
+                        <span>{% trans 'Yil' %}</span> <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="active">
-                            <a href="{% url 'movie:sort' 'quality=HDR' %}" rel="nofollow">HDR</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'movie:sort' 'quality=TS' %}" rel="nofollow">TS</a>
-                        </li>
-                
+                        <li><a href="{% url 'movie:sort' 'year=2026' %}">2026</a></li>
+                        <li><a href="{% url 'movie:sort' 'year=2018' %}">2018</a></li>
+                        <li><a href="{% url 'movie:sort' 'year=2015' %}">2015</a></li>
+                        <li><a href="{% url 'movie:sort' 'year=2014' %}">2014</a></li>
+                    </ul>
+                </div>
+                <div class="dropdown dropdown-filter">
+                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                        <span>{% trans 'Sifat' %}</span> <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'movie:sort' 'quality=HDR' %}">HDR</a></li>
+                        <li><a href="{% url 'movie:sort' 'quality=TS' %}">TS</a></li>
                     </ul>
                 </div>
             </div>
         </div>
-
 
         <div class="items">
-            
-            {% for movie in page_obj %}              
-              
+            {% for movie in page_obj %}
             <div class="item">
                 <a href="{% url 'movie:detail' movie.slug %}">
-                    <img src="{{movie.poster.url}}"
-                        class="img-responsive" loading="lazy" alt="{{ movie|movie_title }}"
-                        title="{{ movie|movie_title }}">
+                    <img src="{{ movie.poster.url }}" loading="lazy" alt="{{ movie|movie_title }}" title="{{ movie|movie_title }}">
                 </a>
-
-                <button class="favorite" data-movie-id="179849" title="Добавить в избранное"></button>
-
-                <span class="label label-danger">2 сезон 10 серия</span>
-
                 <div class="info">
                     <div class="title">
-                        <a href="{% url 'movie:detail' movie.slug %}" class="link" alt="{{ movie|movie_title }}"
-                            title="{{ movie|movie_title }}">{{ movie|movie_title }}</a>
+                        <a href="{% url 'movie:detail' movie.slug %}" class="link" title="{{ movie|movie_title }}">{{ movie|movie_title }}</a>
                     </div>
-                    <div class="desc">{{ movie.year }}, {{ movie.quality }}</div>
+                    <div class="desc">{{ movie.year }}{% if movie.quality %}, {{ movie.quality }}{% endif %}</div>
                 </div>
             </div>
-            
-        {% endfor %}
+            {% empty %}
+            <div class="page-empty">
+                <h3>{% trans "Kontent topilmadi" %}</h3>
+                <p>
+                    {% if category.slug == 'Teatr' %}
+                    {% trans "Teatr spektakllari uchun" %} <a href="{% url 'movie:ticket_category' 'teatr' %}">{% trans "biletlar bo'limiga" %}</a> {% trans "o'ting." %}
+                    {% else %}
+                    {% trans "Boshqa filtrlarni sinab ko'ring yoki bosh sahifaga qayting." %}
+                    {% endif %}
+                </p>
+            </div>
+            {% endfor %}
         </div>
 
+        {% if page_obj.paginator.num_pages > 1 %}
         <ul class="pagination">
-        {% if page_obj.has_previous %}
-            <li>
-                <a href="?page={{ page_obj.previous_page_number }}">{% trans 'Предыдущая' %}</a>
+            {% if page_obj.has_previous %}
+            <li><a href="?page={{ page_obj.previous_page_number }}">← {% trans 'Oldingi' %}</a></li>
+            {% endif %}
+            {% for page in page_obj.paginator.page_range %}
+            <li class="{% if page == page_obj.number %}active{% endif %}">
+                <a href="?page={{ page }}">{{ page }}</a>
             </li>
-           
-        {% endif %}
-        
-        {% for page in page_obj.paginator.page_range %}
-        {% if page == page_obj.number %}
-            <li class="active">
-                <a href="?page={{page}}">{{page}}</a>
-            </li>
-        {% else %}
-            <li class="">
-                <a href="?page={{page}}">{{page}}</a>
-            </li>
-        {% endif %}
-        {% endfor %}
-            
-        {% if page_obj.has_next %}
-            <li>
-                <a href="?page={{ page_obj.next_page_number }}">{% trans 'Следующая' %}</a>
-            </li>
-        {% endif %}
-           
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li><a href="?page={{ page_obj.next_page_number }}">{% trans 'Keyingi' %} →</a></li>
+            {% endif %}
         </ul>
+        {% endif %}
     </div>
-    <script>
-        let links = document.querySelectorAll("#genreLinks")
-        for(let l of links){
-            let value = l.getAttribute("itemid")
-            l.children[0].href = `/films/genres=${value}`
-        }   
-    </script>
-    {% endblock content %}
+</div>
+<script>
+document.querySelectorAll('#genreLinks').forEach(function(el) {
+    const id = el.getAttribute('data-genre-id');
+    if (id && el.querySelector('a')) {
+        el.querySelector('a').href = '/films/genres=' + id;
+    }
+});
+</script>
+{% endblock %}

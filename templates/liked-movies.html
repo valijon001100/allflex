@@ -1,88 +1,53 @@
 {% extends 'base.html' %}
-{% load movie_tags %}
+{% load i18n movie_tags %}
 
 {% block content %}
-
-
-
-<div id="main" class="container">
-
-
+<div id="main" class="container-modern page-main">
     <div id="movies">
-
-        <div class="clearfix">
-            <div class="pull-left">
-                <a href="#" class="h3 catalog-title">{% if cat_name %}{{cat_name}}{% else %}Любимые Фильмы{% endif %} : {{filter_category}}</a>
-            </div>
-
+        <div class="page-header-block">
+            <h1 class="page-title">{% trans 'Sevimli filmlar' %}</h1>
+            <p class="page-subtitle">{% trans "Siz yoqtirgan filmlar ro'yxati" %}</p>
         </div>
-
 
         <div class="items">
             {% if object_list %}
-            {% for movie in object_list %}              
-              
+            {% for movie in object_list %}
             <div class="item">
                 <a href="{% url 'movie:detail' movie.slug %}">
-                    <img src="{{movie.poster.url}}"
-                        class="img-responsive" loading="lazy" alt="{{ movie|movie_title }}"
-                        title="{{ movie|movie_title }}">
+                    <img src="{{ movie.poster.url }}" loading="lazy" alt="{{ movie|movie_title }}" title="{{ movie|movie_title }}">
                 </a>
-
-                <button class="favorite" data-movie-id="179849" title="Добавить в избранное"></button>
-
-                <span class="label label-danger">2 сезон 10 серия</span>
-
                 <div class="info">
                     <div class="title">
-                        <a href="{% url 'movie:detail' movie.slug %}" class="link" alt="{{ movie|movie_title }}"
-                            title="{{ movie|movie_title }}">{{ movie|movie_title }}</a>
+                        <a href="{% url 'movie:detail' movie.slug %}" class="link" title="{{ movie|movie_title }}">{{ movie|movie_title }}</a>
                     </div>
-                    <div class="desc">{{ movie.year }}, {{ movie.quality }}</div>
+                    <div class="desc">{{ movie.year }}{% if movie.quality %}, {{ movie.quality }}{% endif %}</div>
                 </div>
             </div>
-            
-        {% endfor %}
-        {% else %}
-        <center>
-            <a href="#" class="h3 catalog-title">
-                фильм не найден
-            </a>
-            <br>
-            <a href="/" class="h3 catalog-title btn btn-default btn-post">
-                Назад
-            </a>
-        </center>
-        {% endif %}
+            {% endfor %}
+            {% else %}
+            <div class="page-empty">
+                <h3>{% trans "Sevimli filmlar yo'q" %}</h3>
+                <p>{% trans "Filmlarni yoqtirish uchun tizimga kiring." %}</p>
+                <a href="{% url 'movie:home' %}" class="btn-hero btn-primary" style="margin-top:16px;display:inline-flex">{% trans 'Bosh sahifa' %}</a>
+            </div>
+            {% endif %}
         </div>
 
+        {% if page_obj.paginator.num_pages > 1 %}
         <ul class="pagination">
-        {% if page_obj.has_previous %}
-            <li>
-                <a href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+            {% if page_obj.has_previous %}
+            <li><a href="?page={{ page_obj.previous_page_number }}">← {% trans 'Oldingi' %}</a></li>
+            {% endif %}
+            {% for page in page_obj.paginator.page_range %}
+            <li class="{% if page == page_obj.number %}active{% endif %}">
+                <a href="?page={{ page }}">{{ page }}</a>
             </li>
-           
-        {% endif %}
-        
-        {% for page in page_obj.paginator.page_range %}
-        {% if page == page_obj.number %}
-            <li class="active">
-                <a href="?page={{page}}">{{page}}</a>
-            </li>
-        {% else %}
-            <li class="">
-                <a href="?page={{page}}">{{page}}</a>
-            </li>
-        {% endif %}
-        {% endfor %}
-            
-        {% if page_obj.has_next %}
-            <li>
-                <a href="?page={{ page_obj.next_page_number }}">Следующая</a>
-            </li>
-        {% endif %}
-           
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li><a href="?page={{ page_obj.next_page_number }}">{% trans 'Keyingi' %} →</a></li>
+            {% endif %}
         </ul>
+        {% endif %}
     </div>
-
-    {% endblock content %}
+</div>
+{% endblock %}

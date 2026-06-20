@@ -4,7 +4,7 @@
 {% block content %}
 <div class="page-header">
     <h1>🎫 {% trans 'Tadbirlar' %}</h1>
-    <a href="{% url 'movie:admin_ticket_add' %}" class="btn-admin">+ {% trans 'Qo\'shish' %}</a>
+    <a href="{% url 'movie:admin_ticket_add' %}" class="btn-admin">+ {% trans "Qo'shish" %}</a>
 </div>
 
 <form class="search-bar" method="get">
@@ -16,6 +16,9 @@
         <option value="sirk" {% if cat == 'sirk' %}selected{% endif %}>Sirk</option>
     </select>
     <button type="submit" class="btn-admin">{% trans 'Qidirish' %}</button>
+    {% if q or cat %}
+    <a href="{% url 'movie:admin_ticket_list' %}" class="btn-outline">{% trans 'Tozalash' %}</a>
+    {% endif %}
 </form>
 
 <div class="panel-card panel-card--table">
@@ -24,11 +27,11 @@
         <thead>
             <tr>
                 <th>{% trans 'Nomi' %}</th>
-                <th>{% trans 'Bo\'lim' %}</th>
+                <th>{% trans "Bo'lim" %}</th>
                 <th>{% trans 'Sana' %}</th>
                 <th>{% trans 'Narx' %}</th>
                 <th>{% trans 'Qolgan' %}</th>
-                <th>{% trans 'Действия' %}</th>
+                <th>{% trans 'Amallar' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -37,18 +40,30 @@
             <td><strong>{{ event.title }}</strong></td>
             <td>{{ event.category.icon }} {{ event.category.name }}</td>
             <td>{{ event.event_date|date:"d.m.Y H:i" }}</td>
-            <td>{{ event.price|floatformat:0 }}</td>
+            <td>{{ event.price|floatformat:0 }} {% trans "so'm" %}</td>
             <td>{{ event.tickets_left }} / {{ event.quantity_total }}</td>
             <td>
-                <a href="{% url 'movie:admin_ticket_edit' event.pk %}" class="btn-outline btn-sm">{% trans 'Редактировать' %}</a>
-                <a href="{% url 'movie:admin_ticket_delete' event.pk %}" class="btn-outline btn-sm" style="color:#e74c3c">{% trans 'Удалить' %}</a>
+                <a href="{% url 'movie:admin_ticket_edit' event.pk %}" class="btn-outline btn-sm">{% trans 'Tahrirlash' %}</a>
+                <a href="{% url 'movie:admin_ticket_delete' event.pk %}" class="btn-outline btn-sm" style="color:#e74c3c">{% trans "O'chirish" %}</a>
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="6" style="text-align:center;padding:32px">{% trans 'Tadbirlar yo\'q.' %}</td></tr>
+        <tr><td colspan="6" style="text-align:center;padding:32px;color:#9ca3af">{% trans "Tadbirlar yo'q." %}</td></tr>
         {% endfor %}
         </tbody>
     </table>
     </div>
 </div>
+
+{% if page_obj.has_other_pages %}
+<div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if cat %}&category={{ cat }}{% endif %}" class="btn-outline btn-sm">←</a>
+    {% endif %}
+    <span style="padding:8px 12px;color:#9ca3af">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if cat %}&category={{ cat }}{% endif %}" class="btn-outline btn-sm">→</a>
+    {% endif %}
+</div>
+{% endif %}
 {% endblock %}
