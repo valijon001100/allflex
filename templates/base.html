@@ -153,7 +153,6 @@
             {% if not request.user.is_authenticated %}
             <li class="auth-buttons">
                 <a href="{% url 'movie:login' %}" class="btn-auth btn-login">{% trans 'Kirish' %}</a>
-                <a href="{% url 'movie:register' %}" class="btn-auth btn-register">{% trans "Ro'yxatdan o'tish" %}</a>
             </li>
             {% else %}
             <li class="nav-item">
@@ -218,7 +217,6 @@
         <li><a href="{% url 'movie:logout' %}">{% trans 'Chiqish' %}</a></li>
         {% else %}
         <li><a href="{% url 'movie:login' %}">{% trans 'Kirish' %}</a></li>
-        <li><a href="{% url 'movie:register' %}">{% trans "Ro'yxatdan o'tish" %}</a></li>
         {% endif %}
     </ul>
     <form action="{% url 'movie:search' %}" method="get" style="margin-top:16px">
