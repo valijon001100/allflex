@@ -141,10 +141,10 @@ body {
   overflow: visible;
 }
 
-.navbar-modern .navbar-nav,
 .navbar-modern .navbar-nav.navbar-nav-desktop {
   float: none !important;
   margin: 0 !important;
+  display: none !important;
   align-items: center;
   gap: 2px;
   list-style: none;
@@ -1416,24 +1416,27 @@ body {
 @media (min-width: 993px) {
   .navbar-content {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto auto;
     align-items: center;
-    gap: 10px;
+    gap: 8px 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    height: auto;
+    min-height: 72px;
   }
 
   .navbar-modern button.navbar-mobile-toggle {
     display: none !important;
-  }
-
-  .navbar-logo {
-    grid-column: 1;
+    visibility: hidden !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
   }
 
   .navbar-modern .navbar-nav.navbar-nav-desktop {
-    grid-column: 2;
     display: flex !important;
     justify-content: center;
-    flex: none;
     min-width: 0;
     overflow-x: auto;
     overflow-y: visible;
@@ -1444,13 +1447,76 @@ body {
   .navbar-modern .navbar-nav.navbar-nav-desktop::-webkit-scrollbar {
     display: none;
   }
+}
+
+@media (min-width: 993px) and (max-width: 1360px) {
+  .navbar-modern {
+    height: auto;
+    min-height: 72px;
+  }
+
+  body {
+    padding-top: 116px;
+  }
+
+  .navbar-content {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "logo search actions"
+      "nav nav nav";
+  }
+
+  .navbar-logo {
+    grid-area: logo;
+  }
+
+  .navbar-modern .navbar-nav.navbar-nav-desktop {
+    grid-area: nav;
+  }
 
   .navbar-modern .navbar-search {
-    grid-column: 3;
+    grid-area: search;
+    justify-self: end;
   }
 
   .navbar-right {
-    grid-column: 4;
+    grid-area: actions;
+    justify-self: end;
+  }
+}
+
+@media (min-width: 1361px) {
+  .navbar-modern {
+    height: 72px;
+  }
+
+  body {
+    padding-top: 72px;
+  }
+
+  .navbar-content {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "logo nav search actions";
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .navbar-logo {
+    grid-area: logo;
+  }
+
+  .navbar-modern .navbar-nav.navbar-nav-desktop {
+    grid-area: nav;
+  }
+
+  .navbar-modern .navbar-search {
+    grid-area: search;
+  }
+
+  .navbar-right {
+    grid-area: actions;
   }
 }
 
@@ -1950,7 +2016,7 @@ body {
 
 /* --- Mobile Navbar --- */
 .navbar-modern button.navbar-mobile-toggle {
-  display: flex;
+  display: none !important;
   flex-direction: column;
   justify-content: center;
   align-items: center;
