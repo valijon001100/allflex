@@ -6,7 +6,7 @@ from django.utils import timezone
 from movie.models import TicketCategory, TicketEvent
 
 CATEGORY_DATA = [
-    {'name': 'Kino', 'name_uz': 'Kino', 'name_en': 'Cinema', 'slug': 'kino', 'icon': '🎬', 'order': 1},
+    {'name': 'Кино', 'name_uz': 'Kinoteatr', 'name_en': 'Cinema', 'slug': 'kino', 'icon': '🎬', 'order': 1},
     {'name': 'Театр', 'name_uz': 'Teatr', 'name_en': 'Theater', 'slug': 'teatr', 'icon': '🎭', 'order': 2},
     {'name': 'Цирк', 'name_uz': 'Sirk', 'name_en': 'Circus', 'slug': 'sirk', 'icon': '🎪', 'order': 3},
 ]
@@ -24,12 +24,18 @@ SAMPLE_EVENTS = [
 def ensure_categories():
     created = 0
     for data in CATEGORY_DATA:
-        _, was_created = TicketCategory.objects.get_or_create(
+        cat, was_created = TicketCategory.objects.get_or_create(
             slug=data['slug'],
             defaults=data,
         )
         if was_created:
             created += 1
+        elif cat.name_uz != data['name_uz'] or cat.name != data['name']:
+            cat.name_uz = data['name_uz']
+            cat.name = data['name']
+            cat.name_en = data['name_en']
+            cat.icon = data['icon']
+            cat.save(update_fields=['name_uz', 'name', 'name_en', 'icon'])
     return created
 
 

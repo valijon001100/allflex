@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=32" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=34" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -27,7 +27,7 @@
 
 <nav class="navbar-modern" id="mainNavbar">
     <div class="container-modern navbar-content">
-        <button type="button" class="navbar-mobile-toggle" id="mobileNavToggle" aria-label="{% trans 'Menyu' %}" aria-expanded="false">
+        <button type="button" class="navbar-mobile-toggle" id="mobileNavToggle" aria-label="{% trans 'Menyu' %}" aria-expanded="false" title="{% trans 'Menyu' %}">
             <span></span><span></span><span></span>
         </button>
 
@@ -43,24 +43,27 @@
                     {% trans 'Bosh sahifa' %}
                 </a>
             </li>
-            <li class="nav-item lang-dropdown dropdown nav-janr-dropdown{% if request.resolver_match.url_name == 'genre_list' %} is-active{% endif %}">
-                <button type="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Janrlar' %}">
-                    {% trans 'Janr' %}
-                </button>
-                <ul id="janrDropdownMenu" class="dropdown-menu nav-compact-dropdown nav-genre-dropdown">
-                    {% for gen in genres %}
-                    <li>
-                        <a href="{% url 'movie:genre_list' gen.slug %}"{% if request.resolver_match.url_name == 'genre_list' and request.resolver_match.kwargs.slug == gen.slug %} class="is-selected"{% endif %}>
-                            {{ gen|genre_name:current_language }}
-                        </a>
-                    </li>
-                    {% empty %}
-                    <li><span class="dropdown-empty">{% trans "Janrlar yo'q" %}</span></li>
-                    {% endfor %}
-                </ul>
-            </li>
             {% for cat in categories %}
-                {% if cat.children %}
+                {% if cat.obj.slug == 'Teatr' %}
+                <li class="nav-item dropdown nav-item--split">
+                    <div class="nav-split-wrap{% if request.resolver_match.url_name == 'ticket_category' and request.resolver_match.kwargs.slug == 'kino' or request.resolver_match.url_name == 'ticket_detail' %} is-active{% endif %}">
+                        <a href="{{ kinoteatr_nav.home_url }}" class="nav-cat-link">
+                            {{ kinoteatr_nav.label }}
+                        </a>
+                        <button type="button" class="nav-cat-caret dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{% trans 'Kinoteatr tadbirlari' %}">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <ul class="dropdown-menu nav-cat-dropdown">
+                        <li class="dropdown-header">{% trans 'Kinoteatr' %}</li>
+                        <li><a href="{{ kinoteatr_nav.home_url }}"><strong>{% trans 'Barchasi' %}</strong></a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% for sample in kinoteatr_nav.samples %}
+                        <li><a href="{{ sample.url }}">{{ sample.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% elif cat.children %}
                 <li class="nav-item dropdown nav-item--split">
                     <div class="nav-split-wrap{% if request.resolver_match.url_name == 'category_list' %}{% if request.resolver_match.kwargs.slug == cat.obj.slug %} is-active{% else %}{% for child in cat.children %}{% if request.resolver_match.kwargs.slug == child.obj.slug %} is-active{% endif %}{% endfor %}{% endif %}{% endif %}">
                         <a href="{{ cat.obj.get_absolute_url }}"
@@ -108,12 +111,8 @@
                     <li class="dropdown-header">{% trans 'Bilet bo\'limlari' %}</li>
                     <li><a href="{% url 'movie:ticket_home' %}"><strong>{% trans 'Barchasi' %}</strong></a></li>
                     <li><hr class="dropdown-divider"></li>
-                    {% for tcat in ticket_categories %}
-                    <li><a href="{{ tcat.obj.get_absolute_url }}">{{ tcat.obj.icon }} {{ tcat.name }}</a></li>
-                    {% empty %}
-                    <li><a href="{% url 'movie:ticket_category' 'kino' %}">🎬 {% trans 'Kino' %}</a></li>
-                    <li><a href="{% url 'movie:ticket_category' 'teatr' %}">🎭 {% trans 'Teatr' %}</a></li>
-                    <li><a href="{% url 'movie:ticket_category' 'sirk' %}">🎪 {% trans 'Sirk' %}</a></li>
+                    {% for tcat in ticket_nav %}
+                    <li><a href="{{ tcat.url }}">{{ tcat.icon }} {{ tcat.name }}</a></li>
                     {% endfor %}
                     {% if request.user.is_authenticated %}
                     <li><hr class="dropdown-divider"></li>
@@ -181,17 +180,17 @@
 <div class="navbar-mobile-panel" id="mobileNavPanel" aria-hidden="true">
     <ul class="mobile-nav-list">
         <li><a href="{% url 'movie:home' %}">{% trans 'Bosh sahifa' %}</a></li>
-        <li class="mobile-nav-genre">
-            <span class="mobile-nav-label">{% trans 'Janr' %}</span>
+        {% for cat in categories %}
+        {% if cat.obj.slug == 'Teatr' %}
+        <li>
+            <a href="{{ kinoteatr_nav.home_url }}">{{ kinoteatr_nav.label }}</a>
             <ul class="mobile-nav-sub">
-                {% for gen in genres %}
-                <li><a href="{% url 'movie:genre_list' gen.slug %}">{{ gen|genre_name:current_language }}</a></li>
-                {% empty %}
-                <li><span style="color:var(--text-muted);padding:8px 0;display:block">{% trans "Janrlar yo'q" %}</span></li>
+                {% for sample in kinoteatr_nav.samples %}
+                <li><a href="{{ sample.url }}">{{ sample.name }}</a></li>
                 {% endfor %}
             </ul>
         </li>
-        {% for cat in categories %}
+        {% else %}
         <li>
             <a href="{{ cat.obj.get_absolute_url }}">{{ cat.name }}</a>
             {% if cat.children %}
@@ -202,9 +201,17 @@
             </ul>
             {% endif %}
         </li>
+        {% endif %}
         {% endfor %}
         <li><a href="{% url 'movie:live_list' %}">{% trans 'Jonli efir' %}</a></li>
-        <li><a href="{% url 'movie:ticket_home' %}">{% trans 'Biletlar' %}</a></li>
+        <li>
+            <a href="{% url 'movie:ticket_home' %}">{% trans 'Biletlar' %}</a>
+            <ul class="mobile-nav-sub">
+                {% for tcat in ticket_nav %}
+                <li><a href="{{ tcat.url }}">{{ tcat.icon }} {{ tcat.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
         {% if request.user.is_authenticated %}
         <li><a href="{% url 'movie:likedMovies' %}">{% trans 'Sevimlilar' %}</a></li>
         <li><a href="{% url 'movie:my_subscription' %}">{% trans 'Mening obunam' %}</a></li>
@@ -288,98 +295,60 @@ window.addEventListener('scroll', function() {
     var navbar = document.getElementById('mainNavbar');
     if (!navbar) return;
 
-    var janr = navbar.querySelector('.nav-janr-dropdown');
-    var janrToggle = janr ? janr.querySelector('.dropdown-toggle') : null;
-    var janrMenu = document.getElementById('janrDropdownMenu');
-    var janrTimer;
-
-    function closeOtherDropdowns() {
+    function closeOtherDropdowns(except) {
         navbar.querySelectorAll('.dropdown.open').forEach(function (d) {
-            if (d.classList.contains('nav-janr-dropdown')) return;
+            if (except && d === except) return;
             d.classList.remove('open');
-            var t = d.querySelector('.dropdown-toggle');
-            if (t) t.setAttribute('aria-expanded', 'false');
-        });
-    }
-
-    function openJanr() {
-        if (!janr || window.innerWidth < 992) return;
-        clearTimeout(janrTimer);
-        closeOtherDropdowns();
-        janr.classList.add('open');
-        if (janrToggle) janrToggle.setAttribute('aria-expanded', 'true');
-    }
-
-    function scheduleCloseJanr() {
-        if (!janr) return;
-        clearTimeout(janrTimer);
-        janrTimer = setTimeout(function () {
-            janr.classList.remove('open');
-            if (janrToggle) janrToggle.setAttribute('aria-expanded', 'false');
-        }, 160);
-    }
-
-    if (janr && janrMenu && janrToggle) {
-        janr.addEventListener('mouseenter', openJanr);
-        janr.addEventListener('mouseleave', scheduleCloseJanr);
-        janrMenu.addEventListener('mouseenter', function () { clearTimeout(janrTimer); });
-        janrMenu.addEventListener('mouseleave', scheduleCloseJanr);
-        janrToggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (janr.classList.contains('open')) {
-                janr.classList.remove('open');
-                janrToggle.setAttribute('aria-expanded', 'false');
-            } else {
-                openJanr();
-            }
+            d.querySelectorAll('.dropdown-toggle').forEach(function (t) {
+                t.setAttribute('aria-expanded', 'false');
+            });
         });
     }
 
     navbar.querySelectorAll('.dropdown').forEach(function (dropdown) {
-        if (dropdown.classList.contains('nav-janr-dropdown')) return;
-        var toggle = dropdown.querySelector('.dropdown-toggle');
+        var toggles = dropdown.querySelectorAll('.dropdown-toggle');
         var menu = dropdown.querySelector('.dropdown-menu');
-        if (!menu || !toggle) return;
+        if (!menu || !toggles.length) return;
 
-        toggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var open = dropdown.classList.contains('open');
-            closeOtherDropdowns();
-            if (janr) janr.classList.remove('open');
-            if (!open) {
-                dropdown.classList.add('open');
-                toggle.setAttribute('aria-expanded', 'true');
-            }
+        toggles.forEach(function (toggle) {
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var open = dropdown.classList.contains('open');
+                closeOtherDropdowns();
+                if (!open) {
+                    dropdown.classList.add('open');
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+            });
         });
         menu.addEventListener('click', function (e) { e.stopPropagation(); });
     });
 
     if (window.matchMedia('(min-width: 992px)').matches) {
-        navbar.querySelectorAll('.lang-dropdown').forEach(function (dropdown) {
-            if (dropdown.classList.contains('nav-janr-dropdown')) return;
+        navbar.querySelectorAll('.lang-dropdown, .navbar-nav .nav-item.dropdown').forEach(function (dropdown) {
+            var timer;
             dropdown.addEventListener('mouseenter', function () {
-                if (janr) janr.classList.remove('open');
-                closeOtherDropdowns();
+                clearTimeout(timer);
+                closeOtherDropdowns(dropdown);
                 dropdown.classList.add('open');
-                var t = dropdown.querySelector('.dropdown-toggle');
-                if (t) t.setAttribute('aria-expanded', 'true');
+                dropdown.querySelectorAll('.dropdown-toggle').forEach(function (t) {
+                    t.setAttribute('aria-expanded', 'true');
+                });
             });
             dropdown.addEventListener('mouseleave', function () {
-                dropdown.classList.remove('open');
-                var t = dropdown.querySelector('.dropdown-toggle');
-                if (t) t.setAttribute('aria-expanded', 'false');
+                timer = setTimeout(function () {
+                    dropdown.classList.remove('open');
+                    dropdown.querySelectorAll('.dropdown-toggle').forEach(function (t) {
+                        t.setAttribute('aria-expanded', 'false');
+                    });
+                }, 160);
             });
         });
     }
 
     document.addEventListener('click', function () {
         closeOtherDropdowns();
-        if (janr) {
-            janr.classList.remove('open');
-            if (janrToggle) janrToggle.setAttribute('aria-expanded', 'false');
-        }
     });
 })();
 
