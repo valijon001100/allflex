@@ -1546,11 +1546,21 @@ body {
     font-size: 2.2rem;
   }
 
+  body {
+    padding-top: 72px !important;
+  }
+
+  .navbar-modern {
+    height: 72px;
+    min-height: 72px;
+  }
+
   .navbar-content {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 0 12px;
+    height: 100%;
   }
 
   .navbar-modern .navbar-nav.navbar-nav-desktop,
@@ -1564,11 +1574,19 @@ body {
     margin-left: auto;
   }
 
+  #mainNavbar .navbar-mobile-toggle,
   .navbar-modern button.navbar-mobile-toggle {
     order: 1;
     position: relative;
     z-index: 3;
     display: flex !important;
+    visibility: visible !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    overflow: visible !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
   }
 
   body.mobile-nav-open .navbar-modern button.navbar-mobile-toggle span:nth-child(1) {
@@ -2016,13 +2034,14 @@ body {
 
 /* --- Mobile Navbar --- */
 .navbar-modern button.navbar-mobile-toggle {
-  display: none !important;
+  display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 5px;
   width: 44px;
   height: 44px;
+  min-width: 44px;
   padding: 8px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.28);
