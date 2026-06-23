@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{% static 'static/css/bootstrap.css' %}?v=3" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/master.css' %}?v=7" type="text/css">
 <link rel="stylesheet" href="{% static 'static/css/kinobase.css' %}?v=16" type="text/css">
-<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=34" type="text/css">
+<link rel="stylesheet" href="{% static 'static/css/modern-alflix.css' %}?v=36" type="text/css">
 </head>
 <body>
 <script src="{% static 'static/js/jquery.js' %}"></script>
@@ -122,7 +122,7 @@
             </li>
         </ul>
 
-        <form action="{% url 'movie:search' %}" method="get" class="search-form">
+        <form action="{% url 'movie:search' %}" method="get" class="search-form navbar-search">
             <input type="text" name="query" id="autocomplete_search" placeholder="{% trans 'Qidirish...' %}" autocomplete="off">
             <button type="submit" aria-label="{% trans 'Qidirish' %}">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

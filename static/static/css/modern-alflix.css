@@ -134,9 +134,34 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 10px;
   height: 100%;
   padding: 0 var(--spacing-md);
   overflow: visible;
+}
+
+.navbar-modern .navbar-nav,
+.navbar-modern .navbar-nav.navbar-nav-desktop {
+  float: none !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  padding: 0;
+  flex: 1 1 auto;
+  justify-content: center;
+  min-width: 0;
+  overflow: visible;
+  flex-wrap: nowrap;
+}
+
+.navbar-modern .navbar-nav > li,
+.navbar-modern .navbar-nav > .nav-item {
+  float: none !important;
+  display: flex;
+  align-items: center;
 }
 
 .navbar-logo {
@@ -494,50 +519,65 @@ body {
 }
 
 /* Search Form */
-.search-form {
+.navbar-modern .search-form,
+.navbar-modern .navbar-search {
   display: flex;
   align-items: center;
   position: relative;
+  margin: 0 !important;
+  height: 36px;
+  min-height: 36px;
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
   transition: all var(--transition-normal);
+  flex-shrink: 0;
 }
 
-.search-form:hover {
+.navbar-modern .search-form:hover,
+.navbar-modern .navbar-search:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
 }
 
-.search-form input {
+.navbar-modern .search-form input {
   background: transparent;
   border: none;
   color: var(--text-primary);
-  padding: 8px 36px 8px 12px;
+  height: 100%;
+  padding: 0 36px 0 12px;
   width: 160px;
   font-size: 0.875rem;
+  line-height: 1;
+  box-sizing: border-box;
   transition: width var(--transition-normal);
 }
 
-.search-form input:focus {
+.navbar-modern .search-form input:focus {
   outline: none;
   width: 240px;
 }
 
-.search-form button {
+.navbar-modern .search-form button {
   position: absolute;
-  right: 12px;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 6px;
+  padding: 0;
   transition: color var(--transition-fast);
 }
 
-.search-form button:hover {
+.navbar-modern .search-form button:hover {
   color: var(--primary-color);
 }
 
@@ -550,6 +590,35 @@ body {
   margin: 0;
   padding: 0;
   flex-shrink: 0;
+}
+
+.navbar-right > li {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.navbar-right .lang-dropdown .dropdown-toggle,
+.navbar-right .lang-dropdown button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+.navbar-right .btn-auth {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  line-height: 1;
 }
 
 /* Til (UZ) va Janr ? bir xil kompakt tugma va dropdown */
@@ -996,6 +1065,17 @@ body {
   transition: all var(--transition-normal);
   border: 1px solid var(--glass-border);
   position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-card .home-card-poster {
+  display: block;
+  aspect-ratio: auto;
+  height: auto;
+  overflow: hidden;
+  border-radius: 0;
+  flex-shrink: 0;
 }
 
 .movie-card::before {
@@ -1043,6 +1123,26 @@ body {
   object-fit: cover;
   display: block;
   transition: transform var(--transition-slow);
+}
+
+.catalog-movie-grid .movie-card,
+.movie-grid .movie-card {
+  min-height: 0;
+}
+
+.catalog-movie-grid .movie-card-content,
+.movie-grid .movie-card-content {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  padding: var(--spacing-md);
+  margin-top: auto;
+}
+
+.catalog-movie-grid .movie-card::after,
+.movie-grid .movie-card::after {
+  display: none;
 }
 
 .movie-card:hover img {
@@ -1327,8 +1427,14 @@ body {
   }
 
   .navbar-nav-desktop,
-  .search-form {
+  .navbar-modern .navbar-search {
     display: none !important;
+  }
+
+  .navbar-right {
+    order: 3;
+    flex-shrink: 0;
+    margin-left: auto;
   }
 
   .navbar-modern button.navbar-mobile-toggle {
@@ -1360,11 +1466,6 @@ body {
 
   .navbar-logo img {
     height: 34px;
-  }
-
-  .navbar-right {
-    order: 3;
-    flex-shrink: 0;
   }
 
   .navbar-right .auth-buttons .btn-login {
@@ -2165,7 +2266,14 @@ body.mobile-nav-open {
   text-decoration: none;
 }
 
+@media (min-width: 993px) {
+  .navbar-modern .navbar-nav-desktop {
+    display: flex !important;
+  }
+}
+
 @media (max-width: 768px) {
+  .navbar-modern .navbar-search,
   .search-form {
     display: none;
   }
